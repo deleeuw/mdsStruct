@@ -1,0 +1,111 @@
+---
+title: "Organizing Multidimensional Scaling I/O and Computation"
+author: 
+- Jan de Leeuw - University of California Los Angeles
+date: '`r paste("Started October 10 2023, Version of",format(Sys.Date(),"%B %d, %Y"))`'
+output:
+  bookdown::html_document2:
+    keep_md: yes
+    css: preamble.css
+    toc: true
+    toc_depth: 4
+    number_sections: yes
+  bookdown::pdf_document2:
+    latex_engine: lualatex
+    includes:
+      in_header: preamble.tex
+    keep_tex: yes
+    toc: true
+    toc_depth: 4
+    number_sections: yes
+graphics: yes
+mainfont: Times New Roman
+fontsize: 12pt
+bibliography: ["mypubs.bib","total.bib"]
+abstract: "We develop data structures suitable for multidimensional scaling in the smacof framework. Code in both R and C is included."
+---
+
+```{r loadpackages, echo = FALSE}
+#suppressPackageStartupMessages (library (foo, quietly = TRUE))
+```
+
+```{r load code, echo = FALSE}
+source("smacofSort.R")
+```
+
+**Note:** This is a working paper which will be expanded/updated frequently. All suggestions for improvement are welcome. All Rmd, tex, html, pdf, R, and C files are in the public domain. Attribution
+will be appreciated, but is not required. The files can be found at
+https://github.com/deleeuw/mdsStruct. 
+
+# Introduction
+
+The loss function in (metric, least squares, Euclidean, symmetric) Multidimensional Scaling (MDS)
+is
+$$
+\sigma(X):=\frac12\jis w_{ij}(\delta_{ij}-d_{ij}(X))^2.
+$$
+
+This assume symmetry and it uses all elements below the diagonal of both $W$, $\Delta$, and $D(X)$.
+For missing data we set $w_{ij}=0$. 
+
+
+# Example
+
+Here is a small input example.
+
+```{r example}
+n <- 5
+row <- col <- NULL
+set.seed(12345)
+delta <- sample(1:5, 10, replace = TRUE)
+w <- sample(1:5, 10, replace = TRUE)
+
+for (j in 1:(n - 1)) {
+  for (i in (j + 1):n) {
+    row <- c(row, i)
+    col <- c(col, j)
+  }
+}
+data.frame(row = row, col = col, delta = delta, w = w)
+```
+We use this example as input for the R version of *smacofSort()*, which results in the
+*smacofStructure*
+
+```{r}
+dyn.load("smacofSort.so")
+smacofSortR(delta, w, row, col)
+dyn.unload("smacofSort.so")
+```
+
+The *dist* element in the data frame is zero, because we have not computed distances yet.
+Given a configuration $X$ the *row* and *col* elements in the data frame allow from
+straightforward computation of distances. In the case of nonmetric MDS, or more generally
+in MDS with transformed dissimilarities, the *dhat* column will be filled as well.
+The fact that preprocessing with *smacofSort()* gives the ordered dissimilarities, as
+well as the tie blocks, is especially useful in the ordinal case, both with monotone
+polynomials and monotone splines. In the metric (ratio) case there is no need for the
+*dhat* column.
+
+It is obvious how this *smacofStructure* can be adapted if there are multiway data.If we have row-conditional or matrix-conditional data, then we use one of these smacofStructures for each
+row or each matrix.
+
+# Appendix: Code
+
+We use *qsort* to sort the rows of the input data frame by increasing delta. The sorting
+is done in C, the R version is a wrapper around the compiled C code. The C code also
+contains a main which analyzes the same small example as we have used in the text.
+Compile with "clang -o runner -O2 smacofSort.c" and then start "runner" in the shell.
+The C code uses the .C() interface in R, which can be improved using .Call(), 
+but probably in this case with little gain.
+
+## smacofSort.R
+
+```{r file_auxilary1, code = readLines("smacofSort.R"), eval = FALSE}
+```
+
+## smacofSort.c
+
+```{c file_auxilary2, code = readLines("smacofSort.c"), eval = FALSE}
+```
+
+# References
