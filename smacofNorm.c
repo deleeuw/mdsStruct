@@ -41,13 +41,13 @@ void smacofCenter(double *x, const int *np, const int *pp) {
 }
 
 void smacofScale(const double *delta, const double *weights, double *dold,
-                 double *xold, int *pm, int *pn, int *pp) {
+                 double *xold, const int *pm, const int *pn, const int *pp) {
     int m = *pm, n = *pn, p = *pp;
     double swde = 0.0, swdd = 0.0, lbd = 0.0;
     for (int i = 1; i <= m; i++) {
         int iv = VINDEX(i);
-        swde += w[iv] * dold[iv] * delta[iv];
-        swdd += w[iv] * SQUARE(dold[iv]);
+        swde += weights[iv] * dold[iv] * delta[iv];
+        swdd += weights[iv] * SQUARE(dold[iv]);
     }
     lbd = swde / swdd;
     for (int i = 1; i <= m; i++) {

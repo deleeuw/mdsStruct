@@ -37,11 +37,13 @@ void smacofNormWeights(double *weights, const int *pm);
 
 void smacofPrintSDCMatrix(const double *v, const int *ndim, const int *width, const int *precision);
 void smacofPrintAnyMatrix(const double *x, const int *pn, const int *pp, const int *pw, const int *pr);
-void smacofPremultSDCMatrix(const double *a, const double *x, double *y, const int *pn,
-                  const int *pp);
+void smacofPrintSymmetricHollowMatrix(const double *d, const int *pn, const int *pw,
+      const int *pr);
+  void smacofMultiplySDCMatrix(const double *a, const double *x, double *y, const int *pn,
+      const int *pp);
 void smacofMPInverseSDCMatrix(const double *w, double *vinv, const int *ndim);
 void smacofRootMeanSquare(const double *x, const double *y, const double *w, const int *pn,
-               const int *pp, double *change);
+      const int *pp, double *change);
 void smacofGramSchmidt(double *x, double *r, int *pn, int *pp);
 void smacofMaxDifference(const double *x, const double *y, double *maxdiff, const int *pn, const int *pp);
 

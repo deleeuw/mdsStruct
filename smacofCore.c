@@ -24,8 +24,8 @@ void smacofGuttman(const double *delta, const double *w, const double *vinv,
     for (int i = 1; i <= m; i++) {
         b[VINDEX(i)] = w[VINDEX(i)] * delta[VINDEX(i)] / d[VINDEX(i)];
     }
-    (void)smacofMultMM(b, x, y, pn, pp);
-    (void)smacofMultMM(vinv, y, z, pn, pp);
+    (void)smacofMultiplySDCMatrix(b, x, y, pn, pp);
+    (void)smacofMultiplySDCMatrix(vinv, y, z, pn, pp);
     free(b);
     free(y);
     return;

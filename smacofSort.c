@@ -1,16 +1,16 @@
-
+#include "smacof.h"
 
 int smacofComparison(const void *px, const void *py) {
-    double x = ((struct smacofData *)px)->delta;
-    double y = ((struct smacofData *)py)->delta;
+    double x = ((struct fiveTuple *)px)->delta;
+    double y = ((struct fiveTuple *)py)->delta;
     return (int)copysign(1.0, x - y);
 }
 
 void smacofSort(double *delta, double *weight, int *row, int *col, int *index,
                 const int *ndata) {
     int n = *ndata;
-    struct smacofData *xi = (struct smacofData *)calloc(
-        (size_t)nn, (size_t)sizeof(struct smacofData));
+    struct fiveTuple *xi = (struct fiveTuple *)calloc(
+        (size_t)n, (size_t)sizeof(struct fiveTuple));
     for (int i = 0; i < n; i++) {
         xi[i].index = i;
         xi[i].row = row[i];
@@ -18,7 +18,7 @@ void smacofSort(double *delta, double *weight, int *row, int *col, int *index,
         xi[i].delta = delta[i];
         xi[i].weight = weight[i];
     }
-    (void)qsort(xi, (size_t)n, (size_t)sizeof(struct smacofData),
+    (void)qsort(xi, (size_t)n, (size_t)sizeof(struct fiveTuple),
                 smacofComparison);
     for (int i = 0; i < n; i++) {
         index[i] = xi[i].index;

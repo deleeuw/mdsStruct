@@ -116,6 +116,23 @@ void smacofPrintAnyMatrix(const double *x, const int *pn, const int *pp,
     return;
 }
 
+void smacofPrintSymmetricHollowMatrix(const double *d, const int *pn, const int *pw,
+                          const int *pr) {
+  int n = *pn, m = n * (n - 1) / 2;
+  for (int i = 1; i <= n; i++) {
+    for (int j = 1; j <= n; j++) {
+      if (i == j) {
+        printf(" %+6.4f", 0.0);
+      } else {
+        printf(" %+6.4f", d[PINDEX(i, j, n)]);
+      }
+    }
+    printf("\n");
+  }
+  printf("\n\n");
+  return;
+} 
+
 void smacofMultiplySDCMatrix(const double *a, const double *x, double *y,
                              const int *pn, const int *pp) {
     int n = *pn, p = *pp;
