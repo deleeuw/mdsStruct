@@ -39,8 +39,7 @@ void smacofNormWeights(double *weights, const int *pm);
 
 void smacofPrintSDCMatrix(const double *v, const int *ndim, const int *width, const int *precision);
 void smacofPrintAnyMatrix(const double *x, const int *pn, const int *pp, const int *pw, const int *pr);
-void smacofPrintSymmetricHollowMatrix(const double *d, const int *pn, const int *pw,
-      const int *pr);
+void smacofPrintSymmetricHollowMatrix(const double *d, const int *pn, const int *pw, const int *pr);
 void smacofMultiplySDCMatrix(const double *a, const double *x, double *y, const int *pn,
       const int *pp);
 void smacofMPInverseSDCMatrix(const double *w, double *vinv, const int *ndim);

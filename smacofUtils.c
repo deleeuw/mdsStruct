@@ -85,9 +85,9 @@ void smacofPrintSDCMatrix(const double *v, const int *pn, const int *pw,
     for (int i = 1; i <= n; i++) {
         for (int j = 1; j <= n; j++) {
             if (i == j) {
-                printf(" %+6.4f", d[VINDEX(j)]);
+                printf(" %+6.4f", -d[VINDEX(j)]);
             } else {
-                printf(" %+6.4f", -v[PINDEX(i, j, n)]);
+                printf(" %+6.4f", v[PINDEX(i, j, n)]);
             }
         }
         printf("\n");

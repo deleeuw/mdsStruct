@@ -3,9 +3,14 @@
 void smacofInitial(const double *delta, double *xold, const int *pn,
                    const int *pp) {
     int n = *pn, p = *pp, m = n * (n - 1) / 2, itmax = 100;
-    double eps = 1e-6;
+    double eps = 1e-10;
+    int width = 10, precision = 6;
     double *cross = (double *)calloc((size_t)m, (size_t)sizeof(double));
     (void)smacofDoubleCenter(delta, cross, &n);
+    if (DEBUG) {
+        printf("cross\n");
+        (void)smacofPrintSDCMatrix(cross, pn, &width, &precision);
+    }
     (void)smacofSimultaneousIteration(cross, xold, pn, pp, &itmax, &eps);
 }
 
@@ -41,7 +46,6 @@ void smacofSimultaneousIteration(double *cross, double *xold, const int *pn,
                                  const int *pp, const int *itmax,
                                  const double *eps) {
     int n = *pn, p = *pp, np = n * p, itel = 1;
-    int width = 6, precision = 4;
     double oldsum = 0.0, newsum = 0.0, maxdiff = 0.0;
     for (int i = 1; i <= n; i++) {
         for (int s = 1; s <= p; s++) {

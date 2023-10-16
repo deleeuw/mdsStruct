@@ -9,11 +9,10 @@ fullIndex <- function(n) {
   } 
   return(list(ii = ii, jj = jj))
 }
-
 data(ekman, package = "smacof")
 n <- attr(ekman, "Size")
-delta <- as.vector(ekman)
-weights <- rep(1.0, length(delta))
+delta <- as.vector((1 - ekman) ^ 3)
+weights <- rep(1, length(delta))
 xold <- matrix(c(1:n, n:1), n, 2)
 ii <- fullIndex(n)$ii
 jj <- fullIndex(n)$jj
