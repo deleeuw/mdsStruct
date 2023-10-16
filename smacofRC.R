@@ -1,16 +1,22 @@
+fullIndex <- function(n) {
+  ii <- c()
+  jj <- c()
+  for (j in 1:(n - 1)) {
+    for (i in (j + 1):n) {
+      ii <- c(ii, i)
+      jj <- c(jj, j)
+    }
+  } 
+  return(list(ii = ii, jj = jj))
+}
+
 data(ekman, package = "smacof")
 n <- attr(ekman, "Size")
 delta <- as.vector(ekman)
 weights <- rep(1.0, length(delta))
 xold <- matrix(c(1:n, n:1), n, 2)
-k <- 1
-for (j in 1:(n - 1)) {
-  for (i in (j  + 1):n) {
-    ii[k] <- i
-    jj[k] <- j
-    k <- k + 1
-  }
-}
+ii <- fullIndex(n)$ii
+jj <- fullIndex(n)$jj
 itmax = 1000
 eps1 = 10
 eps2 = 6
@@ -18,7 +24,7 @@ verbose = TRUE
 
 dyn.load("smacofCore.so")
 
-smacof <- function(delta, weights, xold, ii, jj, itmax, eps1, eps2, verbose) {
+smacofRC <- function(delta, weights, xold, ii, jj, itmax, eps1, eps2, verbose) {
   m <- length(delta)
   n <- nrow(xold)
   p <- ncol(xold)
@@ -26,6 +32,9 @@ smacof <- function(delta, weights, xold, ii, jj, itmax, eps1, eps2, verbose) {
           delta = as.double(delta),
           weights = as.double(weights),
           xold = as.double(xold),
+          xnew = as.double(array(0.0, dim(xold))),
+          dnew = as.double(rep(0.0, length(delta))),
+          snew = as.double(0.0),
           ii = as.integer(ii),
           jj = as.integer(jj),
           m = as.integer(m),
@@ -35,8 +44,9 @@ smacof <- function(delta, weights, xold, ii, jj, itmax, eps1, eps2, verbose) {
           eps1 = as.integer(eps1),
           eps2 = as.integer(eps2),
           verbose = as.integer(verbose))
+  return(h)
   }
   
-smacof(delta, weights, xold, ii, jj, itmax, eps1, eps2, verbose)
+h <- smacofRC(delta, weights, xold, ii, jj, itmax, eps1, eps2, verbose)
 
 dyn.unload("smacofCore.so")

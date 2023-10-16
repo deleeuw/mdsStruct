@@ -39,5 +39,5 @@ void smacofLoss(const double *delta, const double *weights, const double *dist,
     for (int k = 1; k <= m; k++) {
         sum += weights[VINDEX(k)] * SQUARE(delta[VINDEX(k)] - dist[VINDEX(k)]);
     }
-    *loss = sum;
+    *loss = sum / 2.0;
 }
