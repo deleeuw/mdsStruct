@@ -1,9 +1,17 @@
-delta <- rep(1.0, 6)
-weights <- rep(1.0, 6)
-xold <- matrix(c(1:4,4:1), 4, 2)
-ii <- c(2, 3, 4, 3, 4, 4)
-jj <- c(1, 1, 1, 2, 2, 3)
-itmax = 100
+data(ekman, package = "smacof")
+n <- attr(ekman, "Size")
+delta <- as.vector(ekman)
+weights <- rep(1.0, length(delta))
+xold <- matrix(c(1:n, n:1), n, 2)
+k <- 1
+for (j in 1:(n - 1)) {
+  for (i in (j  + 1):n) {
+    ii[k] <- i
+    jj[k] <- j
+    k <- k + 1
+  }
+}
+itmax = 1000
 eps1 = 10
 eps2 = 6
 verbose = TRUE
@@ -29,3 +37,4 @@ smacof <- function(delta, weights, xold, ii, jj, itmax, eps1, eps2, verbose) {
           verbose = as.integer(verbose))
   }
   
+smacof(delta, weights, xold, ii, jj, itmax, eps1, eps2, verbose)
