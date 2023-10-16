@@ -38,3 +38,5 @@ smacof <- function(delta, weights, xold, ii, jj, itmax, eps1, eps2, verbose) {
   }
   
 smacof(delta, weights, xold, ii, jj, itmax, eps1, eps2, verbose)
+
+dyn.unload("smacofCore.so")
