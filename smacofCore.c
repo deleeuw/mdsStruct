@@ -15,21 +15,29 @@ void smacofDist(const double *x, double *d, const int *ii, const int *jj,
     return;
 }
 
-void smacofGuttman(const double *delta, const double *w, const double *vinv,
-                   const double *d, const double *x, double *z, const int *pn,
-                   const int *pp) {
-    int n = *pn, p = *pp, m = n * (n - 1) / 2;
-    double *b = (double *)calloc((size_t)m, (size_t)sizeof(double));
-    double *y = (double *)calloc((size_t)(n * p), (size_t)sizeof(double));
+void smacofGuttman(const double *delta, const double *weights,
+                   const double *vinv, const double *dold, double *xold,
+                   double *xnew, const int *pn, const int *pp) {
+    int n = *pn, p = *pp, np = n * p, m = n * (n - 1) / 2;
+    double *bmat = (double *)calloc((size_t)m, (size_t)sizeof(double));
+    double *ymat = (double *)calloc((size_t)np, (size_t)sizeof(double));
     for (int i = 1; i <= m; i++) {
-        b[VINDEX(i)] = w[VINDEX(i)] * delta[VINDEX(i)] / d[VINDEX(i)];
+        bmat[VINDEX(i)] =
+            weights[VINDEX(i)] * delta[VINDEX(i)] / dold[VINDEX(i)];
     }
-    (void)smacofMultiplySDCMatrix(b, x, y, pn, pp);
-    (void)smacofMultiplySDCMatrix(vinv, y, z, pn, pp);
-    free(b);
-    free(y);
+    (void)smacofMultiplySDCMatrix(bmat, xold, ymat, pn, pp);
+    (void)smacofMultiplySDCMatrix(vinv, ymat, xnew, pn, pp);
+    free(bmat);
+    free(ymat);
     return;
 }
 
-void smacofLoss(const double *delta, const double *w, const double *d,
-                const int *m, double *loss) {}
+void smacofLoss(const double *delta, const double *weights, const double *dist,
+                const int *pm, double *loss) {
+    int m = *pm;
+    double sum = 0.0;
+    for (int k = 1; k <= m; k++) {
+        sum += weights[VINDEX(k)] * SQUARE(delta[VINDEX(k)] - dist[VINDEX(k)]);
+    }
+    *loss = sum;
+}

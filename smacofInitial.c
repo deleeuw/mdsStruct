@@ -1,7 +1,13 @@
 #include "smacof.h"
 
-void smacofInitial(const double *delta, const int *pn, const int *pp,
-                   double *x) {}
+void smacofInitial(const double *delta, double *xold, const int *pn,
+                   const int *pp) {
+    int n = *pn, p = *pp, m = n * (n - 1) / 2, itmax = 100;
+    double eps = 1e-6;
+    double *cross = (double *)calloc((size_t)m, (size_t)sizeof(double));
+    (void)smacofDoubleCenter(delta, cross, &n);
+    (void)smacofSimultaneousIteration(cross, xold, pn, pp, &itmax, &eps);
+}
 
 void smacofDoubleCenter(const double *delta, double *cross, const int *pn) {
     int n = *pn, ij = 0;
@@ -28,6 +34,72 @@ void smacofDoubleCenter(const double *delta, double *cross, const int *pn) {
         }
     }
     free(rsum);
+    return;
+}
+
+void smacofSimultaneousIteration(double *cross, double *xold, const int *pn,
+                                 const int *pp, const int *itmax,
+                                 const double *eps) {
+    int n = *pn, p = *pp, np = n * p, itel = 1;
+    int width = 6, precision = 4;
+    double oldsum = 0.0, newsum = 0.0, maxdiff = 0.0;
+    for (int i = 1; i <= n; i++) {
+        for (int s = 1; s <= p; s++) {
+            xold[MINDEX(i, s, n)] = drand48();
+        }
+    }
+    double *xnew = (double *)calloc((size_t)np, (size_t)sizeof(double));
+    double *r = (double *)calloc((size_t)p, (size_t)sizeof(double));
+    (void)smacofGramSchmidt(xold, r, &n, &p);
+    oldsum = 0.0;
+    while (true) {
+        (void)smacofMultiplySDCMatrix(cross, xold, xnew, &n, &p);
+        (void)smacofGramSchmidt(xnew, r, &n, &p);
+        (void)smacofMaxDifference(xold, xnew, &maxdiff, &n, &p);
+        newsum = 0.0;
+        for (int i = 1; i <= p; i++) {
+            newsum += r[VINDEX(i)];
+        }
+        if ((itel == *itmax) || ((newsum - oldsum) < *eps)) {
+            break;
+        }
+        itel++;
+        oldsum = newsum;
+        (void)memcpy(xold, xnew, (size_t)(np * sizeof(double)));
+    }
+    for (int i = 1; i <= n; i++) {
+        for (int s = 1; s <= p; s++) {
+            xold[MINDEX(i, s, n)] = xnew[MINDEX(i, s, n)] * sqrt(r[VINDEX(s)]);
+        }
+    }
+    free(xnew);
+    free(r);
+    return;
+}
+
+void smacofGramSchmidt(double *x, double *r, int *pn, int *pp) {
+    int ip, n = *pn, p = *pp, s = 1;
+    while (s <= p) {
+        for (int t = 1; t < s; t++) {
+            double sum = 0.0;
+            for (int i = 1; i <= n; i++) {
+                sum += x[MINDEX(i, t, n)] * x[MINDEX(i, s, n)];
+            }
+            for (int i = 1; i <= n; i++) {
+                x[MINDEX(i, s, n)] -= sum * x[MINDEX(i, t, n)];
+            }
+        }
+        double sum = 0.0;
+        for (int i = 1; i <= n; i++) {
+            sum += x[MINDEX(i, s, n)] * x[MINDEX(i, s, n)];
+        }
+        sum = sqrt(sum);
+        r[VINDEX(s)] = sum;
+        for (int i = 1; i <= n; i++) {
+            x[MINDEX(i, s, n)] /= sum;
+        }
+        s++;
+    }
     return;
 }
 

@@ -9,8 +9,8 @@ int smacofComparison(const void *px, const void *py) {
 void smacofSort(double *delta, double *weight, int *row, int *col, int *index,
                 const int *ndata) {
     int n = *ndata;
-    struct fiveTuple *xi = (struct fiveTuple *)calloc(
-        (size_t)n, (size_t)sizeof(struct fiveTuple));
+    struct fiveTuple *xi =
+        (struct fiveTuple *)calloc((size_t)n, (size_t)sizeof(struct fiveTuple));
     for (int i = 0; i < n; i++) {
         xi[i].index = i;
         xi[i].row = row[i];

@@ -11,14 +11,15 @@
 
 // smacofEngine.c
 
-void smacofEngine(double *delta, double *weights, const int *ii,
+void smacofEngine(double *delta, double *weights, double * xold, const int *ii,
                   const int *jj, const int *pm, const int *pn, const int *pp,
-                  const int *itmax, const int *peps1, const int *peps2, const bool *verbose);
+                  const int *itmax, const int *peps1, const int *peps2, 
+                  const bool *verbose);
 
 // smacofCore.c
 
-void smacofGuttman(const double *delta, const double *w, const double *vinv,
-                   const double *d, const double *x, double *z, const int *pn,
+void smacofGuttman(const double *delta, const double *weights, const double *vinv,
+                   const double *dist, double *xold, double *xnew, const int *pn,
                    const int *pp);
 void smacofLoss(const double *delta, const double *w, const double *d,
                 const int *m, double *loss);
@@ -39,12 +40,11 @@ void smacofPrintSDCMatrix(const double *v, const int *ndim, const int *width, co
 void smacofPrintAnyMatrix(const double *x, const int *pn, const int *pp, const int *pw, const int *pr);
 void smacofPrintSymmetricHollowMatrix(const double *d, const int *pn, const int *pw,
       const int *pr);
-  void smacofMultiplySDCMatrix(const double *a, const double *x, double *y, const int *pn,
+void smacofMultiplySDCMatrix(const double *a, const double *x, double *y, const int *pn,
       const int *pp);
 void smacofMPInverseSDCMatrix(const double *w, double *vinv, const int *ndim);
 void smacofRootMeanSquare(const double *x, const double *y, const double *w, const int *pn,
       const int *pp, double *change);
-void smacofGramSchmidt(double *x, double *r, int *pn, int *pp);
 void smacofMaxDifference(const double *x, const double *y, double *maxdiff, const int *pn, const int *pp);
 
 // smacofSort.c
@@ -57,8 +57,10 @@ void smacofTieBlocks(const double *x, int *it, double *eps, const int *n);
 // smacofInitial.c
 
 void smacofDoubleCenter(const double *delta, double *cross, const int *pn);
-void smacofInitial(const double *delta, const int *pn, const int *pp, double *x);
-
+void smacofInitial(const double *delta, double *xold, const int *pn, const int *pp);
+void smacofGramSchmidt(double *x, double *r, int *pn, int *pp);
+void smacofSimultaneousIteration(double *cross, double *xold, const int *pn, const int *pp,
+                                 const int *itmax, const double *eps);
 // smacofDerivatives.c
 
 

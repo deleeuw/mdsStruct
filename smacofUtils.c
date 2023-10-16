@@ -55,21 +55,15 @@ void smacofMPInverseSDCMatrix(const double *w, double *vinv, const int *pn) {
             vinv[ik] = vinv[ik] / piv;
         }
         d[VINDEX(k)] = -1 / piv;
-        if (DEBUG) {
-            //            (void)smacofPrintMM(vinv, pn);
-        }
     }
     for (int j = 1; j <= (n - 1); j++) {
         for (int i = (j + 1); i <= n; i++) {
             ij = SINDEX(i, j, n);
-            vinv[ij] = -vinv[ij] - add;
+            vinv[ij] = vinv[ij] + add;
         }
     }
     for (int i = 1; i <= n; i++) {
-        d[VINDEX(i)] = -d[VINDEX(i)] - add;
-    }
-    if (DEBUG) {
-        // (void)smacofPrintSDCMatrix(vinv, pn);
+        d[VINDEX(i)] = d[VINDEX(i)] + add;
     }
     free(d);
     return;
@@ -116,22 +110,22 @@ void smacofPrintAnyMatrix(const double *x, const int *pn, const int *pp,
     return;
 }
 
-void smacofPrintSymmetricHollowMatrix(const double *d, const int *pn, const int *pw,
-                          const int *pr) {
-  int n = *pn, m = n * (n - 1) / 2;
-  for (int i = 1; i <= n; i++) {
-    for (int j = 1; j <= n; j++) {
-      if (i == j) {
-        printf(" %+6.4f", 0.0);
-      } else {
-        printf(" %+6.4f", d[PINDEX(i, j, n)]);
-      }
+void smacofPrintSymmetricHollowMatrix(const double *d, const int *pn,
+                                      const int *pw, const int *pr) {
+    int n = *pn, m = n * (n - 1) / 2;
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            if (i == j) {
+                printf(" %+6.4f", 0.0);
+            } else {
+                printf(" %+6.4f", d[PINDEX(i, j, n)]);
+            }
+        }
+        printf("\n");
     }
-    printf("\n");
-  }
-  printf("\n\n");
-  return;
-} 
+    printf("\n\n");
+    return;
+}
 
 void smacofMultiplySDCMatrix(const double *a, const double *x, double *y,
                              const int *pn, const int *pp) {
@@ -149,72 +143,6 @@ void smacofMultiplySDCMatrix(const double *a, const double *x, double *y,
             y[MINDEX(i, s, n)] = sum;
         }
     }
-    return;
-}
-
-void smacofGramSchmidt(double *x, double *r, int *pn, int *pp) {
-    int ip, n = *pn, p = *pp, s = 1;
-    while (s <= p) {
-        for (int t = 1; t < s; t++) {
-            double sum = 0.0;
-            for (int i = 1; i <= n; i++) {
-                sum += x[MINDEX(i, t, n)] * x[MINDEX(i, s, n)];
-            }
-            for (int i = 1; i <= n; i++) {
-                x[MINDEX(i, s, n)] -= sum * x[MINDEX(i, t, n)];
-            }
-        }
-        double sum = 0.0;
-        for (int i = 1; i <= n; i++) {
-            sum += x[MINDEX(i, s, n)] * x[MINDEX(i, s, n)];
-        }
-        sum = sqrt(sum);
-        r[VINDEX(s)] = sum;
-        for (int i = 1; i <= n; i++) {
-            x[MINDEX(i, s, n)] /= sum;
-        }
-        s++;
-    }
-    return;
-}
-
-void smacofSimultaneousIteration(double *cross, double *r, int *pn, int *pp,
-                                 int *itmax, double *eps) {
-    int n = *pn, p = *pp, np = n * p, itel = 1;
-    int width = 6, precision = 4;
-    double oldsum = 0.0, newsum = 0.0, maxdiff = 0.0;
-    double *xold = (double *)calloc((size_t)np, (size_t)sizeof(double));
-    double *xnew = (double *)calloc((size_t)np, (size_t)sizeof(double));
-    for (int i = 1; i <= n; i++) {
-        for (int s = 1; s <= p; s++) {
-            xold[MINDEX(i, s, n)] = drand48();
-        }
-    }
-    //    (void)smacofPrintAnyMatrix(xold, &n, &p, &width, &precision);
-    (void)smacofGramSchmidt(xold, r, &n, &p);
-    //    (void)smacofPrintAnyMatrix(xold, &n, &p, &width, &precision);
-    oldsum = 0.0;
-    while (true) {
-        //        (void)smacofPrintAnyMatrix(xold, &n, &p, &width, &precision);
-        (void)smacofMultiplySDCMatrix(cross, xold, xnew, &n, &p);
-        //        (void)smacofPrintAnyMatrix(xnew, &n, &p, &width, &precision);
-        (void)smacofGramSchmidt(xnew, r, &n, &p);
-        //        (void)smacofPrintAnyMatrix(xnew, &n, &p, &width, &precision);
-        (void)smacofMaxDifference(xold, xnew, &maxdiff, &n, &p);
-        newsum = 0.0;
-        for (int i = 1; i <= p; i++) {
-            newsum += r[VINDEX(i)];
-        }
-        printf("%4d %10.6f %10.6f %10.6f\n", itel, oldsum, newsum, maxdiff);
-        if ((itel == *itmax) || ((newsum - oldsum) < *eps)) {
-            break;
-        }
-        itel++;
-        oldsum = newsum;
-        (void)memcpy(xold, xnew, (size_t)(np * sizeof(double)));
-    }
-    free(xold);
-    free(xnew);
     return;
 }
 
@@ -245,10 +173,16 @@ void smacofMaxDifference(const double *x, const double *y, double *maxdiff,
     *maxdiff = 0.0;
     int n = *pn, p = *pp;
     for (int s = 1; s <= p; s++) {
+        double posdiff = 0.0, negdiff = 0.0;
         for (int i = 1; i <= n; i++) {
-            *maxdiff =
-                MAX(*maxdiff, fabs(x[MINDEX(i, s, n)] - y[MINDEX(i, s, n)]));
+            posdiff =
+                MAX(posdiff, fabs(x[MINDEX(i, s, n)] - y[MINDEX(i, s, n)]));
         }
+        for (int i = 1; i <= n; i++) {
+            negdiff =
+                MAX(negdiff, fabs(x[MINDEX(i, s, n)] + y[MINDEX(i, s, n)]));
+        }
+        *maxdiff = MAX(*maxdiff, MIN(posdiff, negdiff));
     }
     return;
 }
