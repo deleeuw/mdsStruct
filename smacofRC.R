@@ -17,8 +17,8 @@ xold <- matrix(c(1:n, n:1), n, 2)
 ii <- fullIndex(n)$ii
 jj <- fullIndex(n)$jj
 itmax = 1000
-eps1 = 10
-eps2 = 6
+eps1 = 15
+eps2 = 10
 verbose = TRUE
 
 dyn.load("smacofCore.so")
