@@ -2,15 +2,15 @@
 
 void smacofDist(const double *x, double *d, const int *ii, const int *jj,
                 const int *pm, const int *pn, const int *pp) {
-    int n = *pn, p = *pp, m = *pm;
-    double sum = 0.0;
-    for (int k = 1; k <= m; k++) {
-        int i = ii[VINDEX(k)], j = jj[VINDEX(k)];
-        sum = 0.0;
-        for (int s = 1; s <= p; s++) {
-            sum += SQUARE(x[MINDEX(i, s, n)] - x[MINDEX(j, s, n)]);
+    int n = *pn, p = *pp, m = *pm, width = 15, precision= 10;
+    for (int j = 1; j <= (n - 1); j++) {
+        for (int i = (j + 1); i <= n; i++) {
+            double sum = 0.0;
+            for (int s = 1; s <= p; s++) {
+                sum += SQUARE(x[MINDEX(i, s, n)] - x[MINDEX(j, s, n)]);
+            }
+            d[SINDEX(i, j, n)] = sqrt(fabs(sum));
         }
-        d[SINDEX(i, j, n)] = sqrt(fabs(sum));
     }
     return;
 }

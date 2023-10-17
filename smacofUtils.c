@@ -71,7 +71,7 @@ void smacofMPInverseSDCMatrix(const double *w, double *vinv, const int *pn) {
 
 void smacofPrintSDCMatrix(const double *v, const int *pn, const int *pw,
                           const int *pr) {
-    int n = *pn, m = n * (n - 1) / 2;
+    int n = *pn;
     double *d = (double *)calloc((size_t)n, (size_t)sizeof(double));
     for (int i = 1; i <= n; i++) {
         d[VINDEX(i)] = 0.0;
@@ -112,7 +112,7 @@ void smacofPrintAnyMatrix(const double *x, const int *pn, const int *pp,
 
 void smacofPrintSymmetricHollowMatrix(const double *d, const int *pn,
                                       const int *pw, const int *pr) {
-    int n = *pn, m = n * (n - 1) / 2;
+    int n = *pn;
     for (int i = 1; i <= n; i++) {
         for (int j = 1; j <= n; j++) {
             if (i == j) {
@@ -205,7 +205,6 @@ void smacofMaxDistDifference(const double *dold, const double *dnew,
     }
     *pdchange = dchange;
 }
-
 
 void smacofMakeVfromW(const double *weights, double *v, const int *pn) {
     int n = *pn, m = n * (n - 1) / 2;

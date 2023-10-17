@@ -1,0 +1,6 @@
+data(ekman, package = "smacof")
+n <- attr(ekman, "Size")
+deltaRC <- as.vector((1 - ekman) ^ 3)
+deltaR <- as.matrix((1 - ekman) ^ 3)
+xold <- matrix(c(1:n, n:1), n, 2)
+xold <- apply(xold, 2, function(x) x - mean(x))
