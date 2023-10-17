@@ -79,13 +79,13 @@ void smacofPrintSDCMatrix(const double *v, const int *pn, const int *pw,
             if (i == j) {
                 continue;
             }
-            d[VINDEX(i)] += v[PINDEX(i, j, n)];
+            d[VINDEX(i)] += -v[PINDEX(i, j, n)];
         }
     }
     for (int i = 1; i <= n; i++) {
         for (int j = 1; j <= n; j++) {
             if (i == j) {
-                printf(" %+6.4f", -d[VINDEX(j)]);
+                printf(" %+6.4f", d[VINDEX(j)]);
             } else {
                 printf(" %+6.4f", v[PINDEX(i, j, n)]);
             }
@@ -138,7 +138,7 @@ void smacofMultiplySDCMatrix(const double *a, const double *x, double *y,
                     continue;
                 }
                 int ij = PINDEX(i, j, n);
-                sum += a[ij] * (x[MINDEX(i, s, n)] - x[MINDEX(j, s, n)]);
+                sum += -a[ij] * (x[MINDEX(i, s, n)] - x[MINDEX(j, s, n)]);
             }
             y[MINDEX(i, s, n)] = sum;
         }
@@ -146,30 +146,39 @@ void smacofMultiplySDCMatrix(const double *a, const double *x, double *y,
     return;
 }
 
-void smacofRootMeanSquare(const double *x, const double *y, const double *w,
-                          const int *pn, const int *pp, double *change) {
-    int n = *pn, p = *pp;
-    double sum = 0.0, sumsum = 0.0, dis = 0.0, djs = 0.0;
+void smacofVChange(const double *xold, const double *xnew, const double *v,
+                   const int *pn, const int *pp, double *change) {
+    int n = *pn, p = *pp, np = n * p, width = 10, precision = 6;
+    double sum = 0.0;
+    double *z = (double *)calloc((size_t)np, (size_t)sizeof(double));
+    double *h = (double *)calloc((size_t)np, (size_t)sizeof(double));
     for (int s = 1; s <= p; s++) {
         for (int i = 1; i <= n; i++) {
-            sum = 0.0;
-            dis = x[MINDEX(i, s, n)] - y[MINDEX(i, s, n)];
-            for (int j = 1; j <= n; j++) {
-                if (i == j) {
-                    continue;
-                }
-                djs = x[MINDEX(j, s, n)] - y[MINDEX(j, s, n)];
-                sum += w[PINDEX(i, j, n)] * (dis - djs);
-            }
-            sumsum += sum * x[MINDEX(i, s, n)];
+            z[MINDEX(i, s, n)] = xold[MINDEX(i, s, n)] - xnew[MINDEX(i, s, n)];
         }
     }
-    *change = sqrt(sumsum / ((double)n));
+    if (DEBUG) {
+        printf("xold - xnew\n");
+        (void)smacofPrintAnyMatrix(z, pn, pp, &width, &precision);
+    }
+    (void)smacofMultiplySDCMatrix(v, z, h, pn, pp);
+    if (DEBUG) {
+        printf("V(xold - xnew)\n");
+        (void)smacofPrintAnyMatrix(h, pn, pp, &width, &precision);
+    }
+    for (int s = 1; s <= p; s++) {
+        for (int i = 1; i <= n; i++) {
+            sum += z[MINDEX(i, s, n)] * h[MINDEX(i, s, n)];
+        }
+    }
+    *change = sqrt(fabs(sum) / (double)np);
+    free(z);
+    free(h);
     return;
 }
 
-void smacofMaxDifference(const double *x, const double *y, double *maxdiff,
-                         const int *pn, const int *pp) {
+void smacofMaxConfDifference(const double *x, const double *y, double *maxdiff,
+                             const int *pn, const int *pp) {
     *maxdiff = 0.0;
     int n = *pn, p = *pp;
     for (int s = 1; s <= p; s++) {
@@ -187,43 +196,40 @@ void smacofMaxDifference(const double *x, const double *y, double *maxdiff,
     return;
 }
 
-/*
-
-int main() {
-    double xold[8] = {1.0, 2.0, 3.0, 4.0, 1.0, 4.0, 9.0, 16.0};
-    double xnew[8] = {1.0, 2.0, 3.0, 4.0, 1.0, 4.0, 9.0, 16.0};
-    double r[2] = {0.0, 0.0}, eps = 1e-6;
-    double cross[6] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
-    int n = 4, p = 2, itmax = 100, width = 10, precision = 6;
-    (void)smacofPrintSDCMatrix(cross, &n, &width, &precision);
-    (void)smacofGramSchmidt(xold, r, &n, &p);
-    (void)smacofPrintAnyMatrix(xold, &n, &p, &width, &precision);
-    (void)smacofMultiplySDCMatrix(cross, xold, xnew, &n, &p);
-    (void)smacofGramSchmidt(xnew, r, &n, &p);
-    (void)smacofPrintAnyMatrix(xnew, &n, &p, &width, &precision);
-    (void)memcpy(xold, xnew, (size_t) (n * p * sizeof(double)));
-    printf("got here\n\n");
-    (void)smacofMultiplySDCMatrix(cross, xold, xnew, &n, &p);
-    (void)smacofGramSchmidt(xnew, r, &n, &p);
-    (void)smacofPrintAnyMatrix(xnew, &n, &p, &width, &precision);
-    (void)memcpy(xold, xnew, (size_t) (n * p * sizeof(double)));
-    printf("and here\n\n");
-    (void)smacofMultiplySDCMatrix(cross, xold, xnew, &n, &p);
-    (void)smacofGramSchmidt(xnew, r, &n, &p);
-    (void)smacofPrintAnyMatrix(xnew, &n, &p, &width, &precision);
-    (void)memcpy(xold, xnew, (size_t) (n * p * sizeof(double)));
-    printf("and here\n\n");
-    (void)smacofMultiplySDCMatrix(cross, xold, xnew, &n, &p);
-    (void)smacofGramSchmidt(xnew, r, &n, &p);
-    (void)smacofPrintAnyMatrix(xnew, &n, &p, &width, &precision);
-    (void)memcpy(xold, xnew, (size_t) (n * p * sizeof(double)));
-    printf("and here\n\n");
-    (void)smacofMultiplySDCMatrix(cross, xold, xnew, &n, &p);
-    (void)smacofGramSchmidt(xnew, r, &n, &p);
-    (void)smacofPrintAnyMatrix(xnew, &n, &p, &width, &precision);
-    (void)memcpy(xold, xnew, (size_t) (n * p * sizeof(double)));
-    (void)smacofSimultaneousIteration(cross, r, &n, &p, &itmax, &eps);
-    return (EXIT_SUCCESS);
+void smacofMaxDistDifference(const double *dold, const double *dnew,
+                             double *pdchange, const int *pm) {
+    double dchange = 0.0;
+    int m = *pm;
+    for (int k = 1; k <= m; k++) {
+        dchange = MAX(dchange, fabs(dold[VINDEX(k)] - dnew[VINDEX(k)]));
+    }
+    *pdchange = dchange;
 }
 
- */
+
+void smacofMakeVfromW(const double *weights, double *v, const int *pn) {
+    int n = *pn, m = n * (n - 1) / 2;
+    for (int i = 1; i <= m; i++) {
+        v[VINDEX(i)] = -weights[VINDEX(i)];
+    }
+}
+
+/*
+ int main() {
+    int n = 4, p = 2, width = 10, precision = 6;
+    double v[6] = {-1.0, -2.0, -3.0, -4.0, -5.0, -6.0};
+    double x[8] = {1.0, 2.0, 3.0, 4.0, 4.0, 3.0, 2.0, 1.0};
+    double y[8] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    (void)smacofPrintSDCMatrix(v, &n, &width, &precision);
+    (void)smacofPrintAnyMatrix(x, &n, &p, &width, &precision);
+    (void)smacofMultiplySDCMatrix(v, x, y, &n, &p);
+    (void)smacofPrintAnyMatrix(y, &n, &p, &width, &precision);
+    double sum = 0.0;
+    for (int i = 1; i <= 4; i++) {
+      for (int s = 1; s <= 2; s++) {
+        sum += x[MINDEX(i, s, 4)] * y[MINDEX(i, s, 4)];
+      }
+    }
+    printf("%10.6f\n", sum);
+}
+*/

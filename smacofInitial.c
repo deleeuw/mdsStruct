@@ -59,7 +59,7 @@ void smacofSimultaneousIteration(double *cross, double *xold, const int *pn,
     while (true) {
         (void)smacofMultiplySDCMatrix(cross, xold, xnew, &n, &p);
         (void)smacofGramSchmidt(xnew, r, &n, &p);
-        (void)smacofMaxDifference(xold, xnew, &maxdiff, &n, &p);
+        (void)smacofMaxConfDifference(xold, xnew, &maxdiff, &n, &p);
         newsum = 0.0;
         for (int i = 1; i <= p; i++) {
             newsum += r[VINDEX(i)];

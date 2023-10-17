@@ -130,3 +130,15 @@ diag(b) <- -rowSums(b)
 xnew <- vinv %*% b %*% xold
 mPrint(xnew)
 ```
+
+# xold - xnew
+
+```{r xdiff, echo = FALSE}
+mPrint(xold - xnew)
+```
+
+# v %*% (xold - xnew)
+
+```{r vxdiff, echo = FALSE}
+mPrint(v%*% (xold - xnew))
+```

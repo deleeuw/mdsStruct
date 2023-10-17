@@ -43,9 +43,12 @@ void smacofPrintSymmetricHollowMatrix(const double *d, const int *pn, const int 
 void smacofMultiplySDCMatrix(const double *a, const double *x, double *y, const int *pn,
       const int *pp);
 void smacofMPInverseSDCMatrix(const double *w, double *vinv, const int *ndim);
-void smacofRootMeanSquare(const double *x, const double *y, const double *w, const int *pn,
+void smacofVChange(const double *x, const double *y, const double *v, const int *pn,
       const int *pp, double *change);
-void smacofMaxDifference(const double *x, const double *y, double *maxdiff, const int *pn, const int *pp);
+void smacofMaxConfDifference(const double *x, const double *y, double *maxdiff, const int *pn, const int *pp);
+void smacofMaxDistDifference(const double *x, const double *y, double *maxdiff, const int *pm);
+void smacofMakeVfromW(const double *weights, double *v, const int *pn);
+
 
 // smacofSort.c
 
