@@ -46,3 +46,7 @@ gruijter <-
     Diag = FALSE,
     Upper = FALSE
   )
+
+gruijterR <- as.matrix(gruijter)
+gruijterRC <- as.vector(gruijter)
+xold <- matrix(rnorm(18), 9, 2)

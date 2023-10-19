@@ -2,7 +2,7 @@
 
 void smacofInitial(const double *delta, double *xold, const int *pn,
                    const int *pp) {
-    int n = *pn, p = *pp, m = n * (n - 1) / 2, itmax = 100;
+    int n = *pn, m = n * (n - 1) / 2, itmax = 100;
     double eps = 1e-10;
     int width = 10, precision = 6;
     double *cross = (double *)calloc((size_t)m, (size_t)sizeof(double));
@@ -16,7 +16,7 @@ void smacofInitial(const double *delta, double *xold, const int *pn,
 
 void smacofDoubleCenter(const double *delta, double *cross, const int *pn) {
     int n = *pn, ij = 0;
-    double tsum = 0.0, sum = 0.0, cell = 0.0;
+    double tsum = 0.0, cell = 0.0;
     double *rsum = (double *)calloc((size_t)n, (size_t)sizeof(double));
     for (int i = 1; i <= n; i++) {
         double sum = 0.0;
@@ -82,7 +82,7 @@ void smacofSimultaneousIteration(double *cross, double *xold, const int *pn,
 }
 
 void smacofGramSchmidt(double *x, double *r, int *pn, int *pp) {
-    int ip, n = *pn, p = *pp, s = 1;
+    int n = *pn, p = *pp, s = 1;
     while (s <= p) {
         for (int t = 1; t < s; t++) {
             double sum = 0.0;

@@ -77,6 +77,7 @@ struct fiveTuple {
 
 static inline int VINDEX(const int i);
 static inline int SINDEX(const int i, const int j, const int n);
+static inline int TINDEX();
 static inline int MINDEX(const int i, const int j, const int n);
 static inline int PINDEX(const int i, const int j, const int n);
 
@@ -100,7 +101,7 @@ static inline int MINDEX(const int i, const int j, const int n) {
     return ((i - 1) + (j - 1) * n);
 }
 
-// SINDEX retrieves element (i, j) from a strict lower triangular matrix
+// SINDEX retrieves element (i, j) from a strictly lower triangular matrix
 // of order n. Thus always i > j.
 
 static inline int SINDEX(const int i, const int j, const int n) {
@@ -111,7 +112,7 @@ static inline int SINDEX(const int i, const int j, const int n) {
     return (((j - 1) * n) - (j * (j - 1) / 2) + (i - j) - 1);
 }
 
-// PINDEX retrieves element (max(i, j), min(i,j)) from a strict lower
+// PINDEX retrieves element (max(i, j), min(i,j)) from a strictly lower
 // triangularmatrix of order n. Thus always i ≠ j.
 
 static inline int PINDEX(const int i, const int j, const int n) {
@@ -124,6 +125,17 @@ static inline int PINDEX(const int i, const int j, const int n) {
     } else {
         return (SINDEX(j, i, n));
     }
+}
+
+// TINDEX retrieves element (i, j) from a lower triangular matrix
+// of order n. Thus always i >= j.
+
+static inline int TINDEX(const int i, const int j, const int n) {
+  if (i < j) {
+    printf("TINDEX error\n");
+    return EXIT_FAILURE;
+  }
+  return ((j - 1) * n) - ((j - 1) * (j - 2) / 2) + (i - (j - 1)) - 1;
 }
 
 static inline double SQUARE(const double x) { return (x * x); }

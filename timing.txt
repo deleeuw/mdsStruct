@@ -1,0 +1,26 @@
+Unit: milliseconds
+                                                     expr       min       lq      mean    median        uq
+   h <- smacofR(eqdistR, xold = eqdistold, itmax = 10000) 297.27378 302.7739 323.21192 309.03211 342.57837
+ h <- smacofRC(eqdistRC, xold = eqdistold, itmax = 10000)  14.94204  15.0086  15.11127  15.04231  15.14813
+      max neval
+ 383.5531   100
+  16.3424   100
+
+
+Unit: milliseconds
+                                               expr      min        lq       mean    median         uq      max
+   h <- smacofR(morseR, xold = xold, itmax = 10000) 93.71222 95.342527 107.802495 96.738045 132.240457 144.0755
+ h <- smacofRC(morseRC, xold = xold, itmax = 10000)  7.18238  7.344863   8.140281  7.407224   7.528871  47.5165
+ neval
+   100
+   100
+   
+   Unit: microseconds
+                                  expr       min         lq       mean    median        uq       max neval
+   h <- smacofR(airlineR, xold = xold) 11023.834 11645.7220 13287.6388 12016.505 16347.479 17865.299   100
+ g <- smacofRC(airlineRC, xold = xold)   789.373   877.9945   905.6679   903.517   928.773   999.949   100
+ 
+ Unit: microseconds
+                            expr      min         lq       mean    median        uq       max neval
+         h <- smacofR(gruijterR) 21328.32 22052.9365 24624.7361 22963.362 26108.185 66824.670   100
+ h <- smacofRC(gruijterRC, xold)   236.57   604.2375   664.2156   617.173   625.045  6316.337   100

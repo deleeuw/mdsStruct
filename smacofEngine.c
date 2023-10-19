@@ -90,7 +90,7 @@ void smacofEngine(double *delta, double *weights, double *xold, double *xnew,
 int main() {
     double delta[6] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
     double weights[6] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
-    double xold[8] = {1.0, 2.0, 3.0, 4.0, 4.0, 3.0, 2.0, 1.0};
+    double xold[8] = {1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0};
     double xnew[8] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     double dnew[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     double snew = 0.0;

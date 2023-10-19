@@ -39,4 +39,6 @@ structure(c(0, 12947, 1972, 8171, 8160, 9093, 12478, 10490, 5809,
     "Montreal", "Moscow", "New Delhi", "New York", "Paris", "Rio de Janeiro", 
     "Rome", "San Francisco", "Singapore", "Stockholm", "Tokyo"
     )))
-airline <- as.dist(airline)
+airlineRC <- as.vector(as.dist(airline))
+airlineR <- airline
+xold <- matrix(rnorm(36), 18, 2)

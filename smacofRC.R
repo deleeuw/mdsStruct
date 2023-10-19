@@ -1,3 +1,5 @@
+# classical MDS
+
 fullIndex <- function(n) {
   ii <- c()
   jj <- c()
@@ -15,17 +17,17 @@ dyn.load("smacofCore.so")
 
 smacofRC <-
   function(delta,
-           xold,
+           n,
+           p = 2,
+           xold = rbind(diag(p),matrix(0, n - p, p)),
            weights = rep(1, length(delta)),
-           ii = fullIndex(nrow(xold))$ii,
-           jj = fullIndex(nrow(xold))$ii,
+           ii = fullIndex(n)$ii,
+           jj = fullIndex(n)$ii,
            itmax = 1000,
            eps1 = 15,
            eps2 = 10,
            verbose = FALSE) {
     m <- length(delta)
-    n <- nrow(xold)
-    p <- ncol(xold)
     h <- .C(
       "smacofEngine",
       delta = as.double(delta),
