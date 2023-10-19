@@ -26,8 +26,8 @@ void smacofEngine(double *delta, double *weights, double *xold, double *xnew,
     }
     (void)smacofMakeVfromW(weights, v, pn);
     if (DEBUG) {
-      printf("V\n");
-      (void)smacofPrintSDCMatrix(v, pn, &width, &precision);
+        printf("V\n");
+        (void)smacofPrintSDCMatrix(v, pn, &width, &precision);
     }
     (void)smacofMPInverseSDCMatrix(weights, vinv, pn);
     if (DEBUG) {
@@ -69,8 +69,10 @@ void smacofEngine(double *delta, double *weights, double *xold, double *xnew,
         (void)smacofMaxConfDifference(xold, xnew, &cchange, pn, pp);
         (void)smacofMaxDistDifference(dold, dnew, &dchange, pm);
         if (*verbose) {
-            printf("itel %4d sold %15.10f sdif %15.10f cchange %15.10f dchange %15.10f\n", itel,
-                   sold, sold - snew, cchange, dchange);
+            printf(
+                "itel %4d sold %15.10f sdif %15.10f cchange %15.10f dchange "
+                "%15.10f\n",
+                itel, sold, sold - snew, cchange, dchange);
         }
         if ((itel == itmax) || (((sold - snew) < eps1) && (cchange < eps2))) {
             break;
@@ -85,7 +87,6 @@ void smacofEngine(double *delta, double *weights, double *xold, double *xnew,
     free(v);
     return;
 }
-
 
 int main() {
     double delta[6] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};

@@ -2,7 +2,7 @@
 
 void smacofDist(const double *x, double *d, const int *ii, const int *jj,
                 const int *pm, const int *pn, const int *pp) {
-    int n = *pn, p = *pp, m = *pm, width = 15, precision= 10;
+    int n = *pn, p = *pp, m = *pm, width = 15, precision = 10;
     for (int j = 1; j <= (n - 1); j++) {
         for (int i = (j + 1); i <= n; i++) {
             double sum = 0.0;

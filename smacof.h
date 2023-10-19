@@ -64,6 +64,10 @@ void smacofInitial(const double *delta, double *xold, const int *pn, const int *
 void smacofGramSchmidt(double *x, double *r, int *pn, int *pp);
 void smacofSimultaneousIteration(double *cross, double *xold, const int *pn, const int *pp,
                                  const int *itmax, const double *eps);
+void smacofPerronRoot(double *a, const int *pn, const double *plbd,
+                      double *proot, const int *pitmax, const double *peps,
+                      const bool *verbose);
+
 // smacofDerivatives.c
 
 
@@ -77,7 +81,7 @@ struct fiveTuple {
 
 static inline int VINDEX(const int i);
 static inline int SINDEX(const int i, const int j, const int n);
-static inline int TINDEX();
+static inline int TINDEX(const int i, const int j, const int n);
 static inline int MINDEX(const int i, const int j, const int n);
 static inline int PINDEX(const int i, const int j, const int n);
 

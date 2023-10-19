@@ -107,6 +107,57 @@ void smacofGramSchmidt(double *x, double *r, int *pn, int *pp) {
     return;
 }
 
+#include "smacof.h"
+
+void smacofPerronRoot(double *a, const int *pn, const double *plbd,
+                      double *proot, const int *pitmax, const double *peps,
+                      const bool *verbose) {
+  int n = *pn, itel = 1, itmax = *pitmax;
+  double lbd = *plbd, eps = *peps, root = *proot;
+  double *r = (double *)calloc((size_t)n, (size_t)sizeof(double));
+  double *b = (double *)calloc((size_t)(n * n), (size_t)sizeof(double));
+  for (int j = 1; j <= n; j++) {
+    for (int i = j; i <= n; i++) {
+      double h = a[TINDEX(i, j, n)];
+      if (i == j) {
+        b[MINDEX(i, j, n)] = h + lbd;
+      } else {
+        b[MINDEX(i, j, n)] = h;
+        b[MINDEX(j, i, n)] = h;
+      }
+    }
+  }
+  while (true) {
+    double rmin = INFINITY, rmax = 0.0;
+    for (int i = 1; i <= n; i++) {
+      double sum = 0.0;
+      for (int j = 1; j <= n; j++) {
+        sum += b[MINDEX(i, j, n)];
+      }
+      r[VINDEX(i)] = sum;
+      rmin = MIN(rmin, sum);
+      rmax = MAX(rmax, sum);
+    }
+    root = ((rmin + rmax) / 2.0) - lbd;
+    if (verbose) {
+      printf("itel %3d rmin %15.10f rmax %15.10f root %15.10f\n", itel,
+             rmin, rmax, root);
+    }
+    if ((itel == itmax) || ((rmax - rmin) < eps)) {
+      break;
+    }
+    itel++;
+    for (int j = 1; j <= n; j++) {
+      for (int i = 1; i <= n; i++) {
+        b[MINDEX(i, j, n)] *= r[VINDEX(j)] / r[VINDEX(i)];
+      }
+    }
+  }
+  *proot = root;
+  free(r);
+  free(b);
+}
+
 /*
 int main() {
     double delta[10] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
