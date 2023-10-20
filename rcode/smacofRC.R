@@ -1,4 +1,4 @@
-dyn.load("smacofCore.so")
+dyn.load("../ccode/smacofEngine.so")
 
 fullIndex <- function(n) {
   ii <- c()

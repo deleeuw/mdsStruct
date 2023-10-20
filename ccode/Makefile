@@ -1,5 +1,5 @@
-smacofSSWR: Makefile smacofEngine.c smacofInitial.c smacofUtils.c smacofCore.c smacofNorm.c smacof.h
-	clang -o smacof -O2 smacofEngine.c smacofInitial.c smacofUtils.c smacofCore.c smacofNorm.c
+smacof: Makefile smacofEngine.c smacofInitial.c smacofUtils.c smacofCore.c smacofNorm.c smacof.h
+	gcc -o smacof -O2 smacofEngine.c smacofInitial.c smacofUtils.c smacofCore.c smacofNorm.c
 
 rlib: 
 	R CMD SHLIB smacofEngine.c smacofInitial.c smacofUtils.c smacofCore.c smacofNorm.c

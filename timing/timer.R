@@ -3,8 +3,8 @@
 
 timer <- function(dataR,
                   dataRC,
-                  itmax = 500,
-                  eps = 1e-15) {
+                  itmax = 10000,
+                  eps = 6) {
   hdataR <- smacofR(dataR, itmax = itmax, eps1 = eps)
   cat("************************************************************************\n")
   cat(
