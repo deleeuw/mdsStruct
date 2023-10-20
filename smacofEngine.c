@@ -98,7 +98,7 @@ int main() {
     int ii[6] = {2, 3, 4, 3, 4, 4};
     int jj[6] = {1, 1, 1, 2, 2, 3};
     int m = 6, n = 4, p = 2, itmax = 100, peps1 = 15, peps2 = 10;
-    bool verbose = false;
+    bool verbose = true;
     (void)smacofEngine(delta, weights, xold, xnew, dnew, &snew, ii, jj, &m, &n,
                        &p, &itmax, &peps1, &peps2, &verbose);
 }

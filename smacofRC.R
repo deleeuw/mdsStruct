@@ -1,4 +1,6 @@
-# classical MDS
+
+
+dyn.load("smacofCore.so")
 
 fullIndex <- function(n) {
   ii <- c()
@@ -13,7 +15,6 @@ fullIndex <- function(n) {
 }
 
 
-dyn.load("smacofCore.so")
 
 smacofRC <-
   function(delta,

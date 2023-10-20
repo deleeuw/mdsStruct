@@ -107,8 +107,6 @@ void smacofGramSchmidt(double *x, double *r, int *pn, int *pp) {
     return;
 }
 
-#include "smacof.h"
-
 void smacofPerronRoot(double *a, const int *pn, const double *plbd,
                       double *proot, const int *pitmax, const double *peps,
                       const bool *verbose) {
