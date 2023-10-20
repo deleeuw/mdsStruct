@@ -39,7 +39,6 @@ torgerson <- function(delta, p = 2) {
   }
 }
 
-
 smacofR <-
   function(delta,
            weights = 1 - diag(nrow(delta)),
