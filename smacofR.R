@@ -45,7 +45,7 @@ smacofR <-
            weights = 1 - diag(nrow(delta)),
            p = 2,
            xold = NULL,
-           itmax = 1000,
+           itmax = 100000,
            eps1 = 15,
            eps2 = 10,
            verbose = FALSE) {
@@ -61,6 +61,7 @@ smacofR <-
     vinv <- ginv(v)
     delta <- sqrt(2) * delta / sqrt(sum(weights * (delta ^ 2)))
     dold <- as.matrix(dist(xold))
+    dold <- ifelse(dold < 1e-10, 1e-10, dold)
     lbd <- sum(weights * delta * dold) / sum(weights * (dold ^ 2))
     xold <- lbd * xold
     dold <- lbd * dold
@@ -102,6 +103,7 @@ smacofR <-
     return(list(
       conf = xnew,
       dist = dnew,
+      loss = snew,
       weights = weights,
       delta = delta,
       itel = itel

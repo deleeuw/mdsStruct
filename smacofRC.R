@@ -1,5 +1,3 @@
-
-
 dyn.load("smacofCore.so")
 
 fullIndex <- function(n) {
@@ -14,21 +12,18 @@ fullIndex <- function(n) {
   return(list(ii = ii, jj = jj))
 }
 
-
-
 smacofRC <-
   function(delta,
-           n,
            p = 2,
+           n = as.integer((1 + sqrt(1 + 8 * length(delta)) / 2)),
            xold = rbind(diag(p),matrix(0, n - p, p)),
            weights = rep(1, length(delta)),
            ii = fullIndex(n)$ii,
            jj = fullIndex(n)$ii,
-           itmax = 1000,
+           itmax = 100000,
            eps1 = 15,
            eps2 = 10,
            verbose = FALSE) {
-    m <- length(delta)
     h <- .C(
       "smacofEngine",
       delta = as.double(delta),
@@ -39,9 +34,10 @@ smacofRC <-
       snew = as.double(0.0),
       ii = as.integer(ii),
       jj = as.integer(jj),
-      m = as.integer(m),
+      m = as.integer(length(delta)),
       n = as.integer(n),
       p = as.integer(p),
+      itel = as.integer(1),
       itmax = as.integer(itmax),
       eps1 = as.integer(eps1),
       eps2 = as.integer(eps2),

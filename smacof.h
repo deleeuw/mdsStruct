@@ -14,7 +14,7 @@
 void smacofEngine(double *delta, double *weights, double * xold, double *xnew,
                   double *dnew, double *snew, const int *ii,
                   const int *jj, const int *pm, const int *pn, const int *pp,
-                  const int *itmax, const int *peps1, const int *peps2, 
+                  int *pitel, const int *itmax, const int *peps1, const int *peps2, 
                   const bool *verbose);
 
 // smacofCore.c

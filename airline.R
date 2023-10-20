@@ -41,4 +41,3 @@ structure(c(0, 12947, 1972, 8171, 8160, 9093, 12478, 10490, 5809,
     )))
 airlineRC <- as.vector(as.dist(airline))
 airlineR <- airline
-xold <- matrix(rnorm(36), 18, 2)
