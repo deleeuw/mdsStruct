@@ -2,158 +2,152 @@
 
 void smacofInitial(const double *delta, double *xold, const int *pn,
                    const int *pp) {
-    int n = *pn, m = n * (n - 1) / 2, itmax = 100;
-    double eps = 1e-10;
-    int width = 10, precision = 6;
-    double *cross = (double *)calloc((size_t)m, (size_t)sizeof(double));
-    (void)smacofDoubleCenter(delta, cross, &n);
-    if (DEBUG) {
-        printf("cross\n");
-        (void)smacofPrintSDCMatrix(cross, pn, &width, &precision);
-    }
-    (void)smacofSimultaneousIteration(cross, xold, pn, pp, &itmax, &eps);
+  int n = *pn, m = n * (n - 1) / 2, itmax = 100;
+  double eps = 1e-10;
+  double *cross = (double *)calloc((size_t)m, (size_t)sizeof(double));
+  (void)smacofDoubleCenter(delta, cross, &n);
+  (void)smacofSimultaneousIteration(cross, xold, pn, pp, &itmax, &eps);
 }
 
 void smacofDoubleCenter(const double *delta, double *cross, const int *pn) {
-    int n = *pn, ij = 0;
-    double tsum = 0.0, cell = 0.0;
-    double *rsum = (double *)calloc((size_t)n, (size_t)sizeof(double));
-    for (int i = 1; i <= n; i++) {
-        double sum = 0.0;
-        for (int j = 1; j <= n; j++) {
-            if (i == j) {
-                continue;
-            }
-            sum += SQUARE(delta[PINDEX(i, j, n)]);
-        }
-        rsum[VINDEX(i)] = sum / ((double)n);
-        tsum += sum;
+  int n = *pn, ij = 0;
+  double tsum = 0.0, cell = 0.0;
+  double *rsum = (double *)calloc((size_t)n, (size_t)sizeof(double));
+  for (int i = 1; i <= n; i++) {
+    double sum = 0.0;
+    for (int j = 1; j <= n; j++) {
+      if (i == j) {
+        continue;
+      }
+      sum += SQUARE(delta[PINDEX(i, j, n)]);
     }
-    tsum /= SQUARE((double)n);
-    for (int j = 1; j <= (n - 1); j++) {
-        for (int i = (j + 1); i <= n; i++) {
-            ij = SINDEX(i, j, n);
-            cell = SQUARE(delta[ij]);
-            cross[ij] =
-                -0.5 * (cell - rsum[VINDEX(i)] - rsum[VINDEX(j)] + tsum);
-        }
+    rsum[VINDEX(i)] = sum / ((double)n);
+    tsum += sum;
+  }
+  tsum /= SQUARE((double)n);
+  for (int j = 1; j <= (n - 1); j++) {
+    for (int i = (j + 1); i <= n; i++) {
+      ij = SINDEX(i, j, n);
+      cell = SQUARE(delta[ij]);
+      cross[ij] = -0.5 * (cell - rsum[VINDEX(i)] - rsum[VINDEX(j)] + tsum);
     }
-    free(rsum);
-    return;
+  }
+  free(rsum);
+  return;
 }
 
 void smacofSimultaneousIteration(double *cross, double *xold, const int *pn,
                                  const int *pp, const int *itmax,
                                  const double *eps) {
-    int n = *pn, p = *pp, np = n * p, itel = 1;
-    double oldsum = 0.0, newsum = 0.0, maxdiff = 0.0;
-    for (int i = 1; i <= n; i++) {
-        for (int s = 1; s <= p; s++) {
-            xold[MINDEX(i, s, n)] = drand48();
-        }
+  int n = *pn, p = *pp, np = n * p, itel = 1;
+  double oldsum = 0.0, newsum = 0.0, maxdiff = 0.0;
+  for (int i = 1; i <= n; i++) {
+    for (int s = 1; s <= p; s++) {
+      xold[MINDEX(i, s, n)] = drand48();
     }
-    double *xnew = (double *)calloc((size_t)np, (size_t)sizeof(double));
-    double *r = (double *)calloc((size_t)p, (size_t)sizeof(double));
-    (void)smacofGramSchmidt(xold, r, &n, &p);
-    oldsum = 0.0;
-    while (true) {
-        (void)smacofMultiplySDCMatrix(cross, xold, xnew, &n, &p);
-        (void)smacofGramSchmidt(xnew, r, &n, &p);
-        (void)smacofMaxConfDifference(xold, xnew, &maxdiff, &n, &p);
-        newsum = 0.0;
-        for (int i = 1; i <= p; i++) {
-            newsum += r[VINDEX(i)];
-        }
-        if ((itel == *itmax) || ((newsum - oldsum) < *eps)) {
-            break;
-        }
-        itel++;
-        oldsum = newsum;
-        (void)memcpy(xold, xnew, (size_t)(np * sizeof(double)));
+  }
+  double *xnew = (double *)calloc((size_t)np, (size_t)sizeof(double));
+  double *r = (double *)calloc((size_t)p, (size_t)sizeof(double));
+  (void)smacofGramSchmidt(xold, r, &n, &p);
+  oldsum = 0.0;
+  while (true) {
+    (void)smacofMultiplySDCMatrix(cross, xold, xnew, &n, &p);
+    (void)smacofGramSchmidt(xnew, r, &n, &p);
+    (void)smacofMaxConfDifference(xold, xnew, &maxdiff, &n, &p);
+    newsum = 0.0;
+    for (int i = 1; i <= p; i++) {
+      newsum += r[VINDEX(i)];
     }
-    for (int i = 1; i <= n; i++) {
-        for (int s = 1; s <= p; s++) {
-            xold[MINDEX(i, s, n)] = xnew[MINDEX(i, s, n)] * sqrt(r[VINDEX(s)]);
-        }
+    if ((itel == *itmax) || ((newsum - oldsum) < *eps)) {
+      break;
     }
-    free(xnew);
-    free(r);
-    return;
+    itel++;
+    oldsum = newsum;
+    (void)memcpy(xold, xnew, (size_t)(np * sizeof(double)));
+  }
+  for (int i = 1; i <= n; i++) {
+    for (int s = 1; s <= p; s++) {
+      xold[MINDEX(i, s, n)] = xnew[MINDEX(i, s, n)] * sqrt(r[VINDEX(s)]);
+    }
+  }
+  free(xnew);
+  free(r);
+  return;
 }
 
 void smacofGramSchmidt(double *x, double *r, int *pn, int *pp) {
-    int n = *pn, p = *pp, s = 1;
-    while (s <= p) {
-        for (int t = 1; t < s; t++) {
-            double sum = 0.0;
-            for (int i = 1; i <= n; i++) {
-                sum += x[MINDEX(i, t, n)] * x[MINDEX(i, s, n)];
-            }
-            for (int i = 1; i <= n; i++) {
-                x[MINDEX(i, s, n)] -= sum * x[MINDEX(i, t, n)];
-            }
-        }
-        double sum = 0.0;
-        for (int i = 1; i <= n; i++) {
-            sum += x[MINDEX(i, s, n)] * x[MINDEX(i, s, n)];
-        }
-        sum = sqrt(sum);
-        r[VINDEX(s)] = sum;
-        for (int i = 1; i <= n; i++) {
-            x[MINDEX(i, s, n)] /= sum;
-        }
-        s++;
+  int n = *pn, p = *pp, s = 1;
+  while (s <= p) {
+    for (int t = 1; t < s; t++) {
+      double sum = 0.0;
+      for (int i = 1; i <= n; i++) {
+        sum += x[MINDEX(i, t, n)] * x[MINDEX(i, s, n)];
+      }
+      for (int i = 1; i <= n; i++) {
+        x[MINDEX(i, s, n)] -= sum * x[MINDEX(i, t, n)];
+      }
     }
-    return;
+    double sum = 0.0;
+    for (int i = 1; i <= n; i++) {
+      sum += x[MINDEX(i, s, n)] * x[MINDEX(i, s, n)];
+    }
+    sum = sqrt(sum);
+    r[VINDEX(s)] = sum;
+    for (int i = 1; i <= n; i++) {
+      x[MINDEX(i, s, n)] /= sum;
+    }
+    s++;
+  }
+  return;
 }
 
 void smacofPerronRoot(double *a, const int *pn, const double *plbd,
                       double *proot, const int *pitmax, const double *peps,
                       const bool *verbose) {
-    int n = *pn, itel = 1, itmax = *pitmax;
-    double lbd = *plbd, eps = *peps, root = *proot;
-    double *r = (double *)calloc((size_t)n, (size_t)sizeof(double));
-    double *b = (double *)calloc((size_t)(n * n), (size_t)sizeof(double));
+  int n = *pn, itel = 1, itmax = *pitmax;
+  double lbd = *plbd, eps = *peps, root = *proot;
+  double *r = (double *)calloc((size_t)n, (size_t)sizeof(double));
+  double *b = (double *)calloc((size_t)(n * n), (size_t)sizeof(double));
+  for (int j = 1; j <= n; j++) {
+    for (int i = j; i <= n; i++) {
+      double h = a[TINDEX(i, j, n)];
+      if (i == j) {
+        b[MINDEX(i, j, n)] = h + lbd;
+      } else {
+        b[MINDEX(i, j, n)] = h;
+        b[MINDEX(j, i, n)] = h;
+      }
+    }
+  }
+  while (true) {
+    double rmin = INFINITY, rmax = 0.0;
+    for (int i = 1; i <= n; i++) {
+      double sum = 0.0;
+      for (int j = 1; j <= n; j++) {
+        sum += b[MINDEX(i, j, n)];
+      }
+      r[VINDEX(i)] = sum;
+      rmin = MIN(rmin, sum);
+      rmax = MAX(rmax, sum);
+    }
+    root = ((rmin + rmax) / 2.0) - lbd;
+    if (verbose) {
+      printf("itel %3d rmin %15.10f rmax %15.10f root %15.10f\n", itel, rmin,
+             rmax, root);
+    }
+    if ((itel == itmax) || ((rmax - rmin) < eps)) {
+      break;
+    }
+    itel++;
     for (int j = 1; j <= n; j++) {
-        for (int i = j; i <= n; i++) {
-            double h = a[TINDEX(i, j, n)];
-            if (i == j) {
-                b[MINDEX(i, j, n)] = h + lbd;
-            } else {
-                b[MINDEX(i, j, n)] = h;
-                b[MINDEX(j, i, n)] = h;
-            }
-        }
+      for (int i = 1; i <= n; i++) {
+        b[MINDEX(i, j, n)] *= r[VINDEX(j)] / r[VINDEX(i)];
+      }
     }
-    while (true) {
-        double rmin = INFINITY, rmax = 0.0;
-        for (int i = 1; i <= n; i++) {
-            double sum = 0.0;
-            for (int j = 1; j <= n; j++) {
-                sum += b[MINDEX(i, j, n)];
-            }
-            r[VINDEX(i)] = sum;
-            rmin = MIN(rmin, sum);
-            rmax = MAX(rmax, sum);
-        }
-        root = ((rmin + rmax) / 2.0) - lbd;
-        if (verbose) {
-            printf("itel %3d rmin %15.10f rmax %15.10f root %15.10f\n", itel,
-                   rmin, rmax, root);
-        }
-        if ((itel == itmax) || ((rmax - rmin) < eps)) {
-            break;
-        }
-        itel++;
-        for (int j = 1; j <= n; j++) {
-            for (int i = 1; i <= n; i++) {
-                b[MINDEX(i, j, n)] *= r[VINDEX(j)] / r[VINDEX(i)];
-            }
-        }
-    }
-    *proot = root;
-    free(r);
-    free(b);
+  }
+  *proot = root;
+  free(r);
+  free(b);
 }
 
 /*
