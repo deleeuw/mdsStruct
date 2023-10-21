@@ -70,7 +70,7 @@ void smacofTorgerson(const double *delta, double *xold, const int *pn,
 void smacofGramSchmidt(double *x, double *r, int *pn, int *pp);
 void smacofSimultaneousIteration(double *cross, double *xold, const int *pn,
                                  const int *pp, const int *itmax,
-                                 const double *eps);
+                                 const double *eps, const bool *verbose);
 
 // smacofElegant.c
 

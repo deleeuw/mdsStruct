@@ -8,8 +8,8 @@ void smacofElegant(const double *delta, const double *weights, const int *pn,
     int ik = 0, jk = 0, il = 0, jl = 0;
     bool verbose = *pverbose;
     double eps = *peps, cell = 0.0, lbd = *plbd, root = *proot;
-    //    (void)smacofDoubleCenter(delta, cross, pn);
     double *u = (double *)calloc((size_t)mm, (size_t)sizeof(double));
+    (void)smacofDoubleCenter(delta, cross, pn);
     for (int t = 1; t <= m; t++) {
         int i = ii[VINDEX(t)];
         int j = jj[VINDEX(t)];
