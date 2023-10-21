@@ -5,8 +5,9 @@ void smacofTorgerson(const double *delta, double *xold, const int *pn,
     int n = *pn, m = n * (n - 1) / 2, itmax = 100;
     double eps = 1e-10;
     double *cross = (double *)calloc((size_t)m, (size_t)sizeof(double));
+    bool verbose = false;
     (void)smacofDoubleCenter(delta, cross, &n);
-    (void)smacofSimultaneousIteration(cross, xold, pn, pp, &itmax, &eps);
+    (void)smacofSimultaneousIteration(cross, xold, pn, pp, &itmax, &eps, &verbose);
     free(cross);
 }
 

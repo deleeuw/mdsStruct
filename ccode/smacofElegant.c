@@ -4,11 +4,12 @@ void smacofElegant(const double *delta, const double *weights, const int *pn,
                    const int *pm, const int *ii, const int *jj,
                    const double *plbd, double *proot, const int *pitmax,
                    const double *peps, const bool *pverbose) {
-    int n = *pn, m = *pm, itmax = *pitmax, mm = m * (m + 1) / 2;
+    int n = *pn, m = *pm, itmax = *pitmax, mm = m * (m + 1) / 2, nn = n * (n - 1) / 2;
     int ik = 0, jk = 0, il = 0, jl = 0;
     bool verbose = *pverbose;
     double eps = *peps, cell = 0.0, lbd = *plbd, root = *proot;
     double *u = (double *)calloc((size_t)mm, (size_t)sizeof(double));
+    double *cross = (double *)calloc((size_t)nn, (size_t)sizeof(double));
     (void)smacofDoubleCenter(delta, cross, pn);
     for (int t = 1; t <= m; t++) {
         int i = ii[VINDEX(t)];
@@ -76,7 +77,8 @@ void smacofPerronRoot(double *a, const int *pn, const double *plbd,
     free(b);
 }
 
-int main() {
+/*
+ int main() {
     int ii[10] = {2, 3, 4, 5, 3, 4, 5, 4, 5, 5};
     int jj[10] = {1, 1, 1, 1, 2, 2, 2, 3, 3, 4};
     double delta[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -87,3 +89,4 @@ int main() {
     (void)smacofElegant(delta, weights, &n, &m, ii, jj, &lbd, &root, &itmax,
                         &eps, &verbose);
 }
+ */
