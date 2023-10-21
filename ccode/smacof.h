@@ -8,6 +8,7 @@
 #include <string.h>
 
 #define DEBUG false
+#define _CRT_RAND_S
 
 // smacofEngine.c
 
@@ -61,15 +62,22 @@ void smacofSort(double *delta, double *weight, int *row, int *col, int *index,
                 const int *n);
 void smacofTieBlocks(const double *x, int *it, double *eps, const int *n);
 
-// smacofInitial.c
+// smacofTorgerson.c
 
 void smacofDoubleCenter(const double *delta, double *cross, const int *pn);
-void smacofInitial(const double *delta, double *xold, const int *pn,
+void smacofTorgerson(const double *delta, double *xold, const int *pn,
                    const int *pp);
 void smacofGramSchmidt(double *x, double *r, int *pn, int *pp);
 void smacofSimultaneousIteration(double *cross, double *xold, const int *pn,
                                  const int *pp, const int *itmax,
                                  const double *eps);
+
+// smacofElegant.c
+
+void smacofElegant(const double *delta, const double *weights, const int *pn,
+                   const int *pm, const int *ii, const int *jj,
+                   const double *plbd, double *proot, const int *pitmax,
+                   const double *peps, const bool *pverbose);
 void smacofPerronRoot(double *a, const int *pn, const double *plbd,
                       double *proot, const int *pitmax, const double *peps,
                       const bool *verbose);
@@ -89,6 +97,7 @@ static inline int SINDEX(const int i, const int j, const int n);
 static inline int TINDEX(const int i, const int j, const int n);
 static inline int MINDEX(const int i, const int j, const int n);
 static inline int PINDEX(const int i, const int j, const int n);
+static inline int KDELTA(const int i, const int j);
 
 static inline double SQUARE(const double);
 static inline double MAX(const double, const double);
@@ -157,5 +166,7 @@ static inline double MIN(const double x, const double y) {
 static inline int IMAX(const int x, const int y) { return ((x > y) ? x : y); }
 
 static inline int IMIN(const int x, const int y) { return ((x < y) ? x : y); }
+
+static inline int KDELTA(const int i, const int j) {return ((i == j) ? 1 : 0); }
 
 #endif /* SMACOF_H */
