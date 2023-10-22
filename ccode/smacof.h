@@ -38,12 +38,6 @@ void smacofNormWeights(double *weights, const int *pm);
 
 // smacofUtils.c
 
-void smacofPrintSDCMatrix(const double *v, const int *ndim, const int *width,
-                          const int *precision);
-void smacofPrintAnyMatrix(const double *x, const int *pn, const int *pp,
-                          const int *pw, const int *pr);
-void smacofPrintSymmetricHollowMatrix(const double *d, const int *pn,
-                                      const int *pw, const int *pr);
 void smacofMultiplySDCMatrix(const double *a, const double *x, double *y,
                              const int *pn, const int *pp);
 void smacofMPInverseSDCMatrix(const double *w, double *vinv, const int *ndim);
@@ -66,11 +60,13 @@ void smacofTieBlocks(const double *x, int *it, double *eps, const int *n);
 
 void smacofDoubleCenter(const double *delta, double *cross, const int *pn);
 void smacofTorgerson(const double *delta, double *xold, const int *pn,
-                   const int *pp);
+                     const int *pp);
 void smacofGramSchmidt(double *x, double *r, int *pn, int *pp);
 void smacofSimultaneousIteration(double *cross, double *xold, const int *pn,
                                  const int *pp, const int *itmax,
                                  const double *eps, const bool *verbose);
+void smacofJacobi(const int *nn, double *a, double *evec, int *itmax,
+                  double *eps, bool *verbose);
 
 // smacofElegant.c
 
@@ -84,12 +80,21 @@ void smacofPerronRoot(double *a, const int *pn, const double *plbd,
 
 // smacofDerivatives.c
 
+// smacofPrint.c
+
+void smacofPrintSDCMatrix(const double *v, const int *ndim, const int *width,
+                          const int *precision);
+void smacofPrintAnyMatrix(const double *x, const int *pn, const int *pp,
+                          const int *pw, const int *pr);
+void smacofPrintSymmetricHollowMatrix(const double *d, const int *pn,
+                                      const int *pw, const int *pr);
+
 struct fiveTuple {
-  int index;
-  int row;
-  int col;
-  double delta;
-  double weight;
+    int index;
+    int row;
+    int col;
+    double delta;
+    double weight;
 };
 
 static inline int VINDEX(const int i);
@@ -113,60 +118,62 @@ static inline int VINDEX(const int i) { return (i - 1); }
 // column-major-order storage
 
 static inline int MINDEX(const int i, const int j, const int n) {
-  return ((i - 1) + (j - 1) * n);
+    return ((i - 1) + (j - 1) * n);
 }
 
 // SINDEX retrieves element (i, j) from a strictly lower triangular matrix
 // of order n. Thus always i > j.
 
 static inline int SINDEX(const int i, const int j, const int n) {
-  if (i <= j) {
-    printf("SINDEX error\n");
-    return EXIT_FAILURE;
-  }
-  return (((j - 1) * n) - (j * (j - 1) / 2) + (i - j) - 1);
+    if (i <= j) {
+        printf("SINDEX error\n");
+        return EXIT_FAILURE;
+    }
+    return (((j - 1) * n) - (j * (j - 1) / 2) + (i - j) - 1);
 }
 
 // PINDEX retrieves element (max(i, j), min(i,j)) from a strictly lower
 // triangularmatrix of order n. Thus always i ≠ j.
 
 static inline int PINDEX(const int i, const int j, const int n) {
-  if (i == j) {
-    printf("PINDEX error\n");
-    return EXIT_FAILURE;
-  }
-  if (i > j) {
-    return (SINDEX(i, j, n));
-  } else {
-    return (SINDEX(j, i, n));
-  }
+    if (i == j) {
+        printf("PINDEX error\n");
+        return EXIT_FAILURE;
+    }
+    if (i > j) {
+        return (SINDEX(i, j, n));
+    } else {
+        return (SINDEX(j, i, n));
+    }
 }
 
 // TINDEX retrieves element (i, j) from a lower triangular matrix
 // of order n. Thus always i >= j.
 
 static inline int TINDEX(const int i, const int j, const int n) {
-  if (i < j) {
-    printf("TINDEX error\n");
-    return EXIT_FAILURE;
-  }
-  return ((j - 1) * n) - ((j - 1) * (j - 2) / 2) + (i - (j - 1)) - 1;
+    if (i < j) {
+        printf("TINDEX error\n");
+        return EXIT_FAILURE;
+    }
+    return ((j - 1) * n) - ((j - 1) * (j - 2) / 2) + (i - (j - 1)) - 1;
 }
 
 static inline double SQUARE(const double x) { return (x * x); }
 
 static inline double MAX(const double x, const double y) {
-  return ((x > y) ? x : y);
+    return ((x > y) ? x : y);
 }
 
 static inline double MIN(const double x, const double y) {
-  return ((x < y) ? x : y);
+    return ((x < y) ? x : y);
 }
 
 static inline int IMAX(const int x, const int y) { return ((x > y) ? x : y); }
 
 static inline int IMIN(const int x, const int y) { return ((x < y) ? x : y); }
 
-static inline int KDELTA(const int i, const int j) {return ((i == j) ? 1 : 0); }
+static inline int KDELTA(const int i, const int j) {
+    return ((i == j) ? 1 : 0);
+}
 
 #endif /* SMACOF_H */

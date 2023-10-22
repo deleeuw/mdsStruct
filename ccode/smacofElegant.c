@@ -4,7 +4,8 @@ void smacofElegant(const double *delta, const double *weights, const int *pn,
                    const int *pm, const int *ii, const int *jj,
                    const double *plbd, double *proot, const int *pitmax,
                    const double *peps, const bool *pverbose) {
-    int n = *pn, m = *pm, itmax = *pitmax, mm = m * (m + 1) / 2, nn = n * (n - 1) / 2;
+    int n = *pn, m = *pm, itmax = *pitmax, mm = m * (m + 1) / 2,
+        nn = n * (n - 1) / 2;
     int ik = 0, jk = 0, il = 0, jl = 0;
     bool verbose = *pverbose;
     double eps = *peps, cell = 0.0, lbd = *plbd, root = *proot;
