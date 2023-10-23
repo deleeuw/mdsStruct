@@ -7,10 +7,10 @@ void smacofEngine(double *delta, double *weights, double *xold, double *xnew,
                   const int *pm, const int *pn, const int *pp, int *pitel,
                   const int *pitmax, const int *peps1, const int *peps2,
                   const bool *pverbose) {
-    int m = *pm, n = *pn, p = *pp, np = n * p, itel = *pitel, itmax = *pitmax;
-    bool verbose = *pverbose;
+    int m = *pm, n = *pn, p = *pp, np = n * p, itel = *pitel, itmax = *pitmax, itmax_j = 100;
+    bool verbose = *pverbose, verbose_j = false;
     double sold = 0.0, snew = *psnew, cchange = 0.0, dchange = 0.0;
-    double eps1 = pow(10, -*peps1), eps2 = pow(10, -*peps2);
+    double eps1 = pow(10, -*peps1), eps2 = pow(10, -*peps2), eps_j = pow(10, -15);
     double *dold = (double *)calloc((size_t)m, (size_t)sizeof(double));
     double *v = (double *)calloc((size_t)m, (size_t)sizeof(double));
     double *vinv = (double *)calloc((size_t)m, (size_t)sizeof(double));
@@ -18,7 +18,7 @@ void smacofEngine(double *delta, double *weights, double *xold, double *xnew,
     (void)smacofNormDelta(delta, weights, pm);
     (void)smacofMakeVfromW(weights, v, pn);
     (void)smacofMPInverseSDCMatrix(weights, vinv, pn);
-    (void)smacofTorgerson(delta, xold, pn, pp);
+    (void)smacofTorgerson(delta, xold, pn, pp, &itmax_j, &eps_j, &verbose_j);
     (void)smacofCenter(xold, pn, pp);
     (void)smacofDist(xold, dold, ii, jj, pm, pn, pp);
     (void)smacofScale(delta, weights, dold, xold, pm, pn, pp);

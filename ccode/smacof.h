@@ -60,13 +60,8 @@ void smacofTieBlocks(const double *x, int *it, double *eps, const int *n);
 
 void smacofDoubleCenter(const double *delta, double *cross, const int *pn);
 void smacofTorgerson(const double *delta, double *xold, const int *pn,
-                     const int *pp);
-void smacofGramSchmidt(double *x, double *r, int *pn, int *pp);
-void smacofSimultaneousIteration(double *cross, double *xold, const int *pn,
-                                 const int *pp, const int *itmax,
-                                 const double *eps, const bool *verbose);
-void smacofJacobi(const int *nn, double *a, double *evec, int *itmax,
-                  double *eps, bool *verbose);
+                     const int *pp, const int *pitmax, const double *peps,
+                     const bool *pverbose);
 
 // smacofElegant.c
 
@@ -77,6 +72,15 @@ void smacofElegant(const double *delta, const double *weights, const int *pn,
 void smacofPerronRoot(double *a, const int *pn, const double *plbd,
                       double *proot, const int *pitmax, const double *peps,
                       const bool *verbose);
+
+// smacofLinearAlgebra.c
+
+void smacofGramSchmidt(double *x, double *r, int *pn, int *pp);
+void smacofSimultaneousIteration(double *cross, double *xold, const int *pn,
+                                 const int *pp, const int *itmax,
+                                 const double *eps, const bool *verbose);
+void smacofJacobi(double *a, double *evec, double *eval, const int *pn,
+                  const int *itmax, const double *eps, const bool *verbose);
 
 // smacofDerivatives.c
 
