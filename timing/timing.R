@@ -1,7 +1,7 @@
 library("microbenchmark")
-source("../rcode/smacofR.R")
-source("../rcode/smacofRC.R")
-source("../timing/timer.R")
+source("/Users/deleeuw/Desktop/projects/mdsStruct/rcode/smacofR.R")
+source("/Users/deleeuw/Desktop/projects/mdsStruct/rcode/smacofRC.R")
+source("/Users/deleeuw/Desktop/projects/mdsStruct/timing/timer.R")
 
 print("EKMAN", quote = FALSE)
 source("../data/ekman.R")

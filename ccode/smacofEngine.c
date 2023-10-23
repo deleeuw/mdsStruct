@@ -20,7 +20,7 @@ void smacofEngine(double *delta, double *weights, double *xold, double *xnew,
     (void)smacofNormDelta(delta, weights, pm);
     (void)smacofMakeVfromW(weights, v, pn);
     (void)smacofMPInverseSDCMatrix(weights, vinv, pn);
-    (void)smacofTorgerson(delta, xold, pn, pp, &itmax_j, &eps_j, &verbose_j);
+    //(void)smacofTorgerson(delta, xold, pn, pp, &itmax_j, &eps_j, &verbose_j);
     (void)smacofCenter(xold, pn, pp);
     (void)smacofDist(xold, dold, ii, jj, pm, pn, pp);
     (void)smacofScale(delta, weights, dold, xold, pm, pn, pp);
@@ -45,8 +45,10 @@ void smacofEngine(double *delta, double *weights, double *xold, double *xnew,
         (void)memcpy(xold, xnew, (size_t)(np * sizeof(double)));
         (void)memcpy(dold, dnew, (size_t)(m * sizeof(double)));
     }
-    (void)memcpy(psnew, &snew, (size_t)(sizeof(double)));
-    (void)memcpy(pitel, &itel, (size_t)(sizeof(int)));
+    psnew = &snew;
+    pitel = &itel;
+    //    (void)memcpy(psnew, &snew, (size_t)(sizeof(double)));
+    //    (void)memcpy(pitel, &itel, (size_t)(sizeof(int)));
     free(dold);
     free(vinv);
     free(v);
@@ -56,14 +58,16 @@ void smacofEngine(double *delta, double *weights, double *xold, double *xnew,
 int main() {
     double delta[6] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
     double weights[6] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
-    double xold[8] = {1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0};
+    double xold[8] = {1, 1, -2, -2, 1, 1, -1, -1};
     double xnew[8] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     double dnew[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     double snew = 0.0;
     int ii[6] = {2, 3, 4, 3, 4, 4};
     int jj[6] = {1, 1, 1, 2, 2, 3};
     int m = 6, n = 4, p = 2, itel = 1, itmax = 100, peps1 = 15, peps2 = 10;
+    int width = 15, precision = 10;
     bool verbose = true;
     (void)smacofEngine(delta, weights, xold, xnew, dnew, &snew, ii, jj, &m, &n,
                        &p, &itel, &itmax, &peps1, &peps2, &verbose);
+    (void)smacofPrintAnyMatrix(xnew, &n, &p, &width, &precision);
 }

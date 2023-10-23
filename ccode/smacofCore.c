@@ -16,17 +16,18 @@ void smacofDist(const double *x, double *d, const int *ii, const int *jj,
 }
 
 void smacofGuttman(const double *delta, const double *weights,
-                   const double *vinv, const double *dold, double *xold,
+                   const double *vinv, const double *dold, const double *xold,
                    double *xnew, const int *pn, const int *pp) {
     int n = *pn, p = *pp, np = n * p, m = n * (n - 1) / 2;
     double *bmat = (double *)calloc((size_t)m, (size_t)sizeof(double));
     double *ymat = (double *)calloc((size_t)np, (size_t)sizeof(double));
     for (int i = 1; i <= m; i++) {
         double dfix = dold[VINDEX(i)];
-        if (dfix < 1e-10) {
-            bmat[VINDEX(i)] = 0.0;
+        int iv = VINDEX(i);
+        if (dfix < 1e-15) {
+            bmat[iv] = 0.0;
         } else {
-            bmat[VINDEX(i)] = weights[VINDEX(i)] * delta[VINDEX(i)] / dfix;
+            bmat[iv] = weights[iv] * delta[iv] / dfix;
         }
     }
     (void)smacofMultiplySDCMatrix(bmat, xold, ymat, pn, pp);

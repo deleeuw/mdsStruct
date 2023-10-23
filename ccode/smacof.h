@@ -8,7 +8,6 @@
 #include <string.h>
 
 #define DEBUG false
-#define _CRT_RAND_S
 
 // smacofEngine.c
 
@@ -21,7 +20,7 @@ void smacofEngine(double *delta, double *weights, double *xold, double *xnew,
 // smacofCore.c
 
 void smacofGuttman(const double *delta, const double *weights,
-                   const double *vinv, const double *dist, double *xold,
+                   const double *vinv, const double *dist, const double *xold,
                    double *xnew, const int *pn, const int *pp);
 void smacofLoss(const double *delta, const double *w, const double *d,
                 const int *m, double *loss);
@@ -84,6 +83,11 @@ void smacofJacobi(double *a, double *evec, double *eval, const int *pn,
 
 // smacofDerivatives.c
 
+void smacofGradient(const double *delta, const double *weights,
+                    const double *vinv, const double *dold, const double *xold,
+                    double *xnew, double *gradient, const int *pn,
+                    const int *pp);
+
 // smacofPrint.c
 
 void smacofPrintSDCMatrix(const double *v, const int *ndim, const int *width,
@@ -93,6 +97,8 @@ void smacofPrintAnyMatrix(const double *x, const int *pn, const int *pp,
 void smacofPrintSymmetricHollowMatrix(const double *d, const int *pn,
                                       const int *pw, const int *pr);
 
+// structures
+
 struct fiveTuple {
     int index;
     int row;
@@ -100,6 +106,22 @@ struct fiveTuple {
     double delta;
     double weight;
 };
+
+struct allEpsilon {
+    int stressEps;
+    int confEps;
+    int distEps;
+    int jacobiEps;
+};
+
+struct allItmax {
+    int mainItmax;
+    int jacobiItmax;
+    int distEps;
+    int jacobiEps;
+};
+
+// inline indexing functions
 
 static inline int VINDEX(const int i);
 static inline int SINDEX(const int i, const int j, const int n);
@@ -109,6 +131,7 @@ static inline int PINDEX(const int i, const int j, const int n);
 static inline int KDELTA(const int i, const int j);
 
 static inline double SQUARE(const double);
+static inline double THIRD(const double);
 static inline double MAX(const double, const double);
 static inline double MIN(const double, const double);
 static inline int IMIN(const int, const int);
@@ -163,6 +186,8 @@ static inline int TINDEX(const int i, const int j, const int n) {
 }
 
 static inline double SQUARE(const double x) { return (x * x); }
+
+static inline double THIRD(const double x) { return (x * x * x); }
 
 static inline double MAX(const double x, const double y) {
     return ((x > y) ? x : y);

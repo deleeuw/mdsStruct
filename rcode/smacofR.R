@@ -67,7 +67,8 @@ smacofR <-
     sold <- sum(weights * (delta - dold) ^ 2) / 4.0
     itel <- 1
     repeat {
-      b <- -weights * delta / (dold + diag(n))
+      dinv <- ifelse(dold < 1e-10, 0, 1 / dold)
+      b <- -weights * delta * dinv
       diag(b) <- -rowSums(b)
       xnew <- vinv %*% b %*% xold
       dnew <- as.matrix(dist(xnew))
