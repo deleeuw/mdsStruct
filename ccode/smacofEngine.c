@@ -7,10 +7,12 @@ void smacofEngine(double *delta, double *weights, double *xold, double *xnew,
                   const int *pm, const int *pn, const int *pp, int *pitel,
                   const int *pitmax, const int *peps1, const int *peps2,
                   const bool *pverbose) {
-    int m = *pm, n = *pn, p = *pp, np = n * p, itel = *pitel, itmax = *pitmax, itmax_j = 100;
+    int m = *pm, n = *pn, p = *pp, np = n * p, itel = *pitel, itmax = *pitmax,
+        itmax_j = 100;
     bool verbose = *pverbose, verbose_j = false;
     double sold = 0.0, snew = *psnew, cchange = 0.0, dchange = 0.0;
-    double eps1 = pow(10, -*peps1), eps2 = pow(10, -*peps2), eps_j = pow(10, -15);
+    double eps1 = pow(10, -*peps1), eps2 = pow(10, -*peps2),
+           eps_j = pow(10, -15);
     double *dold = (double *)calloc((size_t)m, (size_t)sizeof(double));
     double *v = (double *)calloc((size_t)m, (size_t)sizeof(double));
     double *vinv = (double *)calloc((size_t)m, (size_t)sizeof(double));

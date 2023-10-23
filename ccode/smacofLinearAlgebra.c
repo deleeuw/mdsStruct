@@ -2,22 +2,13 @@
 
 void smacofJacobi(double *a, double *evec, double *eval, const int *pn,
                   const int *pitmax, const double *peps, const bool *pverbose) {
-    int n = *pn, itel = 1, m = n * (n + 1) / 2, itmax = *pitmax;
+    int n = *pn, itel = 1, itmax = *pitmax;
     bool verbose = *pverbose;
     double d = 0.0, s = 0.0, t = 0.0, u = 0.0, v = 0.0, p = 0.0, q = 0.0,
            r = 0.0;
     double fold = 0.0, fnew = 0.0, eps = *peps;
-    // double *a = (double *)calloc((size_t)m, (size_t)sizeof(double));
     double *oldi = (double *)calloc((size_t)n, (size_t)sizeof(double));
     double *oldj = (double *)calloc((size_t)n, (size_t)sizeof(double));
-    /*for (int j = 1; j <= (n - 1); j++){
-        for (int i = (j + 1); i <= n; i++) {
-            s = b[SINDEX(i, j, n)];
-            a[TINDEX(i, j, n)] = s;
-            a[TINDEX(i, i, n)] += s;
-            a[TINDEX(j, j, n)] += s;
-        }
-    }*/
     for (int i = 1; i <= n; i++) {
         for (int j = 1; j <= n; j++) {
             evec[MINDEX(i, j, n)] = (i == j) ? 1.0 : 0.0;
@@ -84,7 +75,7 @@ void smacofJacobi(double *a, double *evec, double *eval, const int *pn,
         itel++;
     }
     for (int i = 1; i <= n; i++) {
-      eval[VINDEX(i)] = a[TINDEX(i, i, n)];
+        eval[VINDEX(i)] = a[TINDEX(i, i, n)];
     }
     free(oldi);
     free(oldj);

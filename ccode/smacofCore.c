@@ -22,8 +22,12 @@ void smacofGuttman(const double *delta, const double *weights,
     double *bmat = (double *)calloc((size_t)m, (size_t)sizeof(double));
     double *ymat = (double *)calloc((size_t)np, (size_t)sizeof(double));
     for (int i = 1; i <= m; i++) {
-        bmat[VINDEX(i)] =
-            weights[VINDEX(i)] * delta[VINDEX(i)] / dold[VINDEX(i)];
+        double dfix = dold[VINDEX(i)];
+        if (dfix < 1e-10) {
+            bmat[VINDEX(i)] = 0.0;
+        } else {
+            bmat[VINDEX(i)] = weights[VINDEX(i)] * delta[VINDEX(i)] / dfix;
+        }
     }
     (void)smacofMultiplySDCMatrix(bmat, xold, ymat, pn, pp);
     (void)smacofMultiplySDCMatrix(vinv, ymat, xnew, pn, pp);

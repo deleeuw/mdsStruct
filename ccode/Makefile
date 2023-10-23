@@ -8,10 +8,10 @@ clib:
 	ar rcs libSmacof.a *.o
 
 clean:
-	rm -rf *.o *.o core a.out
+	rm -rf *.o core a.out
 
 pristine:
-	rm -rf smacof smacofEngine.so libSmacof.a
+	rm -rf smacof *.so *.a
 
 format:
 	clang-format -i -style="{BasedOnStyle: google, IndentWidth: 4}" *.c *.h
