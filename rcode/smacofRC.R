@@ -20,7 +20,8 @@ smacofRC <-
            weights = rep(1, length(delta)),
            ii = fullIndex(n)$ii,
            jj = fullIndex(n)$ii,
-           itmax = 100000,
+           itmax = 10000,
+           init = 1,
            eps1 = 15,
            eps2 = 10,
            verbose = FALSE) {
@@ -39,6 +40,7 @@ smacofRC <-
       p = as.integer(p),
       itel = as.integer(1),
       itmax = as.integer(itmax),
+      init = as.integer(init),
       eps1 = as.integer(eps1),
       eps2 = as.integer(eps2),
       verbose = as.integer(verbose)

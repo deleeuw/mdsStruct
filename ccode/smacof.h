@@ -12,10 +12,10 @@
 // smacofEngine.c
 
 void smacofEngine(double *delta, double *weights, double *xold, double *xnew,
-                  double *dnew, double *snew, const int *ii, const int *jj,
+                  double *dnew, double *psnew, const int *ii, const int *jj,
                   const int *pm, const int *pn, const int *pp, int *pitel,
-                  const int *itmax, const int *peps1, const int *peps2,
-                  const bool *verbose);
+                  const int *pitmax, const int *peps1, const int *peps2,
+                  const int *pinit, const bool *pverbose);
 
 // smacofCore.c
 

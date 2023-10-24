@@ -28,7 +28,7 @@ timer <- function(dataR,
   cat(
     "R median time ",
     formatC(mdataR, digits = 0, format = "f"),
-    "R median time ",
+    "RC median time ",
     formatC(mdataRC, digits = 0, format = "f"),
     "R/RC ratio",
     formatC(
