@@ -1,8 +1,11 @@
-smacof: Makefile smacofEngine.c smacofTorgerson.c smacofUtils.c smacofCore.c smacofNorm.c smacofPrint.c smacofLinearAlgebra.c smacof.h
-	gcc -o smacof -O2 smacofEngine.c smacofTorgerson.c smacofUtils.c smacofCore.c smacofNorm.c smacofLinearAlgebra.c smacofPrint.c
+smacof: Makefile smacofEngine.c smacofTorgerson.c smacofUtils.c \
+smacofCore.c smacofNorm.c smacofPrint.c smacofLinearAlgebra.c smacof.h
+	gcc -o smacof -O2 smacofEngine.c smacofTorgerson.c smacofUtils.c \
+	smacofCore.c smacofNorm.c smacofLinearAlgebra.c smacofPrint.c
 
 rlib: 
-	R CMD SHLIB smacofEngine.c smacofTorgerson.c smacofUtils.c smacofCore.c smacofNorm.c smacofLinearAlgebra.c smacofPrint.c
+	R CMD SHLIB smacofEngine.c smacofTorgerson.c smacofUtils.c \
+	smacofCore.c smacofNorm.c smacofLinearAlgebra.c smacofPrint.c
 
 clib:
 	ar rcs libSmacof.a *.o

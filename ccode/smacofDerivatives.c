@@ -30,10 +30,9 @@ void smacofGradient(const double *delta, const double *weights,
 }
 
 // The Hessian is np by np, and it is the SDC matrix kronecker(I_p, V - B) + H
-// first make H. The diagonal blocks are SDC, the off-diagonal blocks regular
-// matrices
-// it makes sense to use an array of p(p+1)/2 pointers, each pointing to a block
-// then add V and B to diagonal blocks
+// First make H. The diagonal blocks are SDC, the off-diagonal blocks regular
+// matrices. Then add V and B to diagonal blocks
+// It makes sense to use an array of p(p+1)/2 pointers, each pointing to a block
 
 void smacofHessian(const double *delta, const double *weights,
                    const double *xconf, const double *dmat, const double *bmat,
@@ -87,10 +86,10 @@ void smacofHessian(const double *delta, const double *weights,
     }
     free(diagH);
     for (int t = 1; t <= (p - 1); t++) {
-      for (int s = (t + 1); s <= p; s++) {
-        int st = SINDEX(s, t, p);
-        free(nonDiagH[st]);
-      }
+        for (int s = (t + 1); s <= p; s++) {
+            int st = SINDEX(s, t, p);
+            free(nonDiagH[st]);
+        }
     }
     free(nonDiagH);
     return;

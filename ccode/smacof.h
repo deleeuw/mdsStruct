@@ -47,6 +47,7 @@ void smacofMaxConfDifference(const double *x, const double *y, double *maxdiff,
 void smacofMaxDistDifference(const double *x, const double *y, double *maxdiff,
                              const int *pm);
 void smacofMakeVfromW(const double *weights, double *v, const int *pn);
+void smacofArraySwap(double **x, double **y);
 
 // smacofSort.c
 
@@ -123,6 +124,7 @@ struct allItmax {
 
 // inline indexing functions
 
+/*
 static inline int VINDEX(const int i);
 static inline int SINDEX(const int i, const int j, const int n);
 static inline int TINDEX(const int i, const int j, const int n);
@@ -136,6 +138,10 @@ static inline double MAX(const double, const double);
 static inline double MIN(const double, const double);
 static inline int IMIN(const int, const int);
 static inline int IMAX(const int, const int);
+
+static inline void SWAP(double **x, double **y);
+static inline void COPY(double **x, double **y);
+*/
 
 // VINDEX takes 1,...,n to 0,...,n-1
 
@@ -203,6 +209,16 @@ static inline int IMIN(const int x, const int y) { return ((x < y) ? x : y); }
 
 static inline int KDELTA(const int i, const int j) {
     return ((i == j) ? 1 : 0);
+}
+
+static inline void SWAP(double **x, double **y) {
+  double *z = *x;
+  *x = *y;
+  *y = z;
+}
+
+static inline void COPY(double **x, double **y) {
+  *x = *y;
 }
 
 #endif /* SMACOF_H */
