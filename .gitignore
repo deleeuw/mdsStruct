@@ -4,4 +4,5 @@
 .Ruserdata
 *.o
 *.so
-*.a
+*.a	
+*.dSYM

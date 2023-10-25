@@ -15,24 +15,42 @@ void smacofDist(const double *x, double *d, const int *ii, const int *jj,
     return;
 }
 
-void smacofGuttman(const double *delta, const double *weights,
-                   const double *vinv, const double *dold, const double *xold,
-                   double *xnew, const int *pn, const int *pp) {
-    int n = *pn, p = *pp, np = n * p, m = n * (n - 1) / 2;
-    double *bmat = (double *)calloc((size_t)m, (size_t)sizeof(double));
-    double *ymat = (double *)calloc((size_t)np, (size_t)sizeof(double));
+void smacofMakeBmat(const double *delta, const double *weights,
+                    const double *dold, double *bmat, const int *pm) {
+    int m = *pm;
     for (int i = 1; i <= m; i++) {
-        double dfix = dold[VINDEX(i)];
         int iv = VINDEX(i);
+        double dfix = dold[iv];
         if (dfix < 1e-15) {
             bmat[iv] = 0.0;
         } else {
-            bmat[iv] = weights[iv] * delta[iv] / dfix;
+            bmat[iv] = -weights[iv] * delta[iv] / dfix;
         }
+    }
+    return;
+}
+
+void smacofGuttman(const double *vinv, const double *bmat, const double *xold,
+                   double *xnew, const int *pn, const int *pp) {
+    int n = *pn, p = *pp, np = n * p;
+    int width = 15, precision = 10;
+    double *ymat = (double *)calloc((size_t)np, (size_t)sizeof(double));
+    if (DEBUG) {
+        printf("in guttman before matmult\n\n");
+        printf("xold in %p\n\n", xold);
+        (void)smacofPrintAnyMatrix(xold, pn, pp, &width, &precision);
+        printf("xnew in %p\n\n", xnew);
+        (void)smacofPrintAnyMatrix(xnew, pn, pp, &width, &precision);
     }
     (void)smacofMultiplySDCMatrix(bmat, xold, ymat, pn, pp);
     (void)smacofMultiplySDCMatrix(vinv, ymat, xnew, pn, pp);
-    free(bmat);
+    if (DEBUG) {
+        printf("in guttman after matmult\n\n");
+        printf("xold in %p\n\n", xold);
+        (void)smacofPrintAnyMatrix(xold, pn, pp, &width, &precision);
+        printf("xnew in %p\n\n", xnew);
+        (void)smacofPrintAnyMatrix(xnew, pn, pp, &width, &precision);
+    }
     free(ymat);
     return;
 }

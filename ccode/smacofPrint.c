@@ -41,8 +41,8 @@ void smacofPrintAnyMatrix(const double *x, const int *pn, const int *pp,
     return;
 }
 
-void smacofPrintSymmetricHollowMatrix(const double *d, const int *pn,
-                                      const int *pw, const int *pr) {
+void smacofPrintSHMatrix(const double *d, const int *pn, const int *pw,
+                         const int *pr) {
     int n = *pn;
     for (int i = 1; i <= n; i++) {
         for (int j = 1; j <= n; j++) {

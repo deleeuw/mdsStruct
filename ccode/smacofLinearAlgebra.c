@@ -117,7 +117,7 @@ void smacofSimultaneousIteration(double *cross, double *xold, const int *pn,
         }
         itel++;
         oldsum = newsum;
-        (void)COPY(&xold, &xnew);
+        (void)memcpy(xold, xnew, (size_t)np * sizeof(double));
     }
     for (int i = 1; i <= n; i++) {
         for (int s = 1; s <= p; s++) {

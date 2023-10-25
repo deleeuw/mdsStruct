@@ -88,29 +88,6 @@ void smacofMultiplySDCMatrix(const double *a, const double *x, double *y,
     return;
 }
 
-void smacofVChange(const double *xold, const double *xnew, const double *v,
-                   const int *pn, const int *pp, double *change) {
-    int n = *pn, p = *pp, np = n * p;
-    double sum = 0.0;
-    double *z = (double *)calloc((size_t)np, (size_t)sizeof(double));
-    double *h = (double *)calloc((size_t)np, (size_t)sizeof(double));
-    for (int s = 1; s <= p; s++) {
-        for (int i = 1; i <= n; i++) {
-            z[MINDEX(i, s, n)] = xold[MINDEX(i, s, n)] - xnew[MINDEX(i, s, n)];
-        }
-    }
-    (void)smacofMultiplySDCMatrix(v, z, h, pn, pp);
-    for (int s = 1; s <= p; s++) {
-        for (int i = 1; i <= n; i++) {
-            sum += z[MINDEX(i, s, n)] * h[MINDEX(i, s, n)];
-        }
-    }
-    *change = sqrt(fabs(sum) / (double)np);
-    free(z);
-    free(h);
-    return;
-}
-
 void smacofMaxConfDifference(const double *x, const double *y, double *maxdiff,
                              const int *pn, const int *pp) {
     *maxdiff = 0.0;
@@ -140,7 +117,7 @@ void smacofMaxDistDifference(const double *dold, const double *dnew,
     *pdchange = dchange;
 }
 
-void smacofMakeVfromW(const double *weights, double *v, const int *pn) {
+void smacofMakeVmat(const double *weights, double *v, const int *pn) {
     int n = *pn, m = n * (n - 1) / 2;
     for (int i = 1; i <= m; i++) {
         v[VINDEX(i)] = -weights[VINDEX(i)];

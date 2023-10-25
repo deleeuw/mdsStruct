@@ -82,8 +82,8 @@ void smacofPerronRoot(double *a, const int *pn, const double *plbd,
  int main() {
     int ii[10] = {2, 3, 4, 5, 3, 4, 5, 4, 5, 5};
     int jj[10] = {1, 1, 1, 1, 2, 2, 2, 3, 3, 4};
-    double delta[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    double weights[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    double delta[10] = {1, 2, 3, 4, 5, 6, 6, 6, 6, 6};
+    double weights[10] = {1, 1, 1, 1, 1, 1, 7, 8, 9, 10};
     int n = 5, m = 10, itmax = 0;
     double eps = 1e-10, lbd = 1.0, root = 0.0;
     bool verbose = true;
