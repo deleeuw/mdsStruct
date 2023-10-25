@@ -1,16 +1,19 @@
 #include "smacof.h"
 
 void smacofElegant(const double *delta, const double *weights, const int *pn,
-                   const int *pm, const int *ii, const int *jj,
-                   const double *plbd, double *proot, const int *pitmax,
-                   const double *peps, const bool *pverbose) {
+                   const int *pm, const double *plbd, double *proot,
+                   const int *pitmax, const double *peps,
+                   const bool *pverbose) {
     int n = *pn, m = *pm, itmax = *pitmax, mm = m * (m + 1) / 2,
         nn = n * (n - 1) / 2;
     int ik = 0, jk = 0, il = 0, jl = 0;
     bool verbose = *pverbose;
     double eps = *peps, cell = 0.0, lbd = *plbd, root = *proot;
-    double *u = (double *)calloc((size_t)mm, (size_t)sizeof(double));
+    int *ii = (int *)calloc((size_t)nn, (size_t)sizeof(double));
+    int *jj = (int *)calloc((size_t)nn, (size_t)sizeof(double));
+    double *u = (double *)calloc((size_t)nn, (size_t)sizeof(double));
     double *cross = (double *)calloc((size_t)nn, (size_t)sizeof(double));
+    (void)smacofMakeIIandJJ(pn, ii, jj);
     (void)smacofDoubleCenter(delta, cross, pn);
     for (int t = 1; t <= m; t++) {
         int i = ii[VINDEX(t)];
@@ -27,6 +30,8 @@ void smacofElegant(const double *delta, const double *weights, const int *pn,
     (void)smacofPerronRoot(u, pm, plbd, proot, pitmax, peps, pverbose);
     printf("%15.10f\n", *proot);
     free(u);
+    free(ii);
+    free(jj);
 }
 
 void smacofPerronRoot(double *a, const int *pn, const double *plbd,

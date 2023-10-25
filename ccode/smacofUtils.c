@@ -88,8 +88,9 @@ void smacofMultiplySDCMatrix(const double *a, const double *x, double *y,
     return;
 }
 
-void smacofMaxConfDifference(const double *x, const double *y, double *maxdiff,
-                             const int *pn, const int *pp) {
+void smacofMaxConfigurationDifference(const double *x, const double *y,
+                                      double *maxdiff, const int *pn,
+                                      const int *pp) {
     *maxdiff = 0.0;
     int n = *pn, p = *pp;
     for (int s = 1; s <= p; s++) {
@@ -105,8 +106,8 @@ void smacofMaxConfDifference(const double *x, const double *y, double *maxdiff,
     return;
 }
 
-void smacofMaxDistDifference(const double *dold, const double *dnew,
-                             double *pdchange, const int *pm) {
+void smacofMaxDistanceDifference(const double *dold, const double *dnew,
+                                 double *pdchange, const int *pm) {
     double dchange = 0.0;
     int m = *pm;
     for (int k = 1; k <= m; k++) {
@@ -116,10 +117,41 @@ void smacofMaxDistDifference(const double *dold, const double *dnew,
     return;
 }
 
-void smacofMakeVmat(const double *weights, double *v, const int *pn) {
-    int n = *pn, m = n * (n - 1) / 2;
-    for (int i = 1; i <= m; i++) {
-        v[VINDEX(i)] = -weights[VINDEX(i)];
+void smacofAddSDCDiagonal(const double *a, double *b, const int *pn) {
+    int n = *pn;
+    double *rsum = (double *)calloc((size_t)n, (size_t)sizeof(double));
+    for (int i = 1; i <= n; i++) {
+        double sum = 0.0;
+        for (int j = 1; j <= n; j++) {
+            if (i == j) {
+                continue;
+            }
+            sum += a[PINDEX(i, j, n)];
+        }
+        rsum[VINDEX(i)] = sum;
+    }
+    for (int j = 1; j <= n; j++) {
+        for (int i = j; i <= n; i++) {
+            int ij = TINDEX(i, j, n);
+            if (i == j) {
+                b[ij] = -rsum[VINDEX(i)];
+            } else {
+                b[ij] = a[SINDEX(i, j, n)];
+            }
+        }
+    }
+    free(rsum);
+    return;
+}
+
+void smacofMakeIIandJJ(const int *pn, int *ii, int *jj) {
+    int n = *pn;
+    for (int j = 1; j <= (n - 1); j++) {
+        for (int i = (j + 1); i <= n; i++) {
+            int ij = SINDEX(i, j, n);
+            ii[ij] = i;
+            jj[ij] = j;
+        }
     }
     return;
 }

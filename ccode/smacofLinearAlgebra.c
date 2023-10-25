@@ -1,12 +1,12 @@
 #include "smacof.h"
 
 void smacofJacobi(double *a, double *evec, double *eval, const int *pn,
-                  const int *pitmax, const double *peps, const bool *pverbose) {
+                  const int *pitmax, const int *peps, const bool *pverbose) {
     int n = *pn, itel = 1, itmax = *pitmax;
     bool verbose = *pverbose;
     double d = 0.0, s = 0.0, t = 0.0, u = 0.0, v = 0.0, p = 0.0, q = 0.0,
            r = 0.0;
-    double fold = 0.0, fnew = 0.0, eps = *peps;
+    double fold = 0.0, fnew = 0.0, eps = pow(10, -*peps);
     double *oldi = (double *)calloc((size_t)n, (size_t)sizeof(double));
     double *oldj = (double *)calloc((size_t)n, (size_t)sizeof(double));
     for (int i = 1; i <= n; i++) {
@@ -103,7 +103,7 @@ void smacofSimultaneousIteration(double *cross, double *xold, const int *pn,
     while (true) {
         (void)smacofMultiplySDCMatrix(cross, xold, xnew, &n, &p);
         (void)smacofGramSchmidt(xnew, r, &n, &p);
-        (void)smacofMaxConfDifference(xold, xnew, &maxdiff, &n, &p);
+        (void)smacofMaxConfigurationDifference(xold, xnew, &maxdiff, &n, &p);
         newsum = 0.0;
         for (int i = 1; i <= p; i++) {
             newsum += r[VINDEX(i)];

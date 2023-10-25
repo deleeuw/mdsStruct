@@ -57,3 +57,37 @@ void smacofPrintSHMatrix(const double *d, const int *pn, const int *pw,
     printf("\n\n");
     return;
 }
+
+void smacofPrintLTMatrix(const double *d, const int *pn, const int *pw,
+                         const int *pr) {
+    int n = *pn;
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            if (i >= j) {
+                printf(" %+6.4f", d[TINDEX(i, j, n)]);
+            } else {
+                printf(" %+6.4f", 0.0);
+            }
+        }
+        printf("\n");
+    }
+    printf("\n\n");
+    return;
+}
+
+void smacofPrintSLTMatrix(const double *d, const int *pn, const int *pw,
+                          const int *pr) {
+    int n = *pn;
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            if (i > j) {
+                printf(" %+6.4f", d[SINDEX(i, j, n)]);
+            } else {
+                printf(" %+6.4f", 0.0);
+            }
+        }
+        printf("\n");
+    }
+    printf("\n\n");
+    return;
+}

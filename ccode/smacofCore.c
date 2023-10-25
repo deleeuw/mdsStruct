@@ -1,7 +1,6 @@
 #include "smacof.h"
 
-void smacofDist(const double *x, double *d, const int *ii, const int *jj,
-                const int *pm, const int *pn, const int *pp) {
+void smacofDistance(const double *x, double *d, const int *pn, const int *pp) {
     int n = *pn, p = *pp;
     for (int j = 1; j <= (n - 1); j++) {
         for (int i = (j + 1); i <= n; i++) {
@@ -15,8 +14,8 @@ void smacofDist(const double *x, double *d, const int *ii, const int *jj,
     return;
 }
 
-void smacofMakeBmat(const double *delta, const double *weights,
-                    const double *dold, double *bmat, const int *pm) {
+void smacofMakeBMatrix(const double *delta, const double *weights,
+                       const double *dold, double *bmat, const int *pm) {
     int m = *pm;
     for (int i = 1; i <= m; i++) {
         int iv = VINDEX(i);
@@ -30,7 +29,13 @@ void smacofMakeBmat(const double *delta, const double *weights,
     return;
 }
 
-// void smacofInitial() {}
+void smacofMakeVMatrix(const double *weights, double *v, const int *pn) {
+    int n = *pn, m = n * (n - 1) / 2;
+    for (int i = 1; i <= m; i++) {
+        v[VINDEX(i)] = -weights[VINDEX(i)];
+    }
+    return;
+}
 
 void smacofGuttman(const double *vinv, const double *bmat, const double *xold,
                    double *xnew, const int *pn, const int *pp) {
@@ -57,12 +62,36 @@ void smacofGuttman(const double *vinv, const double *bmat, const double *xold,
     return;
 }
 
-void smacofLoss(const double *delta, const double *weights, const double *dist,
-                const int *pm, double *loss) {
+void smacofStress(const double *delta, const double *weights,
+                  const double *dist, const int *pm, double *stress) {
     int m = *pm;
     double sum = 0.0;
     for (int k = 1; k <= m; k++) {
-        sum += weights[VINDEX(k)] * SQUARE(delta[VINDEX(k)] - dist[VINDEX(k)]);
+        int ik = VINDEX(k);
+        sum += weights[ik] * SQUARE(delta[ik] - dist[ik]);
     }
-    *loss = sum / 2.0;
+    *stress = sum / 2.0;
+    return;
+}
+
+void smacofEtaSquare(const double *weights, const double *dist, const int *pm,
+                     double *etasquare) {
+    int m = *pm;
+    double sum = 0.0;
+    for (int k = 1; k <= m; k++) {
+        int ik = VINDEX(k);
+        *etasquare += weights[ik] * SQUARE(dist[ik]);
+    }
+    return;
+}
+
+void smacofRho(const double *delta, const double *weights, const double *dist,
+               const int *pm, double *rho) {
+    int m = *pm;
+    double sum = 0.0;
+    for (int k = 1; k <= m; k++) {
+        int ik = VINDEX(k);
+        sum += weights[ik] * delta[ik] * dist[ik];
+    }
+    return;
 }
