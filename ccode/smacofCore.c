@@ -30,6 +30,8 @@ void smacofMakeBmat(const double *delta, const double *weights,
     return;
 }
 
+// void smacofInitial() {}
+
 void smacofGuttman(const double *vinv, const double *bmat, const double *xold,
                    double *xnew, const int *pn, const int *pp) {
     int n = *pn, p = *pp, np = n * p;

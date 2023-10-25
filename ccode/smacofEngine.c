@@ -7,13 +7,13 @@ void smacofEngine(double *delta, double *weights, double *xini, double *xnew,
                   const int *jj, const int *pm, const int *pn, const int *pp,
                   int *pitel, const int *pitmax, const int *peps1,
                   const int *peps2, const int *pinit, const bool *pverbose) {
-    int m = *pm, np = *pp * *pn, itel = *pitel, itmax = *pitmax, itmax_j = 100,
-        init = *pinit;
+    int m = *pm, n = *pn, p = *pp, np = p * n, itel = *pitel, itmax = *pitmax,
+        itmax_j = 100, init = *pinit;
     int width = 15, precision = 10;
-    bool verbose = *pverbose, verbose_j = false;
+    bool verbose = *pverbose, verbose_j = false, verbose_e = false;
     double sold = 0.0, snew = *psnew, cchange = 0.0, dchange = 0.0;
     double eps1 = pow(10, -*peps1), eps2 = pow(10, -*peps2),
-           eps_j = pow(10, -15);
+           eps_j = pow(10, -15), eps_e = pow(10, -15);
     double *xold = (double *)calloc((size_t)np, (size_t)sizeof(double));
     double *dold = (double *)calloc((size_t)m, (size_t)sizeof(double));
     double *vmat = (double *)calloc((size_t)m, (size_t)sizeof(double));
@@ -31,18 +31,26 @@ void smacofEngine(double *delta, double *weights, double *xini, double *xnew,
         printf("vmat\n\n");
         (void)smacofPrintSDCMatrix(vmat, pn, &width, &precision);
     }
+    //(void)smacofInitial();
     switch (init) {
         case 1:
             (void)smacofTorgerson(delta, xini, pn, pp, &itmax_j, &eps_j,
                                   &verbose_j);
-            printf("HULLO\n");
             break;
         case 2:
-            //(void)smacofElegant(delta, xini, pn, pp, &itmax_j, &eps_e,
+            //(void)smacofElegant(delta, xini, pn, pp, &itmax_e, &eps_e,
             //&verbose_e);
             break;
         case 3:
-            //(void)smacofRandom(xini, pn, pp);
+            //(void)smacofInitSDCmat(delta, weights, pn, &itmax_j, &eps_j,
+            //                     &verbose_j);
+            break;
+        case 4:
+            for (int i = 1; i <= n; i++) {
+                for (int s = 1; s <= p; s++) {
+                    xini[MINDEX(i, s, n)] = drand48();
+                }
+            }
             break;
     }
     if (DEBUG) {
@@ -119,7 +127,7 @@ int main() {
     double snew = 0.0;
     int ii[6] = {2, 3, 4, 3, 4, 4};
     int jj[6] = {1, 1, 1, 2, 2, 3};
-    int m = 6, n = 4, p = 2, itel = 1, itmax = 100, init = 1, peps1 = 15,
+    int m = 6, n = 4, p = 2, itel = 1, itmax = 100, init = 4, peps1 = 15,
         peps2 = 10;
     bool verbose = true;
     (void)smacofEngine(delta, weights, xini, xnew, dnew, bmat, &snew, ii, jj,

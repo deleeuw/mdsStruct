@@ -97,8 +97,6 @@ void smacofMaxConfDifference(const double *x, const double *y, double *maxdiff,
         for (int i = 1; i <= n; i++) {
             posdiff =
                 MAX(posdiff, fabs(x[MINDEX(i, s, n)] - y[MINDEX(i, s, n)]));
-        }
-        for (int i = 1; i <= n; i++) {
             negdiff =
                 MAX(negdiff, fabs(x[MINDEX(i, s, n)] + y[MINDEX(i, s, n)]));
         }
@@ -115,6 +113,7 @@ void smacofMaxDistDifference(const double *dold, const double *dnew,
         dchange = MAX(dchange, fabs(dold[VINDEX(k)] - dnew[VINDEX(k)]));
     }
     *pdchange = dchange;
+    return;
 }
 
 void smacofMakeVmat(const double *weights, double *v, const int *pn) {
@@ -122,6 +121,7 @@ void smacofMakeVmat(const double *weights, double *v, const int *pn) {
     for (int i = 1; i <= m; i++) {
         v[VINDEX(i)] = -weights[VINDEX(i)];
     }
+    return;
 }
 
 /*
