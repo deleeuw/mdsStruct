@@ -6,16 +6,16 @@ void smacofEngine(double *delta, double *weights, double *xini, double *xnew,
                   double *dini, double *dnew, double *bnew, double *psnew,
                   const int *pinit, const int *pn, const int *pp, int *pitel,
                   const int *pitmax, const int *peps1, const int *peps2,
-                  const bool *pverbose) {
+                  const bool *pverbose, const bool *relax) {
     int n = *pn, p = *pp, np = p * n, m = n * (n - 1) / 2, itel = *pitel,
         itmax = *pitmax, itmax_j = 100, init = *pinit, eps_j = 15;
     int width = 15, precision = 10;
     bool verbose = *pverbose, verbose_j = false, verbose_e = false;
-    double sold = 0.0, snew = *psnew, change = 0.0, cchange = 0.0,
-           dchange = 0.0;
+    double sold = 0.0, snew = *psnew, cchange = 0.0, dchange = 0.0,
+           pchange = 0.0, echange = 0.0;
     double rho = 0.0, etaold = 0.0, etanew = 0.0, chch = 0.0;
-    double eps1 = pow(10, -*peps1), eps2 = pow(10, -*peps2),
-           eps_e = pow(10, -15);
+    double eps1 = pow(10, -(double)*peps1), eps2 = pow(10, -(double)*peps2),
+           eps_e = pow(10, -(double)15);
     double *xold = (double *)calloc((size_t)np, (size_t)sizeof(double));
     double *dold = (double *)calloc((size_t)m, (size_t)sizeof(double));
     double *bold = (double *)calloc((size_t)m, (size_t)sizeof(double));
@@ -41,18 +41,20 @@ void smacofEngine(double *delta, double *weights, double *xini, double *xnew,
         (void)smacofEtaSquare(weights, dnew, &m, &etanew);
         (void)smacofMaxConfigurationDifference(xold, xnew, pn, pp, &cchange);
         (void)smacofMaxDistanceDifference(dold, dnew, &m, &dchange);
+        (void)smacofRMSDifference(xold, xnew, pn, pp, &echange);
         if (verbose) {
             printf(
-                "itel %3d sold %10.8f sdif %10.8f cvdf %10.8f cchg %10.8f dchg "
-                "%10.8f\n",
-                itel, sold, sold - snew, etaold + etanew - 2 * rho, cchange,
-                dchange);
+                "itel %3d sold %12.10f sdif %+12.10f cvdf %+12.10f cchg "
+                "%12.10f dchg %12.10f rate %12.10f\n",
+                itel, sold, sold - snew, echange, cchange, dchange,
+                echange / pchange);
         }
         if ((itel == itmax) || (((sold - snew) < eps1) && (cchange < eps2))) {
             break;
         }
         itel++;
         sold = snew;
+        pchange = echange;
         (void)memcpy(xold, xnew, (size_t)np * sizeof(double));
         (void)memcpy(dold, dnew, (size_t)m * sizeof(double));
         (void)memcpy(bold, bnew, (size_t)m * sizeof(double));
@@ -160,8 +162,9 @@ int main() {
     double xnew[28] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     double snew = 0.0;
-    int n = 14, p = 2, itel = 1, itmax = 100, init = 3, peps1 = 15, peps2 = 10;
-    bool verbose = true;
+    int n = 14, p = 2, itel = 1, itmax = 100, init = 1, peps1 = 15, peps2 = 10;
+    bool verbose = true, relax = false;
     (void)smacofEngine(delta, weights, xini, xnew, dini, dnew, bnew, &snew,
-                       &init, &n, &p, &itel, &itmax, &peps1, &peps2, &verbose);
+                       &init, &n, &p, &itel, &itmax, &peps1, &peps2, &verbose,
+                       &relax);
 }

@@ -15,7 +15,7 @@ void smacofEngine(double *delta, double *weights, double *xini, double *xnew,
                   double *dini, double *dnew, double *bmat, double *psnew,
                   const int *pinit, const int *pn, const int *pp, int *pitel,
                   const int *pitmax, const int *peps1, const int *peps2,
-                  const bool *pverbose);
+                  const bool *pverbose, const bool *relax);
 
 // smacofCore.c
 
@@ -52,9 +52,8 @@ void smacofMaxConfigurationDifference(const double *x, const double *y,
                                       double *maxdiff);
 void smacofMaxDistanceDifference(const double *x, const double *y,
                                  const int *pm, double *maxdiff);
-void smacofMeanSquareDifference(const double *x, const double *y,
-                                const double *v, const int *pn, const int *pp,
-                                double *diff);
+void smacofRMSDifference(const double *x, const double *y, const int *pn,
+                         const int *pp, double *diff);
 void smacofAddSDCDiagonal(const double *a, double *b, const int *pn);
 void smacofMakeIIandJJ(const int *pn, int *ii, int *jj);
 

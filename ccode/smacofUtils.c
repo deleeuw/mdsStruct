@@ -117,26 +117,21 @@ void smacofMaxDistanceDifference(const double *dold, const double *dnew,
     return;
 }
 
-void smacofMeanSquareDifference(const double *x, const double *y,
-                                const double *v, const int *pn, const int *pp,
-                                double *diff) {
+void smacofRMSDifference(const double *x, const double *y, const int *pn,
+                         const int *pp, double *diff) {
     int n = *pn, p = *pp, np = n * p;
-    double *z = (double *)calloc((size_t)np, (size_t)sizeof(double));
-    double *h = (double *)calloc((size_t)np, (size_t)sizeof(double));
-    for (int i = 1; i <= np; i++) {
-        int k = VINDEX(i);
-        z[k] = x[k] - y[k];
-    }
-    (void)smacofMultiplySDCMatrix(v, z, h, pn, pp);
     double sum = 0.0;
-    for (int i = 1; i <= np; i++) {
-        int k = VINDEX(i);
-        sum += h[k] * z[k];
+    for (int s = 1; s <= p; s++) {
+        double sump = 0.0, sumn = 0.0;
+        for (int i = 1; i <= np; i++) {
+            int k = VINDEX(i);
+            sump += SQUARE(x[k] - y[k]);
+            sumn += SQUARE(x[k] + y[k]);
+        }
+        sum += MIN(sump, sumn);
+        *diff = sqrt(fabs(sum / ((double)np)));
+        return;
     }
-    *diff = sum;
-    free(z);
-    free(h);
-    return;
 }
 
 void smacofAddSDCDiagonal(const double *a, double *b, const int *pn) {
