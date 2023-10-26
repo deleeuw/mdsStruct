@@ -3,7 +3,7 @@
 // to be called from R
 
 void smacofEngine(double *delta, double *weights, double *xini, double *xnew,
-                  double *dini, double *dnew, double *bmat, double *psnew,
+                  double *dini, double *dnew, double *bnew, double *psnew,
                   const int *pinit, const int *pn, const int *pp, int *pitel,
                   const int *pitmax, const int *peps1, const int *peps2,
                   const bool *pverbose) {
@@ -11,64 +11,42 @@ void smacofEngine(double *delta, double *weights, double *xini, double *xnew,
         itmax = *pitmax, itmax_j = 100, init = *pinit, eps_j = 15;
     int width = 15, precision = 10;
     bool verbose = *pverbose, verbose_j = false, verbose_e = false;
-    double sold = 0.0, snew = *psnew, cchange = 0.0, dchange = 0.0;
+    double sold = 0.0, snew = *psnew, change = 0.0, cchange = 0.0,
+           dchange = 0.0;
+    double rho = 0.0, etaold = 0.0, etanew = 0.0, chch = 0.0;
     double eps1 = pow(10, -*peps1), eps2 = pow(10, -*peps2),
            eps_e = pow(10, -15);
     double *xold = (double *)calloc((size_t)np, (size_t)sizeof(double));
     double *dold = (double *)calloc((size_t)m, (size_t)sizeof(double));
+    double *bold = (double *)calloc((size_t)m, (size_t)sizeof(double));
     double *vmat = (double *)calloc((size_t)m, (size_t)sizeof(double));
     double *vinv = (double *)calloc((size_t)m, (size_t)sizeof(double));
     (void)smacofNormWeights(weights, &m);
     (void)smacofNormDelta(delta, weights, &m);
     (void)smacofMakeVMatrix(weights, vmat, pn);
     (void)smacofMPInverseSDCMatrix(weights, vinv, pn);
-    if (DEBUG) {
-        printf("delta\n\n");
-        (void)smacofPrintSHMatrix(delta, pn, &width, &precision);
-        printf("weights\n\n");
-        (void)smacofPrintSHMatrix(weights, pn, &width, &precision);
-        printf("vmat\n\n");
-        (void)smacofPrintSDCMatrix(vmat, pn, &width, &precision);
-    }
     (void)smacofDistance(xini, dini, pn, pp);
     (void)smacofInitial(delta, weights, xini, dini, pinit, pn, pp);
-    if (DEBUG) {
-        printf("xini in %p\n\n", xini);
-        (void)smacofPrintAnyMatrix(xini, pn, pp, &width, &precision);
-    }
     (void)memcpy(xold, xini, (size_t)np * sizeof(double));
     (void)memcpy(dold, dini, (size_t)m * sizeof(double));
-    if (DEBUG) {
-        printf("xold in %p\n\n", xold);
-        (void)smacofPrintAnyMatrix(xold, pn, pp, &width, &precision);
-    }
     (void)smacofStress(delta, weights, dold, &m, &sold);
+    (void)smacofMakeBMatrix(delta, weights, dold, bold, &m);
     while (true) {
-        (void)smacofMakeBMatrix(delta, weights, dold, bmat, &m);
-        if (DEBUG) {
-            printf("+++++++++++++++++++++++++++++++\n\n");
-            printf("beginning iteration %3d\n\n", itel);
-            printf("bmat in %p\n\n", bmat);
-            (void)smacofPrintSDCMatrix(bmat, pn, &width, &precision);
-            printf("xold in %p\n\n", xold);
-            (void)smacofPrintAnyMatrix(xold, pn, pp, &width, &precision);
-        }
-        (void)smacofGuttman(vinv, bmat, xold, xnew, pn, pp);
-        if (DEBUG) {
-            printf("after guttman\n\n");
-            printf("xold in %p\n\n", xold);
-            (void)smacofPrintAnyMatrix(xold, pn, pp, &width, &precision);
-        }
+        (void)smacofGuttman(vinv, bold, xold, xnew, pn, pp);
         (void)smacofDistance(xnew, dnew, pn, pp);
+        (void)smacofMakeBMatrix(delta, weights, dnew, bnew, &m);
         (void)smacofStress(delta, weights, dnew, &m, &snew);
-        (void)smacofMaxConfigurationDifference(xold, xnew, &cchange, pn, pp);
-        (void)smacofMaxDistanceDifference(dold, dnew, &dchange, &m);
+        (void)smacofEtaSquare(weights, dold, &m, &etaold);
+        (void)smacofRho(delta, weights, dold, &m, &rho);
+        (void)smacofEtaSquare(weights, dnew, &m, &etanew);
+        (void)smacofMaxConfigurationDifference(xold, xnew, pn, pp, &cchange);
+        (void)smacofMaxDistanceDifference(dold, dnew, &m, &dchange);
         if (verbose) {
             printf(
-                "itel %4d sold %15.10f sdif %15.10f cchange %15.10f "
-                "dchange "
-                "%15.10f\n",
-                itel, sold, sold - snew, cchange, dchange);
+                "itel %3d sold %10.8f sdif %10.8f cvdf %10.8f cchg %10.8f dchg "
+                "%10.8f\n",
+                itel, sold, sold - snew, etaold + etanew - 2 * rho, cchange,
+                dchange);
         }
         if ((itel == itmax) || (((sold - snew) < eps1) && (cchange < eps2))) {
             break;
@@ -77,13 +55,7 @@ void smacofEngine(double *delta, double *weights, double *xini, double *xnew,
         sold = snew;
         (void)memcpy(xold, xnew, (size_t)np * sizeof(double));
         (void)memcpy(dold, dnew, (size_t)m * sizeof(double));
-        if (DEBUG) {
-            printf("after swap\n\n");
-            printf("xold in %p\n\n", xold);
-            (void)smacofPrintAnyMatrix(xold, pn, pp, &width, &precision);
-            printf("dold in %p\n\n", dold);
-            (void)smacofPrintSHMatrix(dold, pn, &width, &precision);
-        }
+        (void)memcpy(bold, bnew, (size_t)m * sizeof(double));
     }
     *psnew = snew;
     *pitel = itel;
@@ -91,6 +63,7 @@ void smacofEngine(double *delta, double *weights, double *xini, double *xnew,
     free(vmat);
     free(dold);
     free(xold);
+    free(bold);
     return;
 }
 
@@ -114,7 +87,7 @@ int main() {
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-    double bmat[91] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    double bnew[91] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -189,6 +162,6 @@ int main() {
     double snew = 0.0;
     int n = 14, p = 2, itel = 1, itmax = 100, init = 3, peps1 = 15, peps2 = 10;
     bool verbose = true;
-    (void)smacofEngine(delta, weights, xini, xnew, dini, dnew, bmat, &snew,
+    (void)smacofEngine(delta, weights, xini, xnew, dini, dnew, bnew, &snew,
                        &init, &n, &p, &itel, &itmax, &peps1, &peps2, &verbose);
 }

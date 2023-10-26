@@ -89,8 +89,8 @@ void smacofMultiplySDCMatrix(const double *a, const double *x, double *y,
 }
 
 void smacofMaxConfigurationDifference(const double *x, const double *y,
-                                      double *maxdiff, const int *pn,
-                                      const int *pp) {
+                                      const int *pn, const int *pp,
+                                      double *maxdiff) {
     *maxdiff = 0.0;
     int n = *pn, p = *pp;
     for (int s = 1; s <= p; s++) {
@@ -107,13 +107,35 @@ void smacofMaxConfigurationDifference(const double *x, const double *y,
 }
 
 void smacofMaxDistanceDifference(const double *dold, const double *dnew,
-                                 double *pdchange, const int *pm) {
+                                 const int *pm, double *pdchange) {
     double dchange = 0.0;
     int m = *pm;
     for (int k = 1; k <= m; k++) {
         dchange = MAX(dchange, fabs(dold[VINDEX(k)] - dnew[VINDEX(k)]));
     }
     *pdchange = dchange;
+    return;
+}
+
+void smacofMeanSquareDifference(const double *x, const double *y,
+                                const double *v, const int *pn, const int *pp,
+                                double *diff) {
+    int n = *pn, p = *pp, np = n * p;
+    double *z = (double *)calloc((size_t)np, (size_t)sizeof(double));
+    double *h = (double *)calloc((size_t)np, (size_t)sizeof(double));
+    for (int i = 1; i <= np; i++) {
+        int k = VINDEX(i);
+        z[k] = x[k] - y[k];
+    }
+    (void)smacofMultiplySDCMatrix(v, z, h, pn, pp);
+    double sum = 0.0;
+    for (int i = 1; i <= np; i++) {
+        int k = VINDEX(i);
+        sum += h[k] * z[k];
+    }
+    *diff = sum;
+    free(z);
+    free(h);
     return;
 }
 

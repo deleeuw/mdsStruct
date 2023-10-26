@@ -26,7 +26,6 @@ void smacofEtaSquare(const double *weights, const double *dist, const int *pm,
                      double *etasquare);
 void smacofRho(const double *delta, const double *weights, const double *dist,
                const int *pm, double *rho);
-
 void smacofGuttman(const double *vinv, const double *bmat, const double *xold,
                    double *xnew, const int *pn, const int *pp);
 void smacofStress(const double *delta, const double *w, const double *d,
@@ -49,10 +48,13 @@ void smacofMPInverseSDCMatrix(const double *w, double *vinv, const int *ndim);
 void smacofVChange(const double *x, const double *y, const double *v,
                    const int *pn, const int *pp, double *change);
 void smacofMaxConfigurationDifference(const double *x, const double *y,
-                                      double *maxdiff, const int *pn,
-                                      const int *pp);
+                                      const int *pn, const int *pp,
+                                      double *maxdiff);
 void smacofMaxDistanceDifference(const double *x, const double *y,
-                                 double *maxdiff, const int *pm);
+                                 const int *pm, double *maxdiff);
+void smacofMeanSquareDifference(const double *x, const double *y,
+                                const double *v, const int *pn, const int *pp,
+                                double *diff);
 void smacofAddSDCDiagonal(const double *a, double *b, const int *pn);
 void smacofMakeIIandJJ(const int *pn, int *ii, int *jj);
 
@@ -118,7 +120,7 @@ void smacofPrintAnyMatrix(const double *x, const int *pn, const int *pp,
 void smacofPrintSHMatrix(const double *d, const int *pn, const int *pw,
                          const int *pr);
 void smacofPrintLTMatrix(const double *d, const int *pn, const int *pw,
-                          const int *pr);
+                         const int *pr);
 void smacofPrintSLTMatrix(const double *d, const int *pn, const int *pw,
                           const int *pr);
 

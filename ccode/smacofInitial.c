@@ -54,9 +54,7 @@ void smacofInitSDCmatrix(const double *delta, const double *weights,
         int iv = VINDEX(i);
         a[iv] = -weights[iv] * SQUARE(delta[iv]);
     }
-    (void)smacofPrintSLTMatrix(a, pn, &width, &precision);
     (void)smacofAddSDCDiagonal(a, b, pn);
-    (void)smacofPrintLTMatrix(b, pn, &width, &precision);
     (void)smacofJacobi(b, evec, eval, pn, pitmax_j, peps_j, pverbose_j);
     for (int i = 1; i <= n; i++) {
         for (int s = 1; s <= p; s++) {

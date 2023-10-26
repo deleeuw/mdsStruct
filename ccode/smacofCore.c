@@ -80,8 +80,9 @@ void smacofEtaSquare(const double *weights, const double *dist, const int *pm,
     double sum = 0.0;
     for (int k = 1; k <= m; k++) {
         int ik = VINDEX(k);
-        *etasquare += weights[ik] * SQUARE(dist[ik]);
+        sum += weights[ik] * SQUARE(dist[ik]);
     }
+    *etasquare = sum;
     return;
 }
 
@@ -93,5 +94,6 @@ void smacofRho(const double *delta, const double *weights, const double *dist,
         int ik = VINDEX(k);
         sum += weights[ik] * delta[ik] * dist[ik];
     }
+    *rho = sum;
     return;
 }
