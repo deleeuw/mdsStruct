@@ -6,13 +6,14 @@ void smacofEngine(double *delta, double *weights, double *xini, double *xnew,
                   double *dini, double *dnew, double *bnew, double *psnew,
                   const int *pinit, const int *pn, const int *pp, int *pitel,
                   const int *pitmax, const int *peps1, const int *peps2,
-                  const bool *pverbose, const bool *relax) {
+                  const bool *pverbose, const bool *prelax) {
     int n = *pn, p = *pp, np = p * n, m = n * (n - 1) / 2, itel = *pitel,
         itmax = *pitmax, itmax_j = 100, init = *pinit, eps_j = 15;
     int width = 15, precision = 10;
-    bool verbose = *pverbose, verbose_j = false, verbose_e = false;
+    bool verbose = *pverbose, verbose_j = false, verbose_e = false,
+         relax = *prelax;
     double sold = 0.0, snew = *psnew, cchange = 0.0, dchange = 0.0,
-           pchange = 0.0, echange = 0.0;
+           pchange = 1.0, echange = 1.0, rate = 1.0, eopt = 1.0;
     double rho = 0.0, etaold = 0.0, etanew = 0.0, chch = 0.0;
     double eps1 = pow(10, -(double)*peps1), eps2 = pow(10, -(double)*peps2),
            eps_e = pow(10, -(double)15);
@@ -33,21 +34,29 @@ void smacofEngine(double *delta, double *weights, double *xini, double *xnew,
     (void)smacofMakeBMatrix(delta, weights, dold, bold, &m);
     while (true) {
         (void)smacofGuttman(vinv, bold, xold, xnew, pn, pp);
+        (void)smacofRMSDifference(xold, xnew, pn, pp, &echange);
+        if (itel == 1) {
+            rate = NaN;
+        } else {
+            rate = echange / pchange;
+            if (relax) {
+                eopt = MAX(0, MIN(1, rate / (2 - rate)));
+                for (int i = 1; i <= np; i++) {
+                    int iv = VINDEX(i);
+                    xnew[iv] = (1 + eopt) * xnew[iv] - eopt * xold[iv];
+                }
+            }
+        }
         (void)smacofDistance(xnew, dnew, pn, pp);
         (void)smacofMakeBMatrix(delta, weights, dnew, bnew, &m);
         (void)smacofStress(delta, weights, dnew, &m, &snew);
-        (void)smacofEtaSquare(weights, dold, &m, &etaold);
-        (void)smacofRho(delta, weights, dold, &m, &rho);
-        (void)smacofEtaSquare(weights, dnew, &m, &etanew);
         (void)smacofMaxConfigurationDifference(xold, xnew, pn, pp, &cchange);
         (void)smacofMaxDistanceDifference(dold, dnew, &m, &dchange);
-        (void)smacofRMSDifference(xold, xnew, pn, pp, &echange);
         if (verbose) {
             printf(
                 "itel %3d sold %12.10f sdif %+12.10f cvdf %+12.10f cchg "
                 "%12.10f dchg %12.10f rate %12.10f\n",
-                itel, sold, sold - snew, echange, cchange, dchange,
-                echange / pchange);
+                itel, sold, sold - snew, echange, cchange, dchange, rate);
         }
         if ((itel == itmax) || (((sold - snew) < eps1) && (cchange < eps2))) {
             break;

@@ -117,7 +117,7 @@ void smacofMaxDistanceDifference(const double *dold, const double *dnew,
     return;
 }
 
-void smacofRMSDifference(const double *x, const double *y, const int *pn,
+void smacofRMSDifference(const double *x, double *y, const int *pn,
                          const int *pp, double *diff) {
     int n = *pn, p = *pp, np = n * p;
     double sum = 0.0;
@@ -128,7 +128,15 @@ void smacofRMSDifference(const double *x, const double *y, const int *pn,
             sump += SQUARE(x[k] - y[k]);
             sumn += SQUARE(x[k] + y[k]);
         }
-        sum += MIN(sump, sumn);
+        if (sumn < sump) {
+            for (int i = 1; i <= np; i++) {
+                int k = VINDEX(i);
+                y[k] = -y[k];
+            }
+            sum += sumn;
+        } else {
+            sum += sump;
+        }
         *diff = sqrt(fabs(sum / ((double)np)));
         return;
     }

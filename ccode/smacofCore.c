@@ -42,22 +42,8 @@ void smacofGuttman(const double *vinv, const double *bmat, const double *xold,
     int n = *pn, p = *pp, np = n * p;
     int width = 15, precision = 10;
     double *ymat = (double *)calloc((size_t)np, (size_t)sizeof(double));
-    if (DEBUG) {
-        printf("in guttman before matmult\n\n");
-        printf("xold in %p\n\n", xold);
-        (void)smacofPrintAnyMatrix(xold, pn, pp, &width, &precision);
-        printf("xnew in %p\n\n", xnew);
-        (void)smacofPrintAnyMatrix(xnew, pn, pp, &width, &precision);
-    }
     (void)smacofMultiplySDCMatrix(bmat, xold, ymat, pn, pp);
     (void)smacofMultiplySDCMatrix(vinv, ymat, xnew, pn, pp);
-    if (DEBUG) {
-        printf("in guttman after matmult\n\n");
-        printf("xold in %p\n\n", xold);
-        (void)smacofPrintAnyMatrix(xold, pn, pp, &width, &precision);
-        printf("xnew in %p\n\n", xnew);
-        (void)smacofPrintAnyMatrix(xnew, pn, pp, &width, &precision);
-    }
     free(ymat);
     return;
 }

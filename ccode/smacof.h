@@ -8,6 +8,7 @@
 #include <string.h>
 
 #define DEBUG false
+#define NaN (0.0 / 0.0)
 
 // smacofEngine.c
 
@@ -52,7 +53,7 @@ void smacofMaxConfigurationDifference(const double *x, const double *y,
                                       double *maxdiff);
 void smacofMaxDistanceDifference(const double *x, const double *y,
                                  const int *pm, double *maxdiff);
-void smacofRMSDifference(const double *x, const double *y, const int *pn,
+void smacofRMSDifference(const double *x, double *y, const int *pn,
                          const int *pp, double *diff);
 void smacofAddSDCDiagonal(const double *a, double *b, const int *pn);
 void smacofMakeIIandJJ(const int *pn, int *ii, int *jj);
