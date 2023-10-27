@@ -124,6 +124,15 @@ void smacofPrintLTMatrix(const double *d, const int *pn, const int *pw,
 void smacofPrintSLTMatrix(const double *d, const int *pn, const int *pw,
                           const int *pr);
 
+// smacofAccelerate.c
+
+void smacofRelax(const double *xold, double *xnew, const double *pechange,
+                 const double *ppchange, const int *pnp, const int *pitel,
+                 const bool *prelax, double *prate);
+void smacofDiagonalAdjust(const double *delta, const double *weights, double *x,
+                          const int *pn, const int *pp, const int *pitmax,
+                          const int *peps, const bool *pverbose);
+
 // structures
 
 struct fiveTuple {

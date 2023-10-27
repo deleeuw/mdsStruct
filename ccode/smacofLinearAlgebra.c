@@ -6,7 +6,7 @@ void smacofJacobi(double *a, double *evec, double *eval, const int *pn,
     bool verbose = *pverbose;
     double d = 0.0, s = 0.0, t = 0.0, u = 0.0, v = 0.0, p = 0.0, q = 0.0,
            r = 0.0;
-    double fold = 0.0, fnew = 0.0, eps = pow(10, -*peps);
+    double fold = 0.0, fnew = 0.0, eps = pow(10.0, -(double)*peps);
     double *oldi = (double *)calloc((size_t)n, (size_t)sizeof(double));
     double *oldj = (double *)calloc((size_t)n, (size_t)sizeof(double));
     for (int i = 1; i <= n; i++) {

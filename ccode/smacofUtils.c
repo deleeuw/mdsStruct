@@ -1,6 +1,6 @@
 #include "smacof.h"
 
-// Computes the Moore-Penrose inverse of an SDC
+// Computes the Moore-Penrose inverse of an SDCL
 // matrix of order n and rank n-1 from only the elements
 // below the diagonal
 
@@ -141,6 +141,11 @@ void smacofRMSDifference(const double *x, double *y, const int *pn,
         return;
     }
 }
+
+// smacofAddSDCDiagonal() takes the n(n -1)/2 elements of the strict lower
+// triangular part of an SDCL matrix in column-major storage and returns the n(n
+// + 1)/2 elements of the lower triangular part, including the diagonal, again
+// in column-major storage.
 
 void smacofAddSDCDiagonal(const double *a, double *b, const int *pn) {
     int n = *pn;

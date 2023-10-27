@@ -3,10 +3,9 @@
 void smacofInitial(const double *delta, const double *weights, double *xini,
                    double *dini, const int *pinit, const int *pn,
                    const int *pp) {
-    int n = *pn, p = *pp, np = n * p, init = *pinit;
+    int init = *pinit;
     int itmax_j = 100, itmax_e = 100, eps_j = 10;
-    int width = 15, precision = 10;
-    double eps_e = pow(10, -10);
+    double eps_e = pow((double)10.0, -(double)10.0);
     bool verbose_j = false, verbose_e = false;
     switch (init) {
         case 1:
@@ -29,7 +28,6 @@ void smacofInitial(const double *delta, const double *weights, double *xini,
     (void)smacofDistance(xini, dini, pn, pp);
     (void)smacofScale(delta, weights, dini, xini, pn, pp);
     return;
-    // maybe diagonal improvement
 }
 
 void smacofInitRandom(double *xini, const int *pn, const int *pp) {
@@ -45,7 +43,6 @@ void smacofInitSDCmatrix(const double *delta, const double *weights,
                          const int *pitmax_j, const int *peps_j,
                          const bool *pverbose_j) {
     int n = *pn, p = *pp, m = n * (n - 1) / 2;
-    int width = 15, precision = 10;
     double *a = (double *)calloc((size_t)m, (size_t)sizeof(double));
     double *b = (double *)calloc((size_t)(m + n), (size_t)sizeof(double));
     double *evec = (double *)calloc((size_t)SQUARE(n), (size_t)sizeof(double));
@@ -64,5 +61,3 @@ void smacofInitSDCmatrix(const double *delta, const double *weights,
     }
     return;
 }
-
-void smacofDiagonalImprove() {}

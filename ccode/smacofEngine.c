@@ -15,8 +15,8 @@ void smacofEngine(double *delta, double *weights, double *xini, double *xnew,
     double sold = 0.0, snew = *psnew, cchange = 0.0, dchange = 0.0,
            pchange = 1.0, echange = 1.0, rate = 1.0, eopt = 1.0;
     double rho = 0.0, etaold = 0.0, etanew = 0.0, chch = 0.0;
-    double eps1 = pow(10, -(double)*peps1), eps2 = pow(10, -(double)*peps2),
-           eps_e = pow(10, -(double)15);
+    double eps1 = pow(10.0, -(double)*peps1), eps2 = pow(10.0, -(double)*peps2),
+           eps_e = pow(10.0, -15.0);
     double *xold = (double *)calloc((size_t)np, (size_t)sizeof(double));
     double *dold = (double *)calloc((size_t)m, (size_t)sizeof(double));
     double *bold = (double *)calloc((size_t)m, (size_t)sizeof(double));
@@ -35,18 +35,8 @@ void smacofEngine(double *delta, double *weights, double *xini, double *xnew,
     while (true) {
         (void)smacofGuttman(vinv, bold, xold, xnew, pn, pp);
         (void)smacofRMSDifference(xold, xnew, pn, pp, &echange);
-        if (itel == 1) {
-            rate = NaN;
-        } else {
-            rate = echange / pchange;
-            if (relax) {
-                eopt = MAX(0, MIN(1, rate / (2 - rate)));
-                for (int i = 1; i <= np; i++) {
-                    int iv = VINDEX(i);
-                    xnew[iv] = (1 + eopt) * xnew[iv] - eopt * xold[iv];
-                }
-            }
-        }
+        (void)smacofRelax(xold, xnew, &echange, &pchange, &np, &itel, &relax,
+                          &rate);
         (void)smacofDistance(xnew, dnew, pn, pp);
         (void)smacofMakeBMatrix(delta, weights, dnew, bnew, &m);
         (void)smacofStress(delta, weights, dnew, &m, &snew);
@@ -172,7 +162,7 @@ int main() {
                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     double snew = 0.0;
     int n = 14, p = 2, itel = 1, itmax = 100, init = 1, peps1 = 15, peps2 = 10;
-    bool verbose = true, relax = false;
+    bool verbose = true, relax = true;
     (void)smacofEngine(delta, weights, xini, xnew, dini, dnew, bnew, &snew,
                        &init, &n, &p, &itel, &itmax, &peps1, &peps2, &verbose,
                        &relax);

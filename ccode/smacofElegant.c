@@ -7,6 +7,7 @@ void smacofElegant(const double *delta, const double *weights, const int *pn,
     int n = *pn, m = *pm, itmax = *pitmax, mm = m * (m + 1) / 2,
         nn = n * (n - 1) / 2;
     int ik = 0, jk = 0, il = 0, jl = 0;
+    int width = 6, precision = 4;
     bool verbose = *pverbose;
     double eps = *peps, cell = 0.0, lbd = *plbd, root = *proot;
     int *ii = (int *)calloc((size_t)nn, (size_t)sizeof(double));
@@ -27,6 +28,7 @@ void smacofElegant(const double *delta, const double *weights, const int *pn,
                 cell * sqrt(weights[VINDEX(s)] * weights[VINDEX(t)]);
         }
     }
+    (void)smacofPrintLTMatrix(u, &m, &width, &precision);
     (void)smacofPerronRoot(u, pm, plbd, proot, pitmax, peps, pverbose);
     printf("%15.10f\n", *proot);
     free(u);
@@ -83,16 +85,12 @@ void smacofPerronRoot(double *a, const int *pn, const double *plbd,
     free(b);
 }
 
-/*
- int main() {
-    int ii[10] = {2, 3, 4, 5, 3, 4, 5, 4, 5, 5};
-    int jj[10] = {1, 1, 1, 1, 2, 2, 2, 3, 3, 4};
+int main() {
     double delta[10] = {1, 2, 3, 4, 5, 6, 6, 6, 6, 6};
     double weights[10] = {1, 1, 1, 1, 1, 1, 7, 8, 9, 10};
     int n = 5, m = 10, itmax = 0;
     double eps = 1e-10, lbd = 1.0, root = 0.0;
     bool verbose = true;
-    (void)smacofElegant(delta, weights, &n, &m, ii, jj, &lbd, &root, &itmax,
-                        &eps, &verbose);
+    (void)smacofElegant(delta, weights, &n, &m, &lbd, &root, &itmax, &eps,
+                        &verbose);
 }
- */
