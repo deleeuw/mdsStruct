@@ -41,8 +41,8 @@ void smacofGuttman(const double *vinv, const double *bmat, const double *xold,
                    double *xnew, const int *pn, const int *pp) {
     int n = *pn, p = *pp, np = n * p;
     double *ymat = (double *)calloc((size_t)np, (size_t)sizeof(double));
-    (void)smacofMultiplySDCMatrix(bmat, xold, ymat, pn, pp);
-    (void)smacofMultiplySDCMatrix(vinv, ymat, xnew, pn, pp);
+    (void)smacofMultiplySDCLMatrix(bmat, xold, ymat, pn, pp);
+    (void)smacofMultiplySDCLMatrix(vinv, ymat, xnew, pn, pp);
     free(ymat);
     return;
 }

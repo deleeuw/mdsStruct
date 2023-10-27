@@ -9,7 +9,7 @@ void smacofInitial(const double *delta, const double *weights, double *xini,
     bool verbose_j = false, verbose_e = false;
     switch (init) {
         case 1:
-            (void)smacofTorgerson(delta, xini, pn, pp, &itmax_j, &eps_j,
+            (void)smacofInitTorgerson(delta, xini, pn, pp, &itmax_j, &eps_j,
                                   &verbose_j);
             break;
         case 2:
@@ -17,8 +17,8 @@ void smacofInitial(const double *delta, const double *weights, double *xini,
             //&verbose_e);
             break;
         case 3:
-            (void)smacofInitSDCmatrix(delta, weights, xini, pn, pp, &itmax_j,
-                                      &eps_j, &verbose_j);
+            (void)smacofInitMaximumSum(delta, weights, xini, pn, pp, &itmax_j,
+                                       &eps_j, &verbose_j);
             break;
         case 4:
             (void)smacofInitRandom(xini, pn, pp);
@@ -38,10 +38,9 @@ void smacofInitRandom(double *xini, const int *pn, const int *pp) {
     return;
 }
 
-void smacofInitSDCmatrix(const double *delta, const double *weights,
-                         double *xini, const int *pn, const int *pp,
-                         const int *pitmax_j, const int *peps_j,
-                         const bool *pverbose_j) {
+void smacofInitMaximumSum(const double *delta, const double *weights, double *xini,
+                      const int *pn, const int *pp, const int *pitmax_j,
+                      const int *peps_j, const bool *pverbose_j) {
     int n = *pn, p = *pp, m = n * (n - 1) / 2;
     double *a = (double *)calloc((size_t)m, (size_t)sizeof(double));
     double *b = (double *)calloc((size_t)(m + n), (size_t)sizeof(double));
@@ -51,7 +50,7 @@ void smacofInitSDCmatrix(const double *delta, const double *weights,
         int iv = VINDEX(i);
         a[iv] = -weights[iv] * SQUARE(delta[iv]);
     }
-    (void)smacofAddSDCDiagonal(a, b, pn);
+    (void)smacofAddSDCLDiagonal(a, b, pn);
     (void)smacofJacobi(b, evec, eval, pn, pitmax_j, peps_j, pverbose_j);
     for (int i = 1; i <= n; i++) {
         for (int s = 1; s <= p; s++) {

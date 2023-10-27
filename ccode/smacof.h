@@ -43,11 +43,6 @@ void smacofNormWeights(double *weights, const int *pm);
 
 // smacofUtils.c
 
-void smacofMultiplySDCMatrix(const double *a, const double *x, double *y,
-                             const int *pn, const int *pp);
-void smacofMPInverseSDCMatrix(const double *w, double *vinv, const int *ndim);
-void smacofVChange(const double *x, const double *y, const double *v,
-                   const int *pn, const int *pp, double *change);
 void smacofMaxConfigurationDifference(const double *x, const double *y,
                                       const int *pn, const int *pp,
                                       double *maxdiff);
@@ -55,8 +50,14 @@ void smacofMaxDistanceDifference(const double *x, const double *y,
                                  const int *pm, double *maxdiff);
 void smacofRMSDifference(const double *x, double *y, const int *pn,
                          const int *pp, double *diff);
-void smacofAddSDCDiagonal(const double *a, double *b, const int *pn);
 void smacofMakeIIandJJ(const int *pn, int *ii, int *jj);
+
+// smacofSDCLMatrix.c
+
+void smacofMultiplySDCLMatrix(const double *a, const double *x, double *y,
+                              const int *pn, const int *pp);
+void smacofMPInverseSDCLMatrix(const double *w, double *vinv, const int *ndim);
+void smacofAddSDCLDiagonal(const double *a, double *b, const int *pn);
 
 // smacofSort.c
 
@@ -68,10 +69,10 @@ void smacofTieBlocks(const double *x, int *it, double *eps, const int *n);
 // smacofInitial.c
 
 void smacofInitRandom(double *xini, const int *np, const int *pp);
-void smacofInitSDCmatrix(const double *delta, const double *weights,
-                         double *xini, const int *pn, const int *pp,
-                         const int *pitmax_j, const int *peps_j,
-                         const bool *pverbose_j);
+void smacofInitMaximumSum(const double *delta, const double *weights,
+                          double *xini, const int *pn, const int *pp,
+                          const int *pitmax_j, const int *peps_j,
+                          const bool *pverbose_j);
 void smacofInitial(const double *delta, const double *weights, double *xini,
                    double *dini, const int *pinit, const int *pn,
                    const int *pp);
@@ -79,13 +80,13 @@ void smacofInitial(const double *delta, const double *weights, double *xini,
 // smacofTorgerson.c
 
 void smacofDoubleCenter(const double *delta, double *cross, const int *pn);
-void smacofTorgerson(const double *delta, double *xold, const int *pn,
+void smacofInitTorgerson(const double *delta, double *xold, const int *pn,
                      const int *pp, const int *pitmax, const int *peps,
                      const bool *pverbose);
 
 // smacofElegant.c
 
-void smacofElegant(const double *delta, const double *weights, const int *pn,
+void smacofInitElegant(const double *delta, const double *weights, const int *pn,
                    const int *pm, const double *plbd, double *proot,
                    const int *pitmax, const double *peps, const bool *pverbose);
 void smacofPerronRoot(double *a, const int *pn, const double *plbd,
@@ -113,8 +114,8 @@ void smacofHessian(const double *delta, const double *weights,
 
 // smacofPrint.c
 
-void smacofPrintSDCMatrix(const double *v, const int *ndim, const int *width,
-                          const int *precision);
+void smacofPrintSDCLMatrix(const double *v, const int *ndim, const int *pw,
+                           const int *pr);
 void smacofPrintAnyMatrix(const double *x, const int *pn, const int *pp,
                           const int *pw, const int *pr);
 void smacofPrintSHMatrix(const double *d, const int *pn, const int *pw,

@@ -101,7 +101,7 @@ void smacofSimultaneousIteration(double *cross, double *xold, const int *pn,
     (void)smacofGramSchmidt(xold, r, &n, &p);
     oldsum = 0.0;
     while (true) {
-        (void)smacofMultiplySDCMatrix(cross, xold, xnew, &n, &p);
+        (void)smacofMultiplySDCLMatrix(cross, xold, xnew, &n, &p);
         (void)smacofGramSchmidt(xnew, r, &n, &p);
         (void)smacofMaxConfigurationDifference(xold, xnew, &n, &p, &maxdiff);
         newsum = 0.0;

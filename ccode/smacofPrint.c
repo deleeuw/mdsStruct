@@ -1,7 +1,7 @@
 #include "smacof.h"
 
-void smacofPrintSDCMatrix(const double *v, const int *pn, const int *pw,
-                          const int *pr) {
+void smacofPrintSDCLMatrix(const double *v, const int *pn, const int *pw,
+                           const int *pr) {
     int n = *pn;
     double *d = (double *)calloc((size_t)n, (size_t)sizeof(double));
     for (int i = 1; i <= n; i++) {

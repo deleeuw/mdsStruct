@@ -1,19 +1,20 @@
 smacofSSRW: Makefile smacofEngine.c smacofTorgerson.c smacofUtils.c \
-smacofCore.c smacofNorm.c smacofPrint.c smacofLinearAlgebra.c smacof.h
+smacofCore.c smacofNorm.c smacofPrint.c smacofLinearAlgebra.c \
+smacofAccelerate.c smacofSDCLMatrix.c smacof.h
 	gcc -o smacofSSRW -O2 smacofEngine.c smacofTorgerson.c smacofUtils.c \
 	smacofCore.c smacofNorm.c smacofLinearAlgebra.c smacofPrint.c \
-	smacofInitial.c smacofAccelerate.c
+	smacofInitial.c smacofAccelerate.c smacofSDCLMatrix.c
 
 debug: Makefile smacofEngine.c smacofTorgerson.c smacofUtils.c \
 smacofCore.c smacofNorm.c smacofPrint.c smacofLinearAlgebra.c smacof.h
 	gcc -o smacofdebug -g smacofEngine.c smacofTorgerson.c smacofUtils.c \
 	smacofCore.c smacofNorm.c smacofLinearAlgebra.c smacofPrint.c \
-	smacofInitial.c smacofAccelerate.c
+	smacofInitial.c smacofAccelerate.c smacofSDCLMatrix.c
 
 rlib: 
 	R CMD SHLIB smacofEngine.c smacofTorgerson.c smacofUtils.c \
 	smacofCore.c smacofNorm.c smacofLinearAlgebra.c smacofPrint.c \
-	smacofInitial.c smacofAccelerate.c
+	smacofInitial.c smacofAccelerate.c smacofSDCL.c
 
 clib:
 	ar rcs libSmacof.a *.o

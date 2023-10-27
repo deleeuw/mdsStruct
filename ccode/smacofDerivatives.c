@@ -16,8 +16,8 @@ void smacofGradient(const double *delta, const double *weights,
             bmat[iv] = weights[iv] * delta[iv] / dfix;
         }
     }
-    (void)smacofMultiplySDCMatrix(bmat, xold, ymat, pn, pp);
-    (void)smacofMultiplySDCMatrix(vinv, ymat, xnew, pn, pp);
+    (void)smacofMultiplySDCLMatrix(bmat, xold, ymat, pn, pp);
+    (void)smacofMultiplySDCLMatrix(vinv, ymat, xnew, pn, pp);
     for (int i = 1; i <= n; i++) {
         for (int s = 1; s <= p; s++) {
             gradient[MINDEX(i, s, n)] =
@@ -29,8 +29,8 @@ void smacofGradient(const double *delta, const double *weights,
     return;
 }
 
-// The Hessian is np by np, and it is the SDC matrix kronecker(I_p, V - B) + H
-// First make H. The diagonal blocks are SDC, the off-diagonal blocks regular
+// The Hessian is np by np, and it is the SDCL matrix kronecker(I_p, V - B) + H
+// First make H. The diagonal blocks are SDCL, the off-diagonal blocks regular
 // matrices. Then add V and B to diagonal blocks
 // It makes sense to use an array of p(p+1)/2 pointers, each pointing to a block
 

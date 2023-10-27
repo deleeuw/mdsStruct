@@ -1,6 +1,6 @@
 #include "smacof.h"
 
-void smacofTorgerson(const double *delta, double *xold, const int *pn,
+void smacofInitTorgerson(const double *delta, double *xold, const int *pn,
                      const int *pp, const int *pitmax, const int *peps,
                      const bool *pverbose) {
     int n = *pn, p = *pp, m = n * (n + 1) / 2;

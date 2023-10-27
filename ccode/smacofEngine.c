@@ -25,7 +25,7 @@ void smacofEngine(double *delta, double *weights, double *xini, double *xnew,
     (void)smacofNormWeights(weights, &m);
     (void)smacofNormDelta(delta, weights, &m);
     (void)smacofMakeVMatrix(weights, vmat, pn);
-    (void)smacofMPInverseSDCMatrix(weights, vinv, pn);
+    (void)smacofMPInverseSDCLMatrix(weights, vinv, pn);
     (void)smacofDistance(xini, dini, pn, pp);
     (void)smacofInitial(delta, weights, xini, dini, pinit, pn, pp);
     (void)memcpy(xold, xini, (size_t)np * sizeof(double));

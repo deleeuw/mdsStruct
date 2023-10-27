@@ -53,13 +53,12 @@ void smacofDiagonalAdjust(const double *delta, const double *weights, double *x,
     while (true) {
         for (int i = 1; i <= n; i++) {
             for (int s = 1; s <= p; s++) {
-                xwk[MINDEX(i, s, n)] =
-                    x[MINDEX(i, s, n)] * lbd[VINDEX(s)];
+                xwk[MINDEX(i, s, n)] = x[MINDEX(i, s, n)] * lbd[VINDEX(s)];
             }
         }
         (void)smacofDistance(xwk, dwk, pn, pp);
         (void)smacofMakeBMatrix(delta, weights, dwk, bwk, &m);
-        (void)smacofPrintSDCMatrix(bwk, pn, &width, &precision);
+        (void)smacofPrintSDCLMatrix(bwk, pn, &width, &precision);
         (void)smacofStress(delta, weights, dwk, &m, &stress);
         printf("stress %15.10f\n", stress);
         diff = 0.0;

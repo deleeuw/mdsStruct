@@ -1,6 +1,6 @@
 #include "smacof.h"
 
-void smacofElegant(const double *delta, const double *weights, const int *pn,
+void smacofInitElegant(const double *delta, const double *weights, const int *pn,
                    const int *pm, const double *plbd, double *proot,
                    const int *pitmax, const double *peps,
                    const bool *pverbose) {
