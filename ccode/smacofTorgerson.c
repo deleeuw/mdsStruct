@@ -1,8 +1,8 @@
 #include "smacof.h"
 
 void smacofInitTorgerson(const double *delta, double *xold, const int *pn,
-                     const int *pp, const int *pitmax, const int *peps,
-                     const bool *pverbose) {
+                         const int *pp, const int *pitmax, const int *peps,
+                         const bool *pverbose) {
     int n = *pn, p = *pp, m = n * (n + 1) / 2;
     double *cross = (double *)calloc((size_t)m, (size_t)sizeof(double));
     double *evec = (double *)calloc((size_t)(n * n), (size_t)sizeof(double));

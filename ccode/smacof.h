@@ -16,7 +16,7 @@ void smacofEngine(double *delta, double *weights, double *xini, double *xnew,
                   double *dini, double *dnew, double *bmat, double *psnew,
                   const int *pinit, const int *pn, const int *pp, int *pitel,
                   const int *pitmax, const int *peps1, const int *peps2,
-                  const bool *pverbose, const bool *relax);
+                  const bool *pverbose, const bool *relax, const bool *adjust);
 
 // smacofCore.c
 
@@ -74,21 +74,25 @@ void smacofInitMaximumSum(const double *delta, const double *weights,
                           const int *pitmax_j, const int *peps_j,
                           const bool *pverbose_j);
 void smacofInitial(const double *delta, const double *weights, double *xini,
-                   double *dini, const int *pinit, const int *pn,
-                   const int *pp);
+                   const int *pinit, const int *pn, const int *pp,
+                   const bool *adjust);
+void smacofDiagonalAdjust(const double *delta, const double *weights, double *x,
+                          const int *pn, const int *pp, const int *pitmax,
+                          const int *peps, const bool *pverbose);
 
 // smacofTorgerson.c
 
 void smacofDoubleCenter(const double *delta, double *cross, const int *pn);
 void smacofInitTorgerson(const double *delta, double *xold, const int *pn,
-                     const int *pp, const int *pitmax, const int *peps,
-                     const bool *pverbose);
+                         const int *pp, const int *pitmax, const int *peps,
+                         const bool *pverbose);
 
 // smacofElegant.c
 
-void smacofInitElegant(const double *delta, const double *weights, const int *pn,
-                   const int *pm, const double *plbd, double *proot,
-                   const int *pitmax, const double *peps, const bool *pverbose);
+void smacofInitElegant(const double *delta, const double *weights,
+                       const int *pn, const int *pm, const double *plbd,
+                       double *proot, const int *pitmax, const double *peps,
+                       const bool *pverbose);
 void smacofPerronRoot(double *a, const int *pn, const double *plbd,
                       double *proot, const int *pitmax, const double *peps,
                       const bool *verbose);
@@ -130,9 +134,6 @@ void smacofPrintSLTMatrix(const double *d, const int *pn, const int *pw,
 void smacofRelax(const double *xold, double *xnew, const double *pechange,
                  const double *ppchange, const int *pnp, const int *pitel,
                  const bool *prelax, double *prate);
-void smacofDiagonalAdjust(const double *delta, const double *weights, double *x,
-                          const int *pn, const int *pp, const int *pitmax,
-                          const int *peps, const bool *pverbose);
 
 // structures
 
