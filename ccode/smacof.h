@@ -51,6 +51,8 @@ void smacofMaxDistanceDifference(const double *x, const double *y,
 void smacofRMSDifference(const double *x, double *y, const int *pn,
                          const int *pp, double *diff);
 void smacofMakeIIandJJ(const int *pn, int *ii, int *jj);
+void smacofDoubleCenter(const double *delta, double *cross, const int *pn);
+
 
 // smacofSDCLMatrix.c
 
@@ -69,6 +71,9 @@ void smacofTieBlocks(const double *x, int *it, double *eps, const int *n);
 // smacofInitial.c
 
 void smacofInitRandom(double *xini, const int *np, const int *pp);
+void smacofInitTorgerson(const double *delta, double *xold, const int *pn,
+                         const int *pp, const int *pitmax, const int *peps,
+                         const bool *pverbose);
 void smacofInitMaximumSum(const double *delta, const double *weights,
                           double *xini, const int *pn, const int *pp,
                           const int *pitmax_j, const int *peps_j,
@@ -79,13 +84,6 @@ void smacofInitial(const double *delta, const double *weights, double *xini,
 void smacofDiagonalAdjust(const double *delta, const double *weights, double *x,
                           const int *pn, const int *pp, const int *pitmax,
                           const int *peps, const bool *pverbose);
-
-// smacofTorgerson.c
-
-void smacofDoubleCenter(const double *delta, double *cross, const int *pn);
-void smacofInitTorgerson(const double *delta, double *xold, const int *pn,
-                         const int *pp, const int *pitmax, const int *peps,
-                         const bool *pverbose);
 
 // smacofElegant.c
 
@@ -99,10 +97,6 @@ void smacofPerronRoot(double *a, const int *pn, const double *plbd,
 
 // smacofLinearAlgebra.c
 
-void smacofGramSchmidt(double *x, double *r, int *pn, int *pp);
-void smacofSimultaneousIteration(double *cross, double *xold, const int *pn,
-                                 const int *pp, const int *itmax,
-                                 const double *eps, const bool *verbose);
 void smacofJacobi(double *a, double *evec, double *eval, const int *pn,
                   const int *pm, const int *itmax, const int *eps,
                   const bool *verbose);

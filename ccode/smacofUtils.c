@@ -1,5 +1,37 @@
 #include "smacof.h"
 
+void smacofDoubleCenter(const double *delta, double *cross, const int *pn) {
+  int n = *pn, ij = 0;
+  double tsum = 0.0, cell = 0.0;
+  double *rsum = (double *)calloc((size_t)n, (size_t)sizeof(double));
+  for (int i = 1; i <= n; i++) {
+    double sum = 0.0;
+    for (int j = 1; j <= n; j++) {
+      if (i == j) {
+        continue;
+      }
+      sum += SQUARE(delta[PINDEX(i, j, n)]);
+    }
+    rsum[VINDEX(i)] = sum / ((double)n);
+    tsum += sum;
+  }
+  tsum /= SQUARE((double)n);
+  for (int j = 1; j <= n; j++) {
+    for (int i = j; i <= n; i++) {
+      ij = TINDEX(i, j, n);
+      if (i == j) {
+        cell = 0.0;
+      } else {
+        cell = SQUARE(delta[SINDEX(i, j, n)]);
+      }
+      cross[ij] =
+        -0.5 * (cell - rsum[VINDEX(i)] - rsum[VINDEX(j)] + tsum);
+    }
+  }
+  free(rsum);
+  return;
+}
+
 void smacofMaxConfigurationDifference(const double *x, const double *y,
                                       const int *pn, const int *pp,
                                       double *maxdiff) {

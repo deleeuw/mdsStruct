@@ -35,6 +35,28 @@ void smacofInitial(const double *delta, const double *weights, double *xini,
     return;
 }
 
+void smacofInitTorgerson(const double *delta, double *xold, const int *pn,
+                         const int *pp, const int *pitmax, const int *peps,
+                         const bool *pverbose) {
+  int n = *pn, p = *pp, m = n * (n + 1) / 2;
+  double *cross = (double *)calloc((size_t)m, (size_t)sizeof(double));
+  double *evec = (double *)calloc((size_t)(n * n), (size_t)sizeof(double));
+  double *eval = (double *)calloc((size_t)n, (size_t)sizeof(double));
+  (void)smacofDoubleCenter(delta, cross, pn);
+  (void)smacofJacobi(cross, evec, eval, pn, pp, pitmax, peps, pverbose);
+  for (int i = 1; i <= n; i++) {
+    for (int s = 1; s <= p; s++) {
+      xold[MINDEX(i, s, n)] =
+        evec[MINDEX(i, s, n)] * sqrt(eval[VINDEX(s)]);
+    }
+  }
+  free(cross);
+  free(evec);
+  free(eval);
+  return;
+}
+
+
 void smacofInitRandom(double *xini, const int *pn, const int *pp) {
     int n = *pn, p = *pp, np = n * p;
     for (int i = 1; i <= np; i++) {
@@ -57,7 +79,7 @@ void smacofInitMaximumSum(const double *delta, const double *weights,
         a[iv] = -weights[iv] * SQUARE(delta[iv]);
     }
     (void)smacofAddSDCLDiagonal(a, b, pn);
-    (void)smacofJacobi(b, evec, eval, pn, pitmax_j, peps_j, pverbose_j);
+    (void)smacofJacobi(b, evec, eval, pn, pp, pitmax_j, peps_j, pverbose_j);
     for (int i = 1; i <= n; i++) {
         for (int s = 1; s <= p; s++) {
             xini[MINDEX(i, s, n)] =
