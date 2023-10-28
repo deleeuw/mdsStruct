@@ -104,7 +104,8 @@ void smacofSimultaneousIteration(double *cross, double *xold, const int *pn,
                                  const int *pp, const int *itmax,
                                  const double *eps, const bool *verbose);
 void smacofJacobi(double *a, double *evec, double *eval, const int *pn,
-                  const int *itmax, const int *eps, const bool *verbose);
+                  const int *pm, const int *itmax, const int *eps,
+                  const bool *verbose);
 
 // smacofDerivatives.c
 

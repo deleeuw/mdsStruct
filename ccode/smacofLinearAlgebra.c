@@ -1,8 +1,9 @@
 #include "smacof.h"
 
 void smacofJacobi(double *a, double *evec, double *eval, const int *pn,
-                  const int *pitmax, const int *peps, const bool *pverbose) {
-    int n = *pn, itel = 1, itmax = *pitmax;
+                  const int *pm, const int *pitmax, const int *peps,
+                  const bool *pverbose) {
+    int n = *pn, m = *pm, itel = 1, itmax = *pitmax;
     bool verbose = *pverbose;
     double d = 0.0, s = 0.0, t = 0.0, u = 0.0, v = 0.0, p = 0.0, q = 0.0,
            r = 0.0;
@@ -14,11 +15,11 @@ void smacofJacobi(double *a, double *evec, double *eval, const int *pn,
             evec[MINDEX(i, j, n)] = (i == j) ? 1.0 : 0.0;
         }
     }
-    for (int i = 1; i <= n; i++) {
+    for (int i = 1; i <= m; i++) {
         fold += SQUARE(a[TINDEX(i, i, n)]);
     }
     while (true) {
-        for (int j = 1; j <= n - 1; j++) {
+        for (int j = 1; j <= m; j++) {
             for (int i = j + 1; i <= n; i++) {
                 p = a[TINDEX(i, j, n)];
                 q = a[TINDEX(i, i, n)];
@@ -64,7 +65,7 @@ void smacofJacobi(double *a, double *evec, double *eval, const int *pn,
             }
         }
         fnew = 0.0;
-        for (int i = 1; i <= n; i++) {
+        for (int i = 1; i <= m; i++) {
             fnew += SQUARE(a[TINDEX(i, i, n)]);
         }
         if (verbose) {
@@ -153,4 +154,19 @@ void smacofGramSchmidt(double *x, double *r, int *pn, int *pp) {
         s++;
     }
     return;
+}
+
+int main() {
+    double a[10] = {758.0, 504.0, 261.0, 510.0, 374.0,
+                    193.0, 382.0, 115.0, 212.0, 427.0};
+    double evec[16] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                       0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    double eval[4] = {0.0, 0.0, 0.0, 0.0};
+    int n = 4, m = 2, itmax = 100, width = 15, precision = 10, nr = 1;
+    int eps = 10;
+    bool verbose = true;
+    (void)smacofJacobi(a, evec, eval, &n, &m, &itmax, &eps, &verbose);
+    (void)smacofPrintLTMatrix(a, &n, &width, &precision);
+    (void)smacofPrintAnyMatrix(evec, &n, &n, &width, &precision);
+    (void)smacofPrintAnyMatrix(eval, &nr, &n, &width, &precision);
 }

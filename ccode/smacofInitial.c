@@ -4,11 +4,8 @@ void smacofInitial(const double *delta, const double *weights, double *xini,
                    const int *pinit, const int *pn, const int *pp,
                    const bool *padjust) {
     int init = *pinit, np = *pn * *pp;
-    int itmax_j = 100, itmax_e = 100, itmax_d = 100, eps_j = 10, eps_d = 10,
-        eps_e = 10;
-    bool verbose_j = false, verbose_e = false, verbose_d = false,
-         adjust = *padjust;
-    int width = 15, precision = 10;
+    int itmax_j = 100, itmax_d = 100, eps_j = 10, eps_d = 10;
+    bool verbose_j = false, verbose_d = false, adjust = *padjust;
     double *dini = (double *)calloc((size_t)np, (size_t)sizeof(double));
     switch (init) {
         case 1:
@@ -39,7 +36,7 @@ void smacofInitial(const double *delta, const double *weights, double *xini,
 }
 
 void smacofInitRandom(double *xini, const int *pn, const int *pp) {
-    int np = *pn * *pp;
+    int n = *pn, p = *pp, np = n * p;
     for (int i = 1; i <= np; i++) {
         xini[VINDEX(i)] = drand48();
     }
@@ -73,8 +70,7 @@ void smacofInitMaximumSum(const double *delta, const double *weights,
 void smacofDiagonalAdjust(const double *delta, const double *weights, double *x,
                           const int *pn, const int *pp, const int *pitmax,
                           const int *peps, const bool *pverbose) {
-    int n = *pn, p = *pp, m = n * (n - 1) / 2, itmax = *pitmax,
-        itel = 1;
+    int n = *pn, p = *pp, m = n * (n - 1) / 2, itmax = *pitmax, itel = 1;
     double sum = 0.0, diff = 0.0, mul = 0.0,
            eps = pow((double)10.0, -(double)*peps), stress = 0.0;
     bool verbose = *pverbose;

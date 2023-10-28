@@ -12,7 +12,7 @@ void smacofInitElegant(const double *delta, const double *weights,
     double eps = *peps, cell = 0.0, lbd = *plbd, root = *proot;
     int *ii = (int *)calloc((size_t)nn, (size_t)sizeof(double));
     int *jj = (int *)calloc((size_t)nn, (size_t)sizeof(double));
-    double *u = (double *)calloc((size_t)nn, (size_t)sizeof(double));
+    double *u = (double *)calloc((size_t)mm, (size_t)sizeof(double));
     double *cross = (double *)calloc((size_t)nn, (size_t)sizeof(double));
     (void)smacofMakeIIandJJ(pn, ii, jj);
     (void)smacofDoubleCenter(delta, cross, pn);
@@ -28,9 +28,11 @@ void smacofInitElegant(const double *delta, const double *weights,
                 cell * sqrt(weights[VINDEX(s)] * weights[VINDEX(t)]);
         }
     }
-    (void)smacofPrintLTMatrix(u, &m, &width, &precision);
+    //(void)smacofPrintLTMatrix(u, &m, &width, &precision);
     (void)smacofPerronRoot(u, pm, plbd, proot, pitmax, peps, pverbose);
-    printf("%15.10f\n", *proot);
+    // printf("%15.10f\n", *proot);
+    (void)smacofInitMaximumSum(delta, weights, xini, pn, pp, &itmax_j, &eps_j,
+                               &verbose_j);
     free(u);
     free(ii);
     free(jj);
@@ -38,8 +40,8 @@ void smacofInitElegant(const double *delta, const double *weights,
 
 void smacofPerronRoot(double *a, const int *pn, const double *plbd,
                       double *proot, const int *pitmax, const double *peps,
-                      const bool *verbose) {
-    int n = *pn, itel = 1, itmax = *pitmax;
+                      const bool *pverbose) {
+    int n = *pn, itel = 1, itmax = *pitmax, verbose = *pverbose;
     double lbd = *plbd, eps = *peps, root = *proot;
     double *r = (double *)calloc((size_t)n, (size_t)sizeof(double));
     double *b = (double *)calloc((size_t)(n * n), (size_t)sizeof(double));
@@ -83,14 +85,16 @@ void smacofPerronRoot(double *a, const int *pn, const double *plbd,
     *proot = root;
     free(r);
     free(b);
+    return;
 }
 
 int main() {
     double delta[10] = {1, 2, 3, 4, 5, 6, 6, 6, 6, 6};
-    double weights[10] = {1, 1, 1, 1, 1, 1, 7, 8, 9, 10};
+    double weights[10] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
     int n = 5, m = 10, itmax = 0;
     double eps = 1e-10, lbd = 1.0, root = 0.0;
-    bool verbose = true;
-    (void)smacofElegant(delta, weights, &n, &m, &lbd, &root, &itmax, &eps,
-                        &verbose);
+    bool verbose = false;
+    (void)smacofInitElegant(delta, weights, &n, &m, &lbd, &root, &itmax, &eps,
+                            &verbose);
+    return (EXIT_SUCCESS);
 }
