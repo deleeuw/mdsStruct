@@ -1,10 +1,5 @@
 
-#include <math.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#define DEBUG false
+#include "smacof.h"
 
 struct block {
     double value;
