@@ -53,7 +53,6 @@ void smacofRMSDifference(const double *x, double *y, const int *pn,
 void smacofMakeIIandJJ(const int *pn, int *ii, int *jj);
 void smacofDoubleCenter(const double *delta, double *cross, const int *pn);
 
-
 // smacofSDCLMatrix.c
 
 void smacofMultiplySDCLMatrix(const double *a, const double *x, double *y,
@@ -64,8 +63,8 @@ void smacofAddSDCLDiagonal(const double *a, double *b, const int *pn);
 // smacofSort.c
 
 int smacofComparison(const void *px, const void *py);
-void smacofSort(double *delta, double *weight, int *row, int *col, int *index,
-                const int *n);
+void smacofSort(double *delta, double *weights, int *knum, int *irow, int *icol,
+                const int *pn);
 void smacofTieBlocks(const double *x, int *it, double *eps, const int *n);
 
 // smacofInitial.c
@@ -132,25 +131,12 @@ void smacofRelax(const double *xold, double *xnew, const double *pechange,
 
 // structures
 
-struct fiveTuple {
-    int index;
-    int row;
-    int col;
+struct data {
+    int order;
+    int irow;
+    int icol;
     double delta;
     double weight;
-};
-
-struct allEpsilon {
-    int stressEps;
-    int confEps;
-    int distEps;
-    int jacobiEps;
-    int blockEps;
-};
-
-struct allItmax {
-    int mainItmax;
-    int jacobiItmax;
 };
 
 // VINDEX takes 1,...,n to 0,...,n-1

@@ -44,29 +44,3 @@ void smacofSimultaneousIteration(double *cross, double *xold, const int *pn,
     free(r);
     return;
 }
-
-void smacofGramSchmidt(double *x, double *r, int *pn, int *pp) {
-    int n = *pn, p = *pp, s = 1;
-    while (s <= p) {
-        for (int t = 1; t < s; t++) {
-            double sum = 0.0;
-            for (int i = 1; i <= n; i++) {
-                sum += x[MINDEX(i, t, n)] * x[MINDEX(i, s, n)];
-            }
-            for (int i = 1; i <= n; i++) {
-                x[MINDEX(i, s, n)] -= sum * x[MINDEX(i, t, n)];
-            }
-        }
-        double sum = 0.0;
-        for (int i = 1; i <= n; i++) {
-            sum += x[MINDEX(i, s, n)] * x[MINDEX(i, s, n)];
-        }
-        sum = sqrt(sum);
-        r[VINDEX(s)] = sum;
-        for (int i = 1; i <= n; i++) {
-            x[MINDEX(i, s, n)] /= sum;
-        }
-        s++;
-    }
-    return;
-}

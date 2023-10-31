@@ -1,0 +1,373 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+  12pt,
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{Times New Roman}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ % allow citations to break across lines
+ \let\@cite@ofmt\@firstofone
+ % avoid brackets around text for \cite:
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-1\cslhangindent}
+  \fi
+  % set entry spacing
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{\hfill\break#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+\usepackage{tcolorbox}
+\usepackage{amssymb}
+\usepackage{yfonts}
+\usepackage{bm}
+
+\newtcolorbox{greybox}{
+  colback=white,
+  colframe=blue,
+  coltext=black,
+  boxsep=5pt,
+  arc=4pt}
+  
+\newcommand{\ds}[4]{\sum_{{#1}=1}^{#3}\sum_{{#2}=1}^{#4}}
+\newcommand{\us}[3]{\mathop{\sum\sum}_{1\leq{#2}<{#1}\leq{#3}}}
+
+\newcommand{\ol}[1]{\overline{#1}}
+\newcommand{\ul}[1]{\underline{#1}}
+
+\newcommand{\amin}[1]{\mathop{\text{argmin}}_{#1}}
+\newcommand{\amax}[1]{\mathop{\text{argmax}}_{#1}}
+
+\newcommand{\ci}{\perp\!\!\!\perp}
+
+\newcommand{\mc}[1]{\mathcal{#1}}
+\newcommand{\mb}[1]{\mathbb{#1}}
+\newcommand{\mf}[1]{\mathfrak{#1}}
+
+\newcommand{\eps}{\epsilon}
+\newcommand{\lbd}{\lambda}
+\newcommand{\alp}{\alpha}
+\newcommand{\df}{=:}
+\newcommand{\am}[1]{\mathop{\text{argmin}}_{#1}}
+\newcommand{\ls}[2]{\mathop{\sum\sum}_{#1}^{#2}}
+\newcommand{\ijs}{\mathop{\sum\sum}_{1\leq i<j\leq n}}
+\newcommand{\jis}{\mathop{\sum\sum}_{1\leq j<i\leq n}}
+\newcommand{\sij}{\sum_{i=1}^n\sum_{j=1}^n}
+	
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Notes on the C Version of Smacof},
+  pdfauthor={Jan de Leeuw - University of California Los Angeles},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Notes on the C Version of Smacof}
+\author{Jan de Leeuw - University of California Los Angeles}
+\date{Started October 10 2023, Version of October 30, 2023}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+TBD
+\end{abstract}
+
+{
+\setcounter{tocdepth}{4}
+\tableofcontents
+}
+\textbf{Note:} This is a working paper which will be expanded/updated frequently. All suggestions for improvement are welcome. All Rmd, tex, html, pdf, R, and C files are in the public domain. Attribution
+will be appreciated, but is not required. The files can be found at
+\url{https://github.com/deleeuw/mdsStruct}.
+
+\section{Introduction}\label{introduction}
+
+The loss function in (metric, least squares, Euclidean, symmetric) Multidimensional Scaling (MDS)
+is
+\[
+\sigma(X):=\frac12\jis w_{ij}(\delta_{ij}-d_{ij}(X))^2.
+\]
+
+This assumes symmetry and it uses all elements below the diagonal of both \(W\), \(\Delta\), and \(D(X)\).
+For missing data we set \(w_{ij}=0\).
+
+\section{Example}\label{example}
+
+Here is a small input example.
+
+\section{smacofStructure}\label{smacofstructure}
+
+We use this example as input for the R version of \emph{smacofSort()}, which results in the
+\emph{smacofStructure}
+
+The \emph{dist} element in the data frame is zero, because we have not computed distances yet.
+Given a configuration \(X\) the \emph{row} and \emph{col} elements in the data frame allow from
+straightforward computation of distances. In the case of nonmetric MDS, or more generally
+in MDS with transformed dissimilarities, the \emph{dhat} column will be filled as well.
+The fact that preprocessing with \emph{smacofSort()} gives the ordered dissimilarities, as
+well as the tie blocks, is especially useful in the ordinal case, both with monotone
+polynomials and monotone splines. In the metric (ratio) case there is no need for the
+\emph{dhat} column.
+
+It is obvious how this \emph{smacofStructure} can be adapted if there are multiway data.If we have row-conditional or matrix-conditional data, then we use one of these smacofStructures for each
+row or each matrix.
+
+\section{Appendix: Code}\label{appendix-code}
+
+We use \emph{qsort} to sort the rows of the input data frame by increasing delta. The sorting
+is done in C, the R version is a wrapper around the compiled C code. The C code also
+contains a main which analyzes the same small example as we have used in the text.
+Compile with ``clang -o runner -O2 smacofSort.c'' and then start ``runner'' in the shell.
+The C code uses the .C() interface in R, which can be improved using .Call(),
+but probably in this case with little gain.
+
+\section{smacofHildreth}\label{smacofhildreth}
+
+Hildreth (1957)
+
+Consider the QP problem of minimizing \(f(x)=\frac12(x-y)'W(x-y)\)
+over all \(x\in\mathbb{R}^n\) satisfying \(Ax\geq 0\), where \(A\) is \(m\times n\). Wlg we can assume \(a_j'Wa_j=1\). The Lagrangian is
+\[
+\mathcal{L}(x,\lambda)=\frac12(x-y)'W(x-y)-\lambda'Ax.
+\]
+\[
+\max_{\lambda\geq 0}\mathcal{L}(x,\lambda)=\begin{cases}\frac12(x-y)'W(x-y)&\text{ if }Ax\geq 0,\\
++\infty&\text{ otherwise}.\end{cases}
+\]
+and thus
+\[
+\min_{x\in\mathbb{R}^n}\max_{\lambda\geq 0}\mathcal{L}(x,\lambda)=\min_{Ax\geq 0}\frac12(x-y)'W(x-y).
+\]
+By duality
+\[
+\min_{x\in\mathbb{R}^n}\max_{\lambda\geq 0}\mathcal{L}(x,\lambda)=\max_{\lambda\geq 0}\min_{x\in\mathbb{R}^n}\mathcal{L}(x,\lambda).
+\]
+The inner minimum over \(x\) is attained for
+\[
+x=y+W^{-1}A'\lambda,
+\]
+and is equal to
+\[
+\min_{x\in\mathbb{R}^n}\mathcal{L}(x,\lambda)=-\frac12\lambda'AW^{-1}A'\lambda-\lambda'Ay.
+\]
+Thus
+\[
+\max_{\lambda\geq 0}\min_{x\in\mathbb{R}^n}\mathcal{L}(x,\lambda)=
+-\frac12\min_{\lambda\geq 0}\left\{(Wy+A'\lambda)'W^{-1}(Wy+A'\lambda)-y'Wy\right\}
+\]
+We minimize \(h(\lambda)=(Wy+A'\lambda)'W^{-1}(Wy+A'\lambda)\) with coordinate descent. Let \(\lambda_j(\eps)=\lambda+\eps e_j\). Then
+\[
+h(\lambda_j(\eps))=(Wy+A'\lambda+\eps a_j)'W^{-1}()=\eps^2a_j'W^{-1}a_j+2\eps a_j'W^{-1}(y+W^{-1}A'\lambda)+
+\]
+which must be minimized over \(\eps\geq-\lambda_j\). So the minimum is attained at
+\[
+\eps=-\frac{a_j'W^{-1}x}{a_j'W^{-1}a_j}
+\]
+with \(x=y+W^{-1}A'\lambda\) (cf \ldots), provided \ldots{} satisfies .. Otherwise \(\eps=-\lambda_j\). Now update both \(\lambda\) and \(x\),
+and go to the next \(j\).
+
+\section{smacofDykstra}\label{smacofdykstra}
+
+\section{smacofJacobi}\label{smacofjacobi}
+
+taken from De Leeuw (2017)
+
+\section{smacofSort}\label{smacofsort}
+
+\section{Code}\label{code}
+
+\subsection{smacofSort.R}\label{smacofsort.r}
+
+\subsection{smacofSort.c}\label{smacofsort.c}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\PreprocessorTok{\#include }\ImportTok{"smacof.h"}
+
+\DataTypeTok{int}\NormalTok{ smacofComparison}\OperatorTok{(}\DataTypeTok{const} \DataTypeTok{void} \OperatorTok{*}\NormalTok{px}\OperatorTok{,} \DataTypeTok{const} \DataTypeTok{void} \OperatorTok{*}\NormalTok{py}\OperatorTok{)} \OperatorTok{\{}
+    \DataTypeTok{double}\NormalTok{ x }\OperatorTok{=} \OperatorTok{((}\KeywordTok{struct}\NormalTok{ fiveTuple }\OperatorTok{*)}\NormalTok{px}\OperatorTok{){-}\textgreater{}}\NormalTok{delta}\OperatorTok{;}
+    \DataTypeTok{double}\NormalTok{ y }\OperatorTok{=} \OperatorTok{((}\KeywordTok{struct}\NormalTok{ fiveTuple }\OperatorTok{*)}\NormalTok{py}\OperatorTok{){-}\textgreater{}}\NormalTok{delta}\OperatorTok{;}
+    \ControlFlowTok{return} \OperatorTok{(}\DataTypeTok{int}\OperatorTok{)}\NormalTok{copysign}\OperatorTok{(}\FloatTok{1.0}\OperatorTok{,}\NormalTok{ x }\OperatorTok{{-}}\NormalTok{ y}\OperatorTok{);}
+\OperatorTok{\}}
+
+\DataTypeTok{void}\NormalTok{ smacofSort}\OperatorTok{(}\DataTypeTok{double} \OperatorTok{*}\NormalTok{delta}\OperatorTok{,} \DataTypeTok{double} \OperatorTok{*}\NormalTok{weight}\OperatorTok{,} \DataTypeTok{int} \OperatorTok{*}\NormalTok{row}\OperatorTok{,} \DataTypeTok{int} \OperatorTok{*}\NormalTok{col}\OperatorTok{,} \DataTypeTok{int} \OperatorTok{*}\NormalTok{index}\OperatorTok{,}
+                \DataTypeTok{const} \DataTypeTok{int} \OperatorTok{*}\NormalTok{ndata}\OperatorTok{)} \OperatorTok{\{}
+    \DataTypeTok{int}\NormalTok{ n }\OperatorTok{=} \OperatorTok{*}\NormalTok{ndata}\OperatorTok{;}
+    \KeywordTok{struct}\NormalTok{ fiveTuple }\OperatorTok{*}\NormalTok{xi }\OperatorTok{=}
+        \OperatorTok{(}\KeywordTok{struct}\NormalTok{ fiveTuple }\OperatorTok{*)}\NormalTok{calloc}\OperatorTok{((}\DataTypeTok{size\_t}\OperatorTok{)}\NormalTok{n}\OperatorTok{,} \OperatorTok{(}\DataTypeTok{size\_t}\OperatorTok{)}\KeywordTok{sizeof}\OperatorTok{(}\KeywordTok{struct}\NormalTok{ fiveTuple}\OperatorTok{));}
+    \ControlFlowTok{for} \OperatorTok{(}\DataTypeTok{int}\NormalTok{ i }\OperatorTok{=} \DecValTok{0}\OperatorTok{;}\NormalTok{ i }\OperatorTok{\textless{}}\NormalTok{ n}\OperatorTok{;}\NormalTok{ i}\OperatorTok{++)} \OperatorTok{\{}
+\NormalTok{        xi}\OperatorTok{[}\NormalTok{i}\OperatorTok{].}\NormalTok{index }\OperatorTok{=}\NormalTok{ i}\OperatorTok{;}
+\NormalTok{        xi}\OperatorTok{[}\NormalTok{i}\OperatorTok{].}\NormalTok{row }\OperatorTok{=}\NormalTok{ row}\OperatorTok{[}\NormalTok{i}\OperatorTok{];}
+\NormalTok{        xi}\OperatorTok{[}\NormalTok{i}\OperatorTok{].}\NormalTok{col }\OperatorTok{=}\NormalTok{ col}\OperatorTok{[}\NormalTok{i}\OperatorTok{];}
+\NormalTok{        xi}\OperatorTok{[}\NormalTok{i}\OperatorTok{].}\NormalTok{delta }\OperatorTok{=}\NormalTok{ delta}\OperatorTok{[}\NormalTok{i}\OperatorTok{];}
+\NormalTok{        xi}\OperatorTok{[}\NormalTok{i}\OperatorTok{].}\NormalTok{weight }\OperatorTok{=}\NormalTok{ weight}\OperatorTok{[}\NormalTok{i}\OperatorTok{];}
+    \OperatorTok{\}}
+    \OperatorTok{(}\DataTypeTok{void}\OperatorTok{)}\NormalTok{qsort}\OperatorTok{(}\NormalTok{xi}\OperatorTok{,} \OperatorTok{(}\DataTypeTok{size\_t}\OperatorTok{)}\NormalTok{n}\OperatorTok{,} \OperatorTok{(}\DataTypeTok{size\_t}\OperatorTok{)}\KeywordTok{sizeof}\OperatorTok{(}\KeywordTok{struct}\NormalTok{ fiveTuple}\OperatorTok{),}
+\NormalTok{                smacofComparison}\OperatorTok{);}
+    \ControlFlowTok{for} \OperatorTok{(}\DataTypeTok{int}\NormalTok{ i }\OperatorTok{=} \DecValTok{0}\OperatorTok{;}\NormalTok{ i }\OperatorTok{\textless{}}\NormalTok{ n}\OperatorTok{;}\NormalTok{ i}\OperatorTok{++)} \OperatorTok{\{}
+\NormalTok{        index}\OperatorTok{[}\NormalTok{i}\OperatorTok{]} \OperatorTok{=}\NormalTok{ xi}\OperatorTok{[}\NormalTok{i}\OperatorTok{].}\NormalTok{index}\OperatorTok{;}
+\NormalTok{        row}\OperatorTok{[}\NormalTok{i}\OperatorTok{]} \OperatorTok{=}\NormalTok{ xi}\OperatorTok{[}\NormalTok{i}\OperatorTok{].}\NormalTok{row}\OperatorTok{;}
+\NormalTok{        col}\OperatorTok{[}\NormalTok{i}\OperatorTok{]} \OperatorTok{=}\NormalTok{ xi}\OperatorTok{[}\NormalTok{i}\OperatorTok{].}\NormalTok{col}\OperatorTok{;}
+\NormalTok{        delta}\OperatorTok{[}\NormalTok{i}\OperatorTok{]} \OperatorTok{=}\NormalTok{ xi}\OperatorTok{[}\NormalTok{i}\OperatorTok{].}\NormalTok{delta}\OperatorTok{;}
+\NormalTok{        weight}\OperatorTok{[}\NormalTok{i}\OperatorTok{]} \OperatorTok{=}\NormalTok{ xi}\OperatorTok{[}\NormalTok{i}\OperatorTok{].}\NormalTok{weight}\OperatorTok{;}
+    \OperatorTok{\}}
+\NormalTok{    free}\OperatorTok{(}\NormalTok{xi}\OperatorTok{);}
+    \ControlFlowTok{return}\OperatorTok{;}
+\OperatorTok{\}}
+
+\DataTypeTok{void}\NormalTok{ smacofTieBlocks}\OperatorTok{(}\DataTypeTok{const} \DataTypeTok{double} \OperatorTok{*}\NormalTok{delta}\OperatorTok{,} \DataTypeTok{int} \OperatorTok{*}\NormalTok{block}\OperatorTok{,} \DataTypeTok{double} \OperatorTok{*}\NormalTok{eps}\OperatorTok{,}
+                     \DataTypeTok{const} \DataTypeTok{int} \OperatorTok{*}\NormalTok{ndata}\OperatorTok{)} \OperatorTok{\{}
+    \DataTypeTok{int}\NormalTok{ n }\OperatorTok{=} \OperatorTok{*}\NormalTok{ndata}\OperatorTok{;}
+\NormalTok{    block}\OperatorTok{[}\DecValTok{0}\OperatorTok{]} \OperatorTok{=} \DecValTok{1}\OperatorTok{;}
+    \ControlFlowTok{for} \OperatorTok{(}\DataTypeTok{int}\NormalTok{ i }\OperatorTok{=} \DecValTok{1}\OperatorTok{;}\NormalTok{ i }\OperatorTok{\textless{}}\NormalTok{ n}\OperatorTok{;}\NormalTok{ i}\OperatorTok{++)} \OperatorTok{\{}
+        \ControlFlowTok{if} \OperatorTok{(}\NormalTok{fabs}\OperatorTok{(}\NormalTok{delta}\OperatorTok{[}\NormalTok{i}\OperatorTok{]} \OperatorTok{{-}}\NormalTok{ delta}\OperatorTok{[}\NormalTok{i }\OperatorTok{{-}} \DecValTok{1}\OperatorTok{])} \OperatorTok{\textless{}} \OperatorTok{*}\NormalTok{eps}\OperatorTok{)} \OperatorTok{\{}
+\NormalTok{            block}\OperatorTok{[}\NormalTok{i}\OperatorTok{]} \OperatorTok{=}\NormalTok{ block}\OperatorTok{[}\NormalTok{i }\OperatorTok{{-}} \DecValTok{1}\OperatorTok{];}
+        \OperatorTok{\}} \ControlFlowTok{else} \OperatorTok{\{}
+\NormalTok{            block}\OperatorTok{[}\NormalTok{i}\OperatorTok{]} \OperatorTok{=}\NormalTok{ block}\OperatorTok{[}\NormalTok{i }\OperatorTok{{-}} \DecValTok{1}\OperatorTok{]} \OperatorTok{+} \DecValTok{1}\OperatorTok{;}
+        \OperatorTok{\}}
+    \OperatorTok{\}}
+    \ControlFlowTok{return}\OperatorTok{;}
+\OperatorTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\section*{References}\label{references}
+\addcontentsline{toc}{section}{References}
+
+\phantomsection\label{refs}
+\begin{CSLReferences}{1}{0}
+\bibitem[\citeproctext]{ref-deleeuw_E_17o}
+De Leeuw, J. 2017. {``{Jacobi Eigen in R/C with Lower Triangular Column-wise Compact Storage}.''} 2017.
+
+\bibitem[\citeproctext]{ref-hildreth_57}
+Hildreth, C. 1957. {``{A Quadratic Programming Procedure}.''} \emph{Naval Research Logistic Quarterly} 14 (79--85).
+
+\end{CSLReferences}
+
+\end{document}

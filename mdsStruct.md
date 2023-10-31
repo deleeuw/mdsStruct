@@ -2,19 +2,19 @@
 title: "Notes on the C Version of Smacof"
 author: 
 - Jan de Leeuw - University of California Los Angeles
-date: '`r paste("Started October 10 2023, Version of",format(Sys.Date(),"%B %d, %Y"))`'
+date: 'Started October 10 2023, Version of October 30, 2023'
 output:
+  bookdown::html_document2:
+    keep_md: yes
+    css: preamble.css
+    toc: true
+    toc_depth: 4
+    number_sections: yes
   bookdown::pdf_document2:
     latex_engine: lualatex
     includes:
       in_header: preamble.tex
     keep_tex: yes
-    toc: true
-    toc_depth: 4
-    number_sections: yes
-  bookdown::html_document2:
-    keep_md: yes
-    css: preamble.css
     toc: true
     toc_depth: 4
     number_sections: yes
@@ -25,13 +25,9 @@ bibliography: ["mypubs.bib","total.bib"]
 abstract: TBD
 ---
 
-```{r loadpackages, echo = FALSE}
-#suppressPackageStartupMessages (library (foo, quietly = TRUE))
-```
 
-```{r load code, echo = FALSE}
-#source("rcode/smacofSort.R")
-```
+
+
 
 **Note:** This is a working paper which will be expanded/updated frequently. All suggestions for improvement are welcome. All Rmd, tex, html, pdf, R, and C files are in the public domain. Attribution
 will be appreciated, but is not required. The files can be found at
@@ -84,24 +80,14 @@ but probably in this case with little gain.
 
 # smacofHildreth
 
-@hildreth_57
-
 Consider the QP problem of minimizing $f(x)=\frac12(x-y)'W(x-y)$
-over all $x\in\mathbb{R}^n$ satisfying $Ax\geq 0$, where $A$ is $m\times n$. Wlg we can assume $a_j'Wa_j=1$. The Lagrangian is
+over all $x\in\mathbb{R}^n$ satisfying $Ax\geq 0$, where $A$ is $m\times n$. The Lagrangian is
 $$
-\mathcal{L}(x,\lambda)=\frac12(x-y)'W(x-y)-\lambda'Ax.
+\mathcal{L}(x,\lambda)=\frac12(x-y)'W(x-y)-\lambda'Ax
 $$
+amd we want
 $$
-\max_{\lambda\geq 0}\mathcal{L}(x,\lambda)=\begin{cases}\frac12(x-y)'W(x-y)&\text{ if }Ax\geq 0,\\
-+\infty&\text{ otherwise}.\end{cases}
-$$
-and thus
-$$
-\min_{x\in\mathbb{R}^n}\max_{\lambda\geq 0}\mathcal{L}(x,\lambda)=\min_{Ax\geq 0}\frac12(x-y)'W(x-y).
-$$
-By duality
-$$
-\min_{x\in\mathbb{R}^n}\max_{\lambda\geq 0}\mathcal{L}(x,\lambda)=\max_{\lambda\geq 0}\min_{x\in\mathbb{R}^n}\mathcal{L}(x,\lambda).
+\min_x\max_{\lambda\geq 0}\mathcal{L}(x,\lambda)=\max_{\lambda\geq 0}\min_x\mathcal{L}(x,\lambda)
 $$
 The inner minimum over $x$ is attained for 
 $$
@@ -109,29 +95,24 @@ x=y+W^{-1}A'\lambda,
 $$ 
 and is equal to
 $$
-\min_{x\in\mathbb{R}^n}\mathcal{L}(x,\lambda)=-\frac12\lambda'AW^{-1}A'\lambda-\lambda'Ay.
+\min_x\mathcal{L}(x,\lambda)=-\frac12\lambda'AW^{-1}A'\lambda-\lambda'Ay
 $$
 Thus
 $$
-\max_{\lambda\geq 0}\min_{x\in\mathbb{R}^n}\mathcal{L}(x,\lambda)=
+\max_{\lambda\geq 0}\min_x\mathcal{L}(x,\lambda)=
 -\frac12\min_{\lambda\geq 0}\left\{(Wy+A'\lambda)'W^{-1}(Wy+A'\lambda)-y'Wy\right\}
 $$
-We minimize $h(\lambda)=(Wy+A'\lambda)'W^{-1}(Wy+A'\lambda)$ with coordinate descent. Let $\lambda_j(\eps)=\lambda+\eps e_j$. Then
+Same treatment for the more general problem of minimizing $g(x)=\frac12(Bx-y)'W(Bx-y)$ over
+$Ax\geq 0$. Now $x=(B'WB)^{-1}(B'Wy+A'\lambda)$ and
 $$
-h(\lambda_j(\eps))=(Wy+A'\lambda+\eps a_j)'W^{-1}()=\eps^2a_j'W^{-1}a_j+2\eps a_j'W^{-1}(y+W^{-1}A'\lambda)+
+\min_x\mathcal{L}(x,\lambda)=\frac12((B(B'WB)^{-1}B'W-I)y+B(B'WB)^{-1}A'\lambda)'W(B(B'WB)^{-1}(B'Wy+A'\lambda)-y)-\lambda'A(B'WB)^{-1}(B'Wy+A'\lambda)=
 $$
-which must be minimized over $\eps\geq-\lambda_j$. So the minimum is attained at
 $$
-\eps=-\frac{a_j'W^{-1}x}{a_j'W^{-1}a_j}
+=\frac12y'WB(B'WB)^{-1}B'Wy-2
 $$
-with $x=y+W^{-1}A'\lambda$ (cf ...), provided ... satisfies .. Otherwise $\eps=-\lambda_j$. Now update both $\lambda$ and $x$,
-and go to the next $j$.
-
 # smacofDykstra
 
 # smacofJacobi
-
-taken from @deleeuw_E_17o
 
 # smacofSort
 
@@ -143,7 +124,54 @@ taken from @deleeuw_E_17o
 
 ## smacofSort.c
 
-```{c file_auxilary2, code = readLines("ccode/smacofSort.c"), eval = FALSE}
+
+```c
+#include "smacof.h"
+
+int smacofComparison(const void *px, const void *py) {
+    double x = ((struct fiveTuple *)px)->delta;
+    double y = ((struct fiveTuple *)py)->delta;
+    return (int)copysign(1.0, x - y);
+}
+
+void smacofSort(double *delta, double *weight, int *row, int *col, int *index,
+                const int *ndata) {
+    int n = *ndata;
+    struct fiveTuple *xi =
+        (struct fiveTuple *)calloc((size_t)n, (size_t)sizeof(struct fiveTuple));
+    for (int i = 0; i < n; i++) {
+        xi[i].index = i;
+        xi[i].row = row[i];
+        xi[i].col = col[i];
+        xi[i].delta = delta[i];
+        xi[i].weight = weight[i];
+    }
+    (void)qsort(xi, (size_t)n, (size_t)sizeof(struct fiveTuple),
+                smacofComparison);
+    for (int i = 0; i < n; i++) {
+        index[i] = xi[i].index;
+        row[i] = xi[i].row;
+        col[i] = xi[i].col;
+        delta[i] = xi[i].delta;
+        weight[i] = xi[i].weight;
+    }
+    free(xi);
+    return;
+}
+
+void smacofTieBlocks(const double *delta, int *block, double *eps,
+                     const int *ndata) {
+    int n = *ndata;
+    block[0] = 1;
+    for (int i = 1; i < n; i++) {
+        if (fabs(delta[i] - delta[i - 1]) < *eps) {
+            block[i] = block[i - 1];
+        } else {
+            block[i] = block[i - 1] + 1;
+        }
+    }
+    return;
+}
 ```
 
 # References

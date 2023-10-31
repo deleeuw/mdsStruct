@@ -71,7 +71,9 @@ void smacofJacobi(double *a, double *evec, double *eval, const int *pn,
         if (verbose) {
             printf("itel %3d fold %15.10f fnew %15.10f\n", itel, fold, fnew);
         }
-        if (((fnew - fold) < eps) || (itel == itmax)) break;
+        if (((fnew - fold) < eps) || (itel == itmax)) {
+            break;
+        }
         fold = fnew;
         itel++;
     }
@@ -83,6 +85,35 @@ void smacofJacobi(double *a, double *evec, double *eval, const int *pn,
     return;
 }
 
+void smacofGramSchmidt(double *x, double *r, int *pn, int *pp) {
+    int n = *pn, p = *pp, s = 1;
+    while (s <= p) {
+        for (int t = 1; t < s; t++) {
+            double sum = 0.0;
+            for (int i = 1; i <= n; i++) {
+                sum += x[MINDEX(i, t, n)] * x[MINDEX(i, s, n)];
+            }
+            for (int i = 1; i <= n; i++) {
+                x[MINDEX(i, s, n)] -= sum * x[MINDEX(i, t, n)];
+            }
+        }
+        double sum = 0.0;
+        for (int i = 1; i <= n; i++) {
+            sum += x[MINDEX(i, s, n)] * x[MINDEX(i, s, n)];
+        }
+        sum = sqrt(sum);
+        r[VINDEX(s)] = sum;
+        for (int i = 1; i <= n; i++) {
+            x[MINDEX(i, s, n)] /= sum;
+        }
+        s++;
+    }
+    return;
+}
+
+void smacofInvertPDMatrix() {}
+
+void smacofInvertAnyMatrix() {}
 
 /*
     int main() {
