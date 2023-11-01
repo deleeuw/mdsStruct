@@ -3,6 +3,10 @@
 void smacofImpute(double *delta, const double *weights) {}
 // if (i,j) missing, set average
 // weights always positive
+// compute average
+// set all elements equal
+// replace by actual elements
+
 
 void smacofDoubleCenter(const double *delta, double *cross, const int *pn) {
     // only works if m = n(n-1)/2
