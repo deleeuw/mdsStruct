@@ -1,29 +1,16 @@
-smacofSSMW: Makefile smacofEngine.c smacofUtils.c \
-smacofCore.c smacofNorm.c smacofPrint.c smacofLinearAlgebra.c \
-smacofAccelerate.c smacofSDCLMatrix.c smacofInitial.c smacof.h
-	$(CC) -o smacofSSMW -O2 smacofEngine.c smacofUtils.c \
-	smacofCore.c smacofNorm.c smacofLinearAlgebra.c smacofPrint.c \
-	smacofInitial.c smacofAccelerate.c smacofSDCLMatrix.c 
+smacofSSMW: smacof.h *.c
+	$(CC) -o smacofSSMW -O2 *.c
 
-debug: Makefile smacofEngine.c smacofUtils.c \
-smacofCore.c smacofNorm.c smacofPrint.c smacofLinearAlgebra.c smacof.h
-	$(CC) -o smacofSSMW_D -g smacofEngine.c smacofUtils.c \
-	smacofCore.c smacofNorm.c smacofLinearAlgebra.c smacofPrint.c \
-	smacofInitial.c smacofAccelerate.c smacofSDCLMatrix.c 
+debug: smacof.h *.c
+	$(CC) -o smacofSSMW -g *.c
 
-rlib: 
-	R CMD SHLIB -o smacofSSMW.so \
-		smacofEngine.c \
-		smacofUtils.c \
-		smacofCore.c \
-		smacofNorm.c \
-		smacofLinearAlgebra.c \
-		smacofPrint.c \
-		smacofInitial.c \
-		smacofAccelerate.c \
-		smacofSDCLMatrix.c 
-
-clib:
+rlib: smacof.h *.c
+	R CMD SHLIB -o smacofSSMW.so *.c
+	
+ofiles: smacof.h *.c
+	clang -c -O2 *.c
+		
+clib: ofiles
 	ar rcs libSmacof.a *.o
 
 clean:

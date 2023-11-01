@@ -12,17 +12,19 @@
 
 // smacofEngine.c
 
-void smacofEngine(double *delta, double *weights, double *xini, double *xnew,
-                  double *dini, double *dnew, double *bmat, double *psnew,
-                  const int *pinit, const int *pn, const int *pp, int *pitel,
+void smacofEngine(double *delta, double *weights, const int *irow,
+                  const int *icol, double *xini, double *xnew, double *dini,
+                  double *dnew, double *bnew, double *psnew, const int *pinit,
+                  const int *pn, const int *pp, const int *pm, int *pitel,
                   const int *pitmax, const int *peps1, const int *peps2,
-                  const bool *pverbose, const bool *relax, const bool *adjust);
+                  const bool *pverbose, const bool *prelax,
+                  const bool *padjust);
 
 // smacofCore.c
 
 void smacofMakeBMatrix(const double *delta, const double *weights,
                        const double *dold, double *bmat, const int *pm);
-void smacofMakeVMatrix(const double *weights, double *v, const int *pn);
+void smacofMakeVMatrix(const double *weights, double *v, const int *pm);
 void smacofEtaSquare(const double *weights, const double *dist, const int *pm,
                      double *etasquare);
 void smacofRho(const double *delta, const double *weights, const double *dist,
@@ -31,12 +33,14 @@ void smacofGuttman(const double *vinv, const double *bmat, const double *xold,
                    double *xnew, const int *pn, const int *pp);
 void smacofStress(const double *delta, const double *w, const double *d,
                   const int *m, double *stress);
-void smacofDistance(const double *x, double *d, const int *pn, const int *pp);
+void smacofDistance(const double *x, double *d, const int *irow,
+                    const int *icol, const int *pn, const int *pp,
+                    const int *pm);
 
 // smacofNorm.c
 
 void smacofScale(const double *delta, const double *weights, double *dold,
-                 double *xold, const int *pn, const int *pp);
+                 double *xold, const int *pn, const int *pp, const int *pm);
 void smacofCenter(double *x, const int *np, const int *pp);
 void smacofNormDelta(double *delta, const double *weights, const int *pm);
 void smacofNormWeights(double *weights, const int *pm);
@@ -70,16 +74,17 @@ void smacofTieBlocks(const double *x, int *it, double *eps, const int *n);
 // smacofInitial.c
 
 void smacofInitRandom(double *xini, const int *np, const int *pp);
-void smacofInitTorgerson(const double *delta, double *xold, const int *pn,
-                         const int *pp, const int *pitmax, const int *peps,
-                         const bool *pverbose);
+void smacofInitTorgerson(const double *delta, const double *weights,
+                         const int *irow, const int *icol, double *xold,
+                         const int *pn, const int *pp, const int *pm);
 void smacofInitMaximumSum(const double *delta, const double *weights,
                           double *xini, const int *pn, const int *pp,
                           const int *pitmax_j, const int *peps_j,
                           const bool *pverbose_j);
-void smacofInitial(const double *delta, const double *weights, double *xini,
-                   const int *pinit, const int *pn, const int *pp,
-                   const bool *adjust);
+void smacofInitial(const double *delta, const double *weights, const int *irow,
+                   const int *icol, double *xini, const int *pinit,
+                   const int *pn, const int *pp, const int *pm,
+                   const bool *padjust);
 void smacofDiagonalAdjust(const double *delta, const double *weights, double *x,
                           const int *pn, const int *pp, const int *pitmax,
                           const int *peps, const bool *pverbose);
@@ -99,6 +104,11 @@ void smacofPerronRoot(double *a, const int *pn, const double *plbd,
 void smacofJacobi(double *a, double *evec, double *eval, const int *pn,
                   const int *pm, const int *itmax, const int *eps,
                   const bool *verbose);
+void smacofInvertPDMatrix(const double *x, double *xinv, const int *pn);
+void smacofSimultaneousIteration(double *cross, double *xold, const int *pn,
+                                 const int *pp, const int *itmax,
+                                 const double *eps, const bool *verbose);
+void smacofGramSchmidt(double *x, double *r, int *pn, int *pp);
 
 // smacofDerivatives.c
 
@@ -122,6 +132,8 @@ void smacofPrintLTMatrix(const double *d, const int *pn, const int *pw,
                          const int *pr);
 void smacofPrintSLTMatrix(const double *d, const int *pn, const int *pw,
                           const int *pr);
+void smacofPrintSymmetricMatrix(const double *x, const int *pn, const int *pw,
+                                const int *pr);
 
 // smacofAccelerate.c
 
@@ -185,6 +197,14 @@ static inline int TINDEX(const int i, const int j, const int n) {
         return EXIT_FAILURE;
     }
     return ((j - 1) * n) - ((j - 1) * (j - 2) / 2) + (i - (j - 1)) - 1;
+}
+
+static inline int UINDEX(const int i, const int j, const int n) {
+    if (i >= j) {
+        return (TINDEX(i, j, n));
+    } else {
+        return (TINDEX(j, i, n));
+    }
 }
 
 static inline double SQUARE(const double x) { return (x * x); }

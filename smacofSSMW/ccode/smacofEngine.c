@@ -2,20 +2,17 @@
 
 // to be called from R
 
-void smacofEngine(double *delta, double *weights, double *xini, double *xnew,
-                  double *dini, double *dnew, double *bnew, double *psnew,
-                  const int *pinit, const int *pn, const int *pp, int *pitel,
+void smacofEngine(double *delta, double *weights, const int *irow,
+                  const int *icol, double *xini, double *xnew, double *dini,
+                  double *dnew, double *bnew, double *psnew, const int *pinit,
+                  const int *pn, const int *pp, const int *pm, int *pitel,
                   const int *pitmax, const int *peps1, const int *peps2,
                   const bool *pverbose, const bool *prelax,
                   const bool *padjust) {
-    int n = *pn, p = *pp, np = p * n, m = n * (n - 1) / 2, itel = *pitel,
-        itmax = *pitmax, itmax_j = 100, init = *pinit, eps_j = 15;
-    int width = 15, precision = 10;
-    bool verbose = *pverbose, verbose_j = false, verbose_e = false,
-         relax = *prelax, adjust = *padjust;
+    int n = *pn, p = *pp, np = p * n, m = *pm, itel = *pitel, itmax = *pitmax;
+    bool verbose = *pverbose, verbose_j = false, verbose_e = false;
     double sold = 0.0, snew = *psnew, cchange = 0.0, dchange = 0.0,
-           pchange = 1.0, echange = 1.0, rate = 1.0, eopt = 1.0;
-    double rho = 0.0, etaold = 0.0, etanew = 0.0, chch = 0.0;
+           pchange = 1.0, echange = 1.0, rate = 1.0;
     double eps1 = pow(10.0, -(double)*peps1), eps2 = pow(10.0, -(double)*peps2),
            eps_e = pow(10.0, -15.0);
     double *xold = (double *)calloc((size_t)np, (size_t)sizeof(double));
@@ -23,22 +20,23 @@ void smacofEngine(double *delta, double *weights, double *xini, double *xnew,
     double *bold = (double *)calloc((size_t)m, (size_t)sizeof(double));
     double *vmat = (double *)calloc((size_t)m, (size_t)sizeof(double));
     double *vinv = (double *)calloc((size_t)m, (size_t)sizeof(double));
-    (void)smacofNormWeights(weights, &m);
-    (void)smacofNormDelta(delta, weights, &m);
-    (void)smacofMakeVMatrix(weights, vmat, pn);
+    // sort here
+    (void)smacofNormWeights(weights, pm);        // fine
+    (void)smacofNormDelta(delta, weights, pm);   // fine
+    (void)smacofMakeVMatrix(weights, vmat, pn);  // fine
     (void)smacofMPInverseSDCLMatrix(weights, vinv, pn);
     (void)smacofInitial(delta, weights, xini, pinit, pn, pp, padjust);
-    (void)smacofDistance(xini, dini, pn, pp);
+    (void)smacofDistance(xini, dini, irow, icol, pn, pp, pm);  // fine
     (void)memcpy(xold, xini, (size_t)np * sizeof(double));
     (void)memcpy(dold, dini, (size_t)m * sizeof(double));
     (void)smacofStress(delta, weights, dold, &m, &sold);
-    (void)smacofMakeBMatrix(delta, weights, dold, bold, &m);
+    (void)smacofMakeBMatrix(delta, weights, dold, bold, pm);  // fine
     while (true) {
         (void)smacofGuttman(vinv, bold, xold, xnew, pn, pp);
         (void)smacofRMSDifference(xold, xnew, pn, pp, &echange);
-        (void)smacofRelax(xold, xnew, &echange, &pchange, &np, &itel, &relax,
+        (void)smacofRelax(xold, xnew, &echange, &pchange, &np, &itel, prelax,
                           &rate);
-        (void)smacofDistance(xnew, dnew, pn, pp);
+        (void)smacofDistance(xnew, dnew, irow, icol, pn, pp, pm);
         (void)smacofMakeBMatrix(delta, weights, dnew, bnew, &m);
         (void)smacofStress(delta, weights, dnew, &m, &snew);
         (void)smacofMaxConfigurationDifference(xold, xnew, pn, pp, &cchange);

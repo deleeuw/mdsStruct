@@ -4,68 +4,26 @@
 // matrix of order n and rank n-1 from only the elements
 // below the diagonal
 
-void smacofMPInverseSDCLMatrix(const double *w, double *vinv, const int *pn) {
-    int n = *pn, m = n * (n - 1) / 2, ik = 0, jk = 0, ij = 0;
-    double add = 1.0 / ((double)n), piv = 0.0;
-    double *d = (double *)calloc((size_t)n, (size_t)sizeof(double));
-    for (int i = 1; i <= m; i++) {
-        vinv[VINDEX(i)] = -w[VINDEX(i)];
+void smacofMPInverseSDCLMatrix(const double *v, double *vinv, const int *pn) {
+    int n = *pn, m = n * (n - 1) / 2, l = n * (n + 1) / 2;
+    double add = 1.0 / ((double)n);
+    double *vadd = (double *)calloc((size_t)l, (size_t)sizeof(double));
+    double *vmid = (double *)calloc((size_t)l, (size_t)sizeof(double));
+    (void)smacofAddSDCLDiagonal(v, vadd, pn);
+    for (int k = 1; k <= l; k++) {
+        vadd[VINDEX(k)] += add;
     }
-    for (int i = 1; i <= n; i++) {
-        d[VINDEX(i)] = 0.0;
-        for (int j = 1; j <= n; j++) {
-            if (i == j) {
-                continue;
-            }
-            d[VINDEX(i)] += vinv[PINDEX(i, j, n)];
-        }
-        d[VINDEX(i)] = -d[VINDEX(i)] + add;
-    }
-    for (int i = 1; i <= m; i++) {
-        vinv[VINDEX(i)] += add;
-    }
-    for (int k = 1; k <= n; k++) {
-        piv = d[VINDEX(k)];
-        for (int j = 1; j <= (n - 1); j++) {
-            if (j == k) {
-                continue;
-            }
-            jk = PINDEX(j, k, n);
-            for (int i = (j + 1); i <= n; i++) {
-                if (i == k) {
-                    continue;
-                }
-                ik = PINDEX(i, k, n);
-                ij = SINDEX(i, j, n);
-                vinv[ij] = vinv[ij] - vinv[ik] * vinv[jk] / piv;
-            }
-        }
-        for (int i = 1; i <= n; i++) {
-            if (i == k) {
-                continue;
-            }
-            ik = PINDEX(i, k, n);
-            d[VINDEX(i)] = d[VINDEX(i)] - vinv[ik] * vinv[ik] / piv;
-        }
-        for (int i = 1; i <= n; i++) {
-            if (i == k) {
-                continue;
-            }
-            ik = PINDEX(i, k, n);
-            vinv[ik] = vinv[ik] / piv;
-        }
-        d[VINDEX(k)] = -1 / piv;
+    (void)smacofInvertPDMatrix(vadd, vmid, pn);
+    for (int k = 1; k <= l; k++) {
+        vmid[VINDEX(k)] -= add;
     }
     for (int j = 1; j <= (n - 1); j++) {
         for (int i = (j + 1); i <= n; i++) {
-            ij = SINDEX(i, j, n);
-            vinv[ij] = vinv[ij] + add;
+            vinv[SINDEX(i, j, n)] = vmid[TINDEX(i, j, n)];
         }
     }
-    for (int i = 1; i <= n; i++) {
-        d[VINDEX(i)] = d[VINDEX(i)] + add;
-    }
-    free(d);
+    free(vadd);
+    free(vmid);
     return;
 }
 
@@ -119,3 +77,15 @@ void smacofAddSDCLDiagonal(const double *a, double *b, const int *pn) {
     free(rsum);
     return;
 }
+
+/*
+int main() {
+    double v[3] = {-1, -1, -1};
+    double vinv[3] = {0, 0, 0};
+    int n = 3, width = 15, precision = 10;
+    (void)smacofPrintSDCLMatrix(v, &n, &width, &precision);
+    (void)smacofMPInverseSDCLMatrix(v, vinv, &n);
+    (void)smacofPrintSDCLMatrix(vinv, &n, &width, &precision);
+    return(EXIT_SUCCESS);
+}
+*/

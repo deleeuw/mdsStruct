@@ -41,6 +41,20 @@ void smacofPrintAnyMatrix(const double *x, const int *pn, const int *pp,
     return;
 }
 
+void smacofPrintSymmetricMatrix(const double *x, const int *pn, const int *pw,
+                                const int *pr) {
+    int n = *pn, width = *pw, precision = *pr;
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            int ij = UINDEX(i, j, n);
+            printf(" %+*.*f", width, precision, x[ij]);
+        }
+        printf("\n");
+    }
+    printf("\n\n");
+    return;
+}
+
 void smacofPrintSHMatrix(const double *d, const int *pn, const int *pw,
                          const int *pr) {
     int n = *pn;

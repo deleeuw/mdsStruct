@@ -1,15 +1,17 @@
 #include "smacof.h"
 
-void smacofDistance(const double *x, double *d, const int *pn, const int *pp) {
-    int n = *pn, p = *pp;
-    for (int j = 1; j <= (n - 1); j++) {
-        for (int i = (j + 1); i <= n; i++) {
-            double sum = 0.0;
-            for (int s = 1; s <= p; s++) {
-                sum += SQUARE(x[MINDEX(i, s, n)] - x[MINDEX(j, s, n)]);
-            }
-            d[SINDEX(i, j, n)] = sqrt(fabs(sum));
+void smacofDistance(const double *x, double *d, const int *irow,
+                    const int *icol, const int *pn, const int *pp,
+                    const int *pm) {
+    int n = *pn, p = *pp, m = *pm;
+    for (int k = 1; k <= m; k++) {
+        int i = irow[VINDEX(k)];
+        int j = icol[VINDEX(k)];
+        double sum = 0.0;
+        for (int s = 1; s <= p; s++) {
+            sum += SQUARE(x[MINDEX(i, s, n)] - x[MINDEX(j, s, n)]);
         }
+        d[VINDEX(k)] = sqrt(fabs(sum));
     }
     return;
 }
@@ -17,22 +19,22 @@ void smacofDistance(const double *x, double *d, const int *pn, const int *pp) {
 void smacofMakeBMatrix(const double *delta, const double *weights,
                        const double *dold, double *bmat, const int *pm) {
     int m = *pm;
-    for (int i = 1; i <= m; i++) {
-        int iv = VINDEX(i);
-        double dfix = dold[iv];
+    for (int k = 1; k <= m; k++) {
+        int kv = VINDEX(k);
+        double dfix = dold[kv];
         if (dfix < 1e-15) {
-            bmat[iv] = 0.0;
+            bmat[kv] = 0.0;
         } else {
-            bmat[iv] = -weights[iv] * delta[iv] / dfix;
+            bmat[kv] = -weights[kv] * delta[kv] / dfix;
         }
     }
     return;
 }
 
-void smacofMakeVMatrix(const double *weights, double *v, const int *pn) {
-    int n = *pn, m = n * (n - 1) / 2;
-    for (int i = 1; i <= m; i++) {
-        v[VINDEX(i)] = -weights[VINDEX(i)];
+void smacofMakeVMatrix(const double *weights, double *v, const int *pm) {
+    int m = *pm;
+    for (int k = 1; k <= m; k++) {
+        v[VINDEX(k)] = -weights[VINDEX(k)];
     }
     return;
 }

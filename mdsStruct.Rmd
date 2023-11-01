@@ -82,7 +82,42 @@ Compile with "clang -o runner -O2 smacofSort.c" and then start "runner" in the s
 The C code uses the .C() interface in R, which can be improved using .Call(), 
 but probably in this case with little gain.
 
+# smacofMaximumSum
+
+Maximize
+$$
+\jis w_{ij}\delta_{ij}^2d_{ij}^2(X)
+$$
+over $X$ with $\text{tr}\ (X'X)^2=1$. This gives $BX=X\Lambda$, with
+$$
+B=\jis w_{ij}\delta_{ij}^2A_{ij}
+$$
+There is also a non-metric version. Maximize over $\text{tr}\ (X'X)^2$
+$$
+\jis\mathop{\sum\sum}_{1\leq k<l\leq n} w_{ij,kl}\text{sign}(\delta_{ij}-\delta_{kl})(d_{ij}^2(X)-d_{kl}^2(X))
+$$
+which simplifies to
+$$
+2\ \jis d_{ij}^2(X)\mathop{\sum\sum}_{1\leq k<l\leq n}w_{ij,kl}\text{sign}(\delta_{ij}-\delta_{kl})
+$$
+Simplifies more $w_{ij,kl}=w_{ij}$ or $_{ij,kl}=w_{ij}w_{kl}$
+
+Also note
+$$
+\rho(X)=\jis w_{ij}\delta_{ij}d_{ij}(X)=
+\jis \frac{w_{ij}}{\delta_{ij}d_{ij}(X)}\delta_{ij}^2d_{ij}^2(X)\approx\jis
+\frac{w_{ij}}{\delta_{ij}^2}\delta_{ij}^2d_{ij}^2(X)=\eta^2(X)
+$$
+
+# smacofElegant
+
+# smacofAdjustDiagonal
+
+# smacofImpute
+
 # smacofHildreth
+
+
 
 @hildreth_57
 

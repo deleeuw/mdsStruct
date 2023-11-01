@@ -158,23 +158,52 @@ void smacofSimultaneousIteration(double *cross, double *xold, const int *pn,
     return;
 }
 
-void smacofInvertPDMatrix() {}
+void smacofInvertPDMatrix(const double *x, double *xinv, const int *pn) {
+    int n = *pn, m = n * (n + 1) / 2, ik = 0, jk = 0, ij = 0;
+    for (int k = 1; k <= m; k++) {
+        xinv[VINDEX(k)] = x[VINDEX(k)];
+    }
+    for (int k = 1; k <= n; k++) {
+        double piv = xinv[TINDEX(k, k, n)];
+        for (int j = 1; j <= n; j++) {
+            if (j == k) {
+                continue;
+            }
+            jk = UINDEX(j, k, n);
+            for (int i = j; i <= n; i++) {
+                if (i == k) {
+                    continue;
+                }
+                ik = UINDEX(i, k, n);
+                ij = TINDEX(i, j, n);
+                xinv[ij] = xinv[ij] - xinv[ik] * xinv[jk] / piv;
+            }
+        }
+        for (int i = 1; i <= n; i++) {
+            if (i == k) {
+                continue;
+            }
+            ik = UINDEX(i, k, n);
+            xinv[ik] = xinv[ik] / piv;
+        }
+        xinv[TINDEX(k, k, n)] = -1 / piv;
+    }
+    for (int k = 1; k <= m; k++) {
+        xinv[VINDEX(k)] = -xinv[VINDEX(k)];
+    }
+    return;
+}
 
 void smacofInvertAnyMatrix() {}
 
 /*
-    int main() {
-    double a[10] = {758.0, 504.0, 261.0, 510.0, 374.0,
+int main() {
+    double x[10] = {758.0, 504.0, 261.0, 510.0, 374.0,
                     193.0, 382.0, 115.0, 212.0, 427.0};
-    double evec[16] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                       0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-    double eval[4] = {0.0, 0.0, 0.0, 0.0};
-    int n = 4, m = 2, itmax = 100, width = 15, precision = 10, nr = 1;
-    int eps = 10;
-    bool verbose = true;
-    (void)smacofJacobi(a, evec, eval, &n, &m, &itmax, &eps, &verbose);
-    (void)smacofPrintLTMatrix(a, &n, &width, &precision);
-    (void)smacofPrintAnyMatrix(evec, &n, &n, &width, &precision);
-    (void)smacofPrintAnyMatrix(eval, &nr, &n, &width, &precision);
+    double xinv[10] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    int n = 4, width = 15, precision = 10;
+    (void)smacofPrintSymmetricMatrix(x, &n, &width, &precision);
+    (void)smacofInvertPDMatrix(x, xinv, &n);
+    (void)smacofPrintSymmetricMatrix(xinv, &n, &width, &precision);
 }
 */
