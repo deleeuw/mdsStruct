@@ -56,6 +56,9 @@ void smacofRMSDifference(const double *x, double *y, const int *pn,
                          const int *pp, double *diff);
 void smacofMakeIIandJJ(const int *pn, int *ii, int *jj);
 void smacofDoubleCenter(const double *delta, double *cross, const int *pn);
+void smacofMakeIIandJJ(const int *pn, int *ii, int *jj);
+void smacofReadInputFile(char *fname, int *irow, int *icol, double *delta,
+                         double *weights);
 
 // smacofSDCLMatrix.c
 

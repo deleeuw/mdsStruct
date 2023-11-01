@@ -98,6 +98,24 @@ void smacofMakeIIandJJ(const int *pn, int *ii, int *jj) {
     return;
 }
 
+void smacofReadInputFile(char *fname, int *irow, int *icol, double *delta,
+                         double *weights) {
+    FILE *stream = fopen(fname, "r");
+    if (stream == NULL) {
+        printf("Error: cannot open %s\n", fname);
+        exit(EXIT_FAILURE);
+    }
+    int k = 0;
+    fscanf(stream, "%d %d %lf %lf", &irow[k], &icol[k], &delta[k], &weights[k]);
+    while (!feof(stream)) {
+        k++;
+        fscanf(stream, "%d %d %lf %lf", &irow[k], &icol[k], &delta[k],
+               &weights[k]);
+    }
+    fclose(stream);
+    return;
+}
+
 /*
  int main() {
     int n = 4, p = 2, width = 10, precision = 6;
