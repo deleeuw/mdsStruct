@@ -1,17 +1,5 @@
 dyn.load("/Users/deleeuw/Desktop/projects/mdsStruct/ccode/smacofEngine.so")
 
-fullIndex <- function(n) {
-  ii <- c()
-  jj <- c()
-  for (j in 1:(n - 1)) {
-    for (i in (j + 1):n) {
-      ii <- c(ii, i)
-      jj <- c(jj, j)
-    }
-  }
-  return(list(ii = ii, jj = jj))
-}
-
 smacofRC <-
   function(delta,
            p = 2,

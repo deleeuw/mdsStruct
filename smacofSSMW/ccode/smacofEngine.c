@@ -7,8 +7,7 @@ void smacofEngine(double *delta, double *weights, const int *irow,
                   double *dnew, double *bnew, double *psnew, const int *pinit,
                   const int *pn, const int *pp, const int *pm, int *pitel,
                   const int *pitmax, const int *peps1, const int *peps2,
-                  const bool *pverbose, const bool *prelax,
-                  const bool *padjust) {
+                  const bool *pverbose, const bool *prelax) {
     int n = *pn, p = *pp, np = p * n, m = *pm, itel = *pitel, itmax = *pitmax;
     bool verbose = *pverbose, verbose_j = false, verbose_e = false;
     double sold = 0.0, snew = *psnew, cchange = 0.0, dchange = 0.0,
@@ -25,8 +24,7 @@ void smacofEngine(double *delta, double *weights, const int *irow,
     (void)smacofNormDelta(delta, weights, pm);   // fine
     (void)smacofMakeVMatrix(weights, vmat, pn);  // fine
     (void)smacofMPInverseSDCLMatrix(weights, vinv, pn);
-    (void)smacofInitial(delta, weights, irow, icol, xini, pinit, pn, pp, pm,
-                        padjust);
+    (void)smacofInitial(delta, weights, irow, icol, xini, pinit, pn, pp, pm);
     (void)smacofDistance(xini, dini, irow, icol, pn, pp, pm);  // fine
     (void)memcpy(xold, xini, (size_t)np * sizeof(double));
     (void)memcpy(dold, dini, (size_t)m * sizeof(double));

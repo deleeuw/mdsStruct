@@ -1,43 +1,6 @@
 library(MASS)
 
-# double centers a symmetric matrix
 
-doubleCenter <- function(x) {
-  rs <- apply(x, 1, mean)
-  ss <- mean(x)
-  return(x - outer(rs, rs, "+") + ss)
-}
-
-# mPrint() formats a matrix (or vector, or scalar) of numbers
-# for printing 
-
-mPrint <- function(x,
-                   digits = 6,
-                   width = 8,
-                   format = "f",
-                   flag = "+") {
-  print(noquote(
-    formatC(
-      x,
-      digits = digits,
-      width = width,
-      format = format,
-      flag = flag
-    )
-  ))
-}
-
-# classical MDS
-
-torgerson <- function(delta, p = 2) {
-  e <- eigen(-.5 * doubleCenter(as.matrix(delta) ^ 2))
-  l <- sqrt(pmax(0, e$values[1:p]))
-  if (p == 1) {
-    return(as.matrix(e$vectors[, 1] * l))
-  } else {
-    return(e$vectors[, 1:p] %*% diag(l))
-  }
-}
 
 smacofR <-
   function(delta,

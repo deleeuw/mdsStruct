@@ -1,18 +1,12 @@
 smacofSSMW: smacof.h *.c
-	$(CC) -o smacofSSMW -O2 *.c
+	$(CC) -o smacofSSMW -O2 *.c -lSmacof
 
 debug: smacof.h *.c
 	$(CC) -o smacofSSMW -g *.c
 
 rlib: smacof.h *.c
-	R CMD SHLIB -o smacofSSMW.so *.c
-	
-ofiles: smacof.h *.c
-	clang -c -O2 *.c
-		
-clib: ofiles
-	ar rcs libSmacof.a *.o
-
+	R CMD SHLIB -o smacofSSMW.so *.c -lSmacof
+			
 clean:
 	rm -rf *.o *.dSYM core a.out
 

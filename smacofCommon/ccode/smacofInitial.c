@@ -2,11 +2,10 @@
 
 void smacofInitial(const double *delta, const double *weights, const int *irow,
                    const int *icol, double *xini, const int *pinit,
-                   const int *pn, const int *pp, const int *pm,
-                   const bool *padjust) {
+                   const int *pn, const int *pp, const int *pm) {
     int init = *pinit, np = *pn * *pp;
     int itmax_j = 100, itmax_d = 100, eps_j = 10, eps_d = 10;
-    bool verbose_j = false, verbose_d = false, adjust = *padjust;
+    bool verbose_j = false, verbose_d = false;
     double *dini = (double *)calloc((size_t)np, (size_t)sizeof(double));
     switch (init) {
         case 1:
@@ -28,10 +27,6 @@ void smacofInitial(const double *delta, const double *weights, const int *irow,
     (void)smacofCenter(xini, pn, pp);
     (void)smacofDistance(xini, dini, irow, icol, pn, pp, pm);
     (void)smacofScale(delta, weights, dini, xini, pn, pp, pm);
-    if (adjust) {
-        (void)smacofDiagonalAdjust(delta, weights, xini, pn, pp, &itmax_d,
-                                   &eps_d, &verbose_d);
-    }
     free(dini);
     return;
 }
@@ -39,32 +34,31 @@ void smacofInitial(const double *delta, const double *weights, const int *irow,
 void smacofInitTorgerson(const double *delta, const double *weights,
                          const int *irow, const int *icol, double *xold,
                          const int *pn, const int *pp, const int *pm) {
-    int n = *pn, p = *pp, m = *pm, mn = n * (n - 1) / 2, itmax = 100, eps = 10;
+    int n = *pn, p = *pp, m = *pm, nn = n * (n - 1) / 2, itmax = 100, eps = 10;
+    int width = 15, precision = 10, nrow = 1;
     bool verbose = false;
-    double *dimp = (double *)calloc((size_t)mn, (size_t)sizeof(double));
-    if (m < mn) {
-        double sum = 0.0;
-        for (int k = 1; k <= m; k++) {
-            sum += weights[VINDEX(k)] * delta[VINDEX(k)];
-        }
-        for (int k = 1; k <= mn; k++) {
-            dimp[VINDEX(k)] = sum;
-        }
-        for (int k = 1; k <= m; k++) {
-            int ki = irow[VINDEX(k)];
-            int kj = icol[VINDEX(k)];
-            dimp[SINDEX(ki, kj, n)] = delta[VINDEX(k)];
-        }
-    }
-    double *cross = (double *)calloc((size_t)mn, (size_t)sizeof(double));
+    double *dimp = (double *)calloc((size_t)nn, (size_t)sizeof(double));
+    double *cross = (double *)calloc((size_t)nn, (size_t)sizeof(double));
     double *evec = (double *)calloc((size_t)(n * n), (size_t)sizeof(double));
     double *eval = (double *)calloc((size_t)n, (size_t)sizeof(double));
+    double sum = 0.0;
+    for (int k = 1; k <= m; k++) {
+        sum += weights[VINDEX(k)] * delta[VINDEX(k)];
+    }
+    for (int k = 1; k <= nn; k++) {
+        dimp[VINDEX(k)] = sum;
+    }
+    for (int k = 1; k <= m; k++) {
+        int ki = irow[VINDEX(k)];
+        int kj = icol[VINDEX(k)];
+        dimp[SINDEX(ki, kj, n)] = delta[VINDEX(k)];
+    }
     (void)smacofDoubleCenter(dimp, cross, pn);
     (void)smacofJacobi(cross, evec, eval, pn, pp, &itmax, &eps, &verbose);
     for (int i = 1; i <= n; i++) {
         for (int s = 1; s <= p; s++) {
             xold[MINDEX(i, s, n)] =
-                evec[MINDEX(i, s, n)] * sqrt(eval[VINDEX(s)]);
+                evec[MINDEX(i, s, n)] * sqrt(fabs(eval[VINDEX(s)]));
         }
     }
     free(cross);

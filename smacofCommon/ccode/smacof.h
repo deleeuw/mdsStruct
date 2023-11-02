@@ -17,8 +17,7 @@ void smacofEngine(double *delta, double *weights, const int *irow,
                   double *dnew, double *bnew, double *psnew, const int *pinit,
                   const int *pn, const int *pp, const int *pm, int *pitel,
                   const int *pitmax, const int *peps1, const int *peps2,
-                  const bool *pverbose, const bool *prelax,
-                  const bool *padjust);
+                  const bool *pverbose, const bool *prelax);
 
 // smacofCore.c
 
@@ -57,9 +56,8 @@ void smacofRMSDifference(const double *x, double *y, const int *pn,
 void smacofMakeIIandJJ(const int *pn, int *ii, int *jj);
 void smacofDoubleCenter(const double *delta, double *cross, const int *pn);
 void smacofMakeIIandJJ(const int *pn, int *ii, int *jj);
-void smacofReadInputFile(char *fname, int *irow, int *icol, double *delta, double *weights);
-
-  
+void smacofReadInputFile(char *fname, int *irow, int *icol, double *delta,
+                         double *weights);
 
 // smacofSDCLMatrix.c
 
@@ -87,11 +85,7 @@ void smacofInitMaximumSum(const double *delta, const double *weights,
                           const bool *pverbose_j);
 void smacofInitial(const double *delta, const double *weights, const int *irow,
                    const int *icol, double *xini, const int *pinit,
-                   const int *pn, const int *pp, const int *pm,
-                   const bool *padjust);
-void smacofDiagonalAdjust(const double *delta, const double *weights, double *x,
-                          const int *pn, const int *pp, const int *pitmax,
-                          const int *peps, const bool *pverbose);
+                   const int *pn, const int *pp, const int *pm);
 
 // smacofElegant.c
 
