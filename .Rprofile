@@ -24,12 +24,12 @@ clib <- function() {
 }
 
 rlib <- function() {
-  common()
+  ssmw()
   system("make rlib")
 }
 
-pristine <- function() {
-  system("make pristine")
+clean <- function() {
+  system("make clean")
 }
 
 run <- function() {

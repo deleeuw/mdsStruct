@@ -4,17 +4,11 @@ smacofSSMW: *.c \
 /usr/local/lib/libSmacof.a
 	$(CC) -o smacofSSMW -O2 *.c -lSmacof
 
-debug: smacof.h *.c
-	$(CC) -o smacofSSMW -g *.c
-
-rlib: smacof.h *.c
+rlib: ../../smacofCommon/ccode/*.h *.c
 	R CMD SHLIB -o smacofSSMW.so *.c -lSmacof
-			
-clean:
-	rm -rf *.o *.dSYM core a.out
 
-pristine: clean
-	rm -rf smacofSSMW *.so *.a *.txt
+clean: clean
+	rm -rf smacofSSMW *.o *.dSym a.out core *.so *.a *.txt
 
 format:
 	clang-format -i -style="{BasedOnStyle: google, IndentWidth: 4}" *.c

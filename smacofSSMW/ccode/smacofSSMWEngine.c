@@ -39,20 +39,17 @@ void smacofSSMWEngine(double *delta, double *weights, const int *irow,
                           &rate);
         (void)smacofDistance(xnew, dnew, irow, icol, pn, pp, pm);
         (void)smacofMakeBMatrix(delta, weights, dnew, bnew, irow, icol, pn, pm);
-        (void)smacofStress(delta, weights, dnew, pm, psnew);
-        (void)smacofMaxConfigurationDifference(xold, xnew, pn, pp, &cchange);
-        (void)smacofMaxDistanceDifference(dold, dnew, pm, &dchange);
+        (void)smacofStress(delta, weights, dnew, pm, &snew);
         if (verbose) {
             printf(
-                "itel %3d sold %12.10f sdif %+12.10f cvdf %+12.10f cchg "
-                "%12.10f dchg %12.10f rate %12.10f\n",
-                itel, sold, sold - *psnew, echange, cchange, dchange, rate);
+                "itel %3d sold %12.10f sdif %+12.10f rmsd %+12.10f rate "
+                "%12.10f\n", itel, sold, sold - snew, echange, rate);
         }
-        if ((itel == itmax) || (((sold - snew) < eps1) && (cchange < eps2))) {
+        if ((itel == itmax) || (((sold - snew) < eps1) && (echange < eps2))) {
             break;
         }
         itel++;
-        sold = *psnew;
+        sold = snew;
         pchange = echange;
         (void)memcpy(xold, xnew, (size_t)np * sizeof(double));
         (void)memcpy(dold, dnew, (size_t)m * sizeof(double));

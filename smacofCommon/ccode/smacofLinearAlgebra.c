@@ -208,18 +208,10 @@ void smacofMPInverseSDCLMatrix(const double *vmat, double *vinv, const int *pn) 
             vadd[TINDEX(i, j, n)] = vmat[TINDEX(i, j, n)] + add;
         }
     }
-    printf("vmat\n");
-    (void)smacofPrintSymmetricMatrix(vmat, pn, &width, &precision);
-    printf("vadd\n");
-    (void)smacofPrintSymmetricMatrix(vadd, pn, &width, &precision);
     (void)smacofInvertPDMatrix(vadd, vinv, pn);
-    printf("vadd inv\n");
-    (void)smacofPrintSymmetricMatrix(vinv, pn, &width, &precision);
     for (int k = 1; k <= nn; k++) {
         vinv[VINDEX(k)] -= add;
     }
-    printf("vadd inv\n");
-    (void)smacofPrintSymmetricMatrix(vinv, pn, &width, &precision);
     free(vadd);
     return;
 }

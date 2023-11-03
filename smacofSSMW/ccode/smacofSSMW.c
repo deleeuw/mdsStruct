@@ -12,12 +12,12 @@ int main() {
     double dnew[15] = {0.0};
     double bnew[15] = {0.0};
     double snew = 0.0;
-    int init = 4;
+    int init = 3;
     int n = 6;
     int p = 2;
     int m = 15;
     int itel = 1;
-    int itmax = 3;
+    int itmax = 5;
     int eps1 = 15;
     int eps2 = 10;
     bool verbose = true;
