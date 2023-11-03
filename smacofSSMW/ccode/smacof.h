@@ -1,1 +1,0 @@
-../../smacofCommon/ccode/smacof.h

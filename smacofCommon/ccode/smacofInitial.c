@@ -13,14 +13,10 @@ void smacofInitial(const double *delta, const double *weights, const int *irow,
                                       pm);
             break;
         case 2:
-            //(void)smacofElegant(delta, xini, pn, pp, &itmax_e, &eps_e,
-            //&verbose_e);
+            (void)smacofInitMaximumSum(delta, weights, irow, icol, xini, pn, pp,
+                                       pm, &itmax_j, &eps_j, &verbose_j);
             break;
         case 3:
-            (void)smacofInitMaximumSum(delta, weights, xini, pn, pp, &itmax_j,
-                                       &eps_j, &verbose_j);
-            break;
-        case 4:
             (void)smacofInitRandom(xini, pn, pp);
             break;
     }
@@ -77,19 +73,25 @@ void smacofInitRandom(double *xini, const int *pn, const int *pp) {
 }
 
 void smacofInitMaximumSum(const double *delta, const double *weights,
-                          double *xini, const int *pn, const int *pp,
+                          const int *irow, const int *icol, double *xini,
+                          const int *pn, const int *pp, const int *pm,
                           const int *pitmax_j, const int *peps_j,
                           const bool *pverbose_j) {
-    int n = *pn, p = *pp, m = n * (n - 1) / 2;
+    int n = *pn, p = *pp, m = *pm, nn = n * (n - 1) / 2;
     double *a = (double *)calloc((size_t)m, (size_t)sizeof(double));
     double *b = (double *)calloc((size_t)(m + n), (size_t)sizeof(double));
     double *evec = (double *)calloc((size_t)SQUARE(n), (size_t)sizeof(double));
     double *eval = (double *)calloc((size_t)n, (size_t)sizeof(double));
-    for (int i = 1; i <= m; i++) {
-        int iv = VINDEX(i);
-        a[iv] = -weights[iv] * SQUARE(delta[iv]);
+    for (int k = 1; k <= nn; k++) {
+        b[VINDEX(k)] = 0.0;
     }
-    (void)smacofAddSDCLDiagonal(a, b, pn);
+    for (int k = 1; k <= m; k++) {
+        int kv = VINDEX(k), ik = irow[kv], jk = icol[kv];
+        double cell = weights[kv] * SQUARE(delta[kv]);
+        b[TINDEX(ik, jk, n)] -= cell;
+        b[TINDEX(ik, ik, n)] += cell;
+        b[TINDEX(jk, jk, n)] += cell;
+    }
     (void)smacofJacobi(b, evec, eval, pn, pp, pitmax_j, peps_j, pverbose_j);
     for (int i = 1; i <= n; i++) {
         for (int s = 1; s <= p; s++) {
@@ -97,6 +99,10 @@ void smacofInitMaximumSum(const double *delta, const double *weights,
                 evec[MINDEX(i, s, n)] * sqrt(eval[VINDEX(s)]);
         }
     }
+    free(a);
+    free(b);
+    free(evec);
+    free(eval);
     return;
 }
 

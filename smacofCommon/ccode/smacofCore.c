@@ -16,25 +16,44 @@ void smacofDistance(const double *x, double *d, const int *irow,
     return;
 }
 
+// bmat always has to be a complete SDCL matrix
+
 void smacofMakeBMatrix(const double *delta, const double *weights,
-                       const double *dold, double *bmat, const int *pm) {
-    int m = *pm;
+                       const double *dold, double *bmat, const int *irow,
+                       const int *icol, const int *pn, const int *pm) {
+    int m = *pm, n = *pn, nn = n * (n - 1) / 2;
+    for (int k = 1; k <= nn; k++) {
+        bmat[VINDEX(k)] = -0.0;
+    }
     for (int k = 1; k <= m; k++) {
-        int kv = VINDEX(k);
-        double dfix = dold[kv];
+        int kv = VINDEX(k), ik = irow[kv], jk = icol[kv];
+        double dfix = dold[kv], cell = 0.0;
         if (dfix < 1e-15) {
-            bmat[kv] = 0.0;
+            cell = -0.0;
         } else {
-            bmat[kv] = -weights[kv] * delta[kv] / dfix;
+            cell = weights[kv] * delta[kv] / dfix;
         }
+        bmat[TINDEX(ik, jk, n)] -= cell;
+        bmat[TINDEX(ik, ik, n)] += cell;
+        bmat[TINDEX(jk, jk, n)] += cell;
     }
     return;
 }
 
-void smacofMakeVMatrix(const double *weights, double *v, const int *pm) {
-    int m = *pm;
+// vmat always has to be a complete SDCL matrix
+
+void smacofMakeVMatrix(const double *weights, double *vmat, const int *irow,
+                       const int *icol, const int *pn, const int *pm) {
+    int m = *pm, n = *pn, nn = n * (n - 1) / 2;
+    for (int k = 1; k <= nn; k++) {
+        vmat[VINDEX(k)] = -0.0;
+    }
     for (int k = 1; k <= m; k++) {
-        v[VINDEX(k)] = -weights[VINDEX(k)];
+        int kv = VINDEX(k), ik = irow[kv], jk = icol[kv];
+        double cell = weights[kv];
+        vmat[TINDEX(ik, jk, n)] -= cell;
+        vmat[TINDEX(ik, ik, n)] += cell;
+        vmat[TINDEX(jk, jk, n)] += cell;
     }
     return;
 }
@@ -42,9 +61,10 @@ void smacofMakeVMatrix(const double *weights, double *v, const int *pm) {
 void smacofGuttman(const double *vinv, const double *bmat, const double *xold,
                    double *xnew, const int *pn, const int *pp) {
     int n = *pn, p = *pp, np = n * p;
+    int width = 15, precision = 10;
     double *ymat = (double *)calloc((size_t)np, (size_t)sizeof(double));
-    (void)smacofMultiplySDCLMatrix(bmat, xold, ymat, pn, pp);
-    (void)smacofMultiplySDCLMatrix(vinv, ymat, xnew, pn, pp);
+    (void)smacofMultiplySymmetricMatrix(bmat, xold, ymat, pn, pp);
+    (void)smacofMultiplySymmetricMatrix(vinv, ymat, xnew, pn, pp);
     free(ymat);
     return;
 }
@@ -61,6 +81,7 @@ void smacofStress(const double *delta, const double *weights,
     return;
 }
 
+/*
 void smacofEtaSquare(const double *weights, const double *dist, const int *pm,
                      double *etasquare) {
     int m = *pm;
@@ -84,3 +105,4 @@ void smacofRho(const double *delta, const double *weights, const double *dist,
     *rho = sum;
     return;
 }
+*/

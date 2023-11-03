@@ -16,8 +16,8 @@ void smacofGradient(const double *delta, const double *weights,
             bmat[iv] = weights[iv] * delta[iv] / dfix;
         }
     }
-    (void)smacofMultiplySDCLMatrix(bmat, xold, ymat, pn, pp);
-    (void)smacofMultiplySDCLMatrix(vinv, ymat, xnew, pn, pp);
+    (void)smacofMultiplySymmetricMatrix(bmat, xold, ymat, pn, pp);
+    (void)smacofMultiplySymmetricMatrix(vinv, ymat, xnew, pn, pp);
     for (int i = 1; i <= n; i++) {
         for (int s = 1; s <= p; s++) {
             gradient[MINDEX(i, s, n)] =

@@ -1,4 +1,7 @@
-smacofSSMW: smacof.h *.c
+smacofSSMW: *.c \
+../../smacofCommon/ccode/*.c \
+../../smacofCommon/ccode/*.h \
+/usr/local/lib/libSmacof.a
 	$(CC) -o smacofSSMW -O2 *.c -lSmacof
 
 debug: smacof.h *.c
@@ -14,5 +17,5 @@ pristine: clean
 	rm -rf smacofSSMW *.so *.a *.txt
 
 format:
-	clang-format -i -style="{BasedOnStyle: google, IndentWidth: 4}" *.c *.h
+	clang-format -i -style="{BasedOnStyle: google, IndentWidth: 4}" *.c
 

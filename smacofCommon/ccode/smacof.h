@@ -12,18 +12,20 @@
 
 // smacofEngine.c
 
-void smacofEngine(double *delta, double *weights, const int *irow,
-                  const int *icol, double *xini, double *xnew, double *dini,
-                  double *dnew, double *bnew, double *psnew, const int *pinit,
-                  const int *pn, const int *pp, const int *pm, int *pitel,
-                  const int *pitmax, const int *peps1, const int *peps2,
-                  const bool *pverbose, const bool *prelax);
+void smacofSSMWEngine(double *delta, double *weights, const int *irow,
+                      const int *icol, double *xini, double *xnew, double *dnew,
+                      double *bnew, double *psnew, const int *pinit,
+                      const int *pn, const int *pp, const int *pm, int *pitel,
+                      const int *pitmax, const int *peps1, const int *peps2,
+                      const bool *pverbose, const bool *prelax);
 
 // smacofCore.c
 
 void smacofMakeBMatrix(const double *delta, const double *weights,
-                       const double *dold, double *bmat, const int *pm);
-void smacofMakeVMatrix(const double *weights, double *v, const int *pm);
+                       const double *dold, double *bmat, const int *irow,
+                       const int *icol, const int *pn, const int *pm);
+void smacofMakeVMatrix(const double *weights, double *vmat, const int *irow,
+                       const int *icol, const int *pn, const int *pm);
 void smacofEtaSquare(const double *weights, const double *dist, const int *pm,
                      double *etasquare);
 void smacofRho(const double *delta, const double *weights, const double *dist,
@@ -59,13 +61,6 @@ void smacofMakeIIandJJ(const int *pn, int *ii, int *jj);
 void smacofReadInputFile(char *fname, int *irow, int *icol, double *delta,
                          double *weights);
 
-// smacofSDCLMatrix.c
-
-void smacofMultiplySDCLMatrix(const double *a, const double *x, double *y,
-                              const int *pn, const int *pp);
-void smacofMPInverseSDCLMatrix(const double *w, double *vinv, const int *ndim);
-void smacofAddSDCLDiagonal(const double *a, double *b, const int *pn);
-
 // smacofSort.c
 
 int smacofComparison(const void *px, const void *py);
@@ -80,22 +75,13 @@ void smacofInitTorgerson(const double *delta, const double *weights,
                          const int *irow, const int *icol, double *xold,
                          const int *pn, const int *pp, const int *pm);
 void smacofInitMaximumSum(const double *delta, const double *weights,
-                          double *xini, const int *pn, const int *pp,
+                          const int *irow, const int *icol, double *xini,
+                          const int *pn, const int *pp, const int *pm,
                           const int *pitmax_j, const int *peps_j,
                           const bool *pverbose_j);
 void smacofInitial(const double *delta, const double *weights, const int *irow,
                    const int *icol, double *xini, const int *pinit,
                    const int *pn, const int *pp, const int *pm);
-
-// smacofElegant.c
-
-void smacofInitElegant(const double *delta, const double *weights,
-                       const int *pn, const int *pm, const double *plbd,
-                       double *proot, const int *pitmax, const double *peps,
-                       const bool *pverbose);
-void smacofPerronRoot(double *a, const int *pn, const double *plbd,
-                      double *proot, const int *pitmax, const double *peps,
-                      const bool *verbose);
 
 // smacofLinearAlgebra.c
 
@@ -107,6 +93,9 @@ void smacofSimultaneousIteration(double *cross, double *xold, const int *pn,
                                  const int *pp, const int *itmax,
                                  const double *eps, const bool *verbose);
 void smacofGramSchmidt(double *x, double *r, int *pn, int *pp);
+void smacofMultiplySymmetricMatrix(const double *a, const double *x, double *y,
+                                   const int *pn, const int *pp);
+void smacofMPInverseSDCLMatrix(const double *w, double *vinv, const int *ndim);
 
 // smacofDerivatives.c
 

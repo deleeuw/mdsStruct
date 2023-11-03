@@ -111,6 +111,7 @@ void smacofGramSchmidt(double *x, double *r, int *pn, int *pp) {
     return;
 }
 
+/*
 void smacofSimultaneousIteration(double *cross, double *xold, const int *pn,
                                  const int *pp, const int *itmax,
                                  const double *eps, const bool *verbose) {
@@ -130,7 +131,7 @@ void smacofSimultaneousIteration(double *cross, double *xold, const int *pn,
     (void)smacofGramSchmidt(xold, r, &n, &p);
     oldsum = 0.0;
     while (true) {
-        (void)smacofMultiplySDCLMatrix(cross, xold, xnew, &n, &p);
+        (void)smacofMultiplySymmetricMatrix(cross, xold, xnew, &n, &p);
         (void)smacofGramSchmidt(xnew, r, &n, &p);
         (void)smacofMaxConfigurationDifference(xold, xnew, &n, &p, &maxdiff);
         newsum = 0.0;
@@ -157,6 +158,7 @@ void smacofSimultaneousIteration(double *cross, double *xold, const int *pn,
     free(r);
     return;
 }
+*/
 
 void smacofInvertPDMatrix(const double *x, double *xinv, const int *pn) {
     int n = *pn, m = n * (n + 1) / 2, ik = 0, jk = 0, ij = 0;
@@ -195,6 +197,48 @@ void smacofInvertPDMatrix(const double *x, double *xinv, const int *pn) {
 }
 
 void smacofInvertAnyMatrix() {}
+
+void smacofMPInverseSDCLMatrix(const double *vmat, double *vinv, const int *pn) {
+    int n = *pn, nn = n * (n + 1) / 2;
+    int width = 15, precision = 10;
+    double add = 1.0 / ((double)n);
+    double *vadd = (double *)calloc((size_t)nn, (size_t)sizeof(double));
+    for (int j = 1; j <= n; j++) {
+        for (int i = j; i <= n; i++) {
+            vadd[TINDEX(i, j, n)] = vmat[TINDEX(i, j, n)] + add;
+        }
+    }
+    printf("vmat\n");
+    (void)smacofPrintSymmetricMatrix(vmat, pn, &width, &precision);
+    printf("vadd\n");
+    (void)smacofPrintSymmetricMatrix(vadd, pn, &width, &precision);
+    (void)smacofInvertPDMatrix(vadd, vinv, pn);
+    printf("vadd inv\n");
+    (void)smacofPrintSymmetricMatrix(vinv, pn, &width, &precision);
+    for (int k = 1; k <= nn; k++) {
+        vinv[VINDEX(k)] -= add;
+    }
+    printf("vadd inv\n");
+    (void)smacofPrintSymmetricMatrix(vinv, pn, &width, &precision);
+    free(vadd);
+    return;
+}
+
+void smacofMultiplySymmetricMatrix(const double *a, const double *x, double *y,
+                                   const int *pn, const int *pp) {
+    int n = *pn, p = *pp;
+    for (int s = 1; s <= p; s++) {
+        for (int i = 1; i <= n; i++) {
+            double sum = 0.0;
+            for (int j = 1; j <= n; j++) {
+                int ij = UINDEX(i, j, n);
+                sum += a[ij] * x[MINDEX(j, s, n)];
+            }
+            y[MINDEX(i, s, n)] = sum;
+        }
+    }
+    return;
+}
 
 /*
 int main() {
