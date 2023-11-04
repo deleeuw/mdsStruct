@@ -43,8 +43,7 @@ void smacofSSMWEngine(double *delta, double *weights, const int *irow,
         (void)smacofStress(delta, weights, dnew, pm, &snew);
         if (verbose) {
             printf(
-                "itel %3d sold %12.10f snew %12.10f sdif %+12.10f rmsd "
-                "%+12.10f rate "
+                "itel %3d sold %12.10f snew %12.10f sdif %+12.10f rmsd %+12.10f rate "
                 "%12.10f\n",
                 itel, sold, snew, sold - snew, echange, rate);
         }
