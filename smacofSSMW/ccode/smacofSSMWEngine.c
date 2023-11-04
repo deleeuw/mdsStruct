@@ -30,6 +30,7 @@ void smacofSSMWEngine(double *delta, double *weights, const int *irow,
     (void)smacofDistance(xini, dini, irow, icol, pn, pp, pm);
     (void)memcpy(xold, xini, (size_t)np * sizeof(double));
     (void)memcpy(dold, dini, (size_t)m * sizeof(double));
+    (void)smacofMakeBMatrix(delta, weights, dold, bold, irow, icol, pn, pm);
     (void)smacofStress(delta, weights, dold, pm, &sold);
     while (true) {
         (void)smacofGuttman(vinv, bold, xold, xnew, pn, pp);
@@ -38,6 +39,7 @@ void smacofSSMWEngine(double *delta, double *weights, const int *irow,
         (void)smacofRelax(xold, xnew, &echange, &pchange, &np, &itel, prelax,
                           &rate);
         (void)smacofDistance(xnew, dnew, irow, icol, pn, pp, pm);
+        (void)smacofMakeBMatrix(delta, weights, dnew, bnew, irow, icol, pn, pm);
         (void)smacofStress(delta, weights, dnew, pm, &snew);
         if (verbose) {
             printf(

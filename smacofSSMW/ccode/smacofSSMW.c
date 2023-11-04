@@ -17,7 +17,7 @@ int main() {
     int p = 2;
     int m = 15;
     int itel = 1;
-    int itmax = 10;
+    int itmax = 1000;
     int eps1 = 15;
     int eps2 = 10;
     bool verbose = true;

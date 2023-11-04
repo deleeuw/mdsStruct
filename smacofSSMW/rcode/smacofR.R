@@ -6,11 +6,10 @@ smacofR <-
            weights = 1 - diag(nrow(delta)),
            p = 2,
            xold = NULL,
-           itmax = 2,
+           itmax = 1000,
            eps1 = 15,
            eps2 = 10,
            verbose = TRUE) {
-    
     n <- nrow(delta)
     deps1 <- 10 ^ -eps1
     deps2 <- 10 ^ -eps2
@@ -74,7 +73,8 @@ smacofR <-
           formatC(snew, digits = 15, format = "f"),
           "sdif ",
           formatC(diff, digits = 15, format = "f"),
-           "\n")
+          "\n"
+        )
       }
       if ((itel == itmax) ||
           ((diff < deps1) && (cchange < deps2))) {
@@ -96,12 +96,49 @@ smacofR <-
     ))
   }
 
-delta <- matrix(c(0, 1, 2, 3, 4, 5,
-                  1, 0, 6, 7, 8, 9,
-                  2, 6, 0, 10, 11, 12,
-                  3, 7, 10, 0, 13, 14,
-                  4, 8, 11, 13, 0, 15,
-                  5, 9, 12, 14, 15, 0), 6, 6)
+delta <- matrix(
+  c(
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    1,
+    0,
+    6,
+    7,
+    8,
+    9,
+    2,
+    6,
+    0,
+    10,
+    11,
+    12,
+    3,
+    7,
+    10,
+    0,
+    13,
+    14,
+    4,
+    8,
+    11,
+    13,
+    0,
+    15,
+    5,
+    9,
+    12,
+    14,
+    15,
+    0
+  ),
+  6,
+  6
+)
 weights <- 1 - diag(6)
-weights[5, 1] <- weights[6, 1] <- weights[1, 5] <- weights[1, 6] <- 0.0
+weights[5, 1] <-
+  weights[6, 1] <- weights[1, 5] <- weights[1, 6] <- 0.0
 weights[6, 5] <- weights[5, 6] <- 10.0
