@@ -10,14 +10,14 @@ int main() {
     double xini[12] = {0.0};
     double xnew[12] = {0.0};
     double dnew[15] = {0.0};
-    double bnew[15] = {0.0};
+    double bnew[21] = {0.0};
     double snew = 0.0;
-    int init = 3;
+    int init = 1;
     int n = 6;
     int p = 2;
     int m = 15;
     int itel = 1;
-    int itmax = 5;
+    int itmax = 10;
     int eps1 = 15;
     int eps2 = 10;
     bool verbose = true;

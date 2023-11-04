@@ -198,7 +198,8 @@ void smacofInvertPDMatrix(const double *x, double *xinv, const int *pn) {
 
 void smacofInvertAnyMatrix() {}
 
-void smacofMPInverseSDCLMatrix(const double *vmat, double *vinv, const int *pn) {
+void smacofMPInverseSDCLMatrix(const double *vmat, double *vinv,
+                               const int *pn) {
     int n = *pn, nn = n * (n + 1) / 2;
     int width = 15, precision = 10;
     double add = 1.0 / ((double)n);

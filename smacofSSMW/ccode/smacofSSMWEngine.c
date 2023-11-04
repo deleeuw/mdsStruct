@@ -31,19 +31,19 @@ void smacofSSMWEngine(double *delta, double *weights, const int *irow,
     (void)memcpy(xold, xini, (size_t)np * sizeof(double));
     (void)memcpy(dold, dini, (size_t)m * sizeof(double));
     (void)smacofStress(delta, weights, dold, pm, &sold);
-    (void)smacofMakeBMatrix(delta, weights, dold, bold, irow, icol, pn, pm);
     while (true) {
         (void)smacofGuttman(vinv, bold, xold, xnew, pn, pp);
         (void)smacofRMSDifference(xold, xnew, pn, pp, &echange);
+        /// this is confusing, skip when relax == FALSE
         (void)smacofRelax(xold, xnew, &echange, &pchange, &np, &itel, prelax,
                           &rate);
         (void)smacofDistance(xnew, dnew, irow, icol, pn, pp, pm);
-        (void)smacofMakeBMatrix(delta, weights, dnew, bnew, irow, icol, pn, pm);
         (void)smacofStress(delta, weights, dnew, pm, &snew);
         if (verbose) {
             printf(
-                "itel %3d sold %12.10f sdif %+12.10f rmsd %+12.10f rate "
-                "%12.10f\n", itel, sold, sold - snew, echange, rate);
+                "itel %3d sold %12.10f snew %12.10f sdif %+12.10f rmsd %+12.10f rate "
+                "%12.10f\n",
+                itel, sold, snew, sold - snew, echange, rate);
         }
         if ((itel == itmax) || (((sold - snew) < eps1) && (echange < eps2))) {
             break;
@@ -53,7 +53,7 @@ void smacofSSMWEngine(double *delta, double *weights, const int *irow,
         pchange = echange;
         (void)memcpy(xold, xnew, (size_t)np * sizeof(double));
         (void)memcpy(dold, dnew, (size_t)m * sizeof(double));
-        (void)memcpy(bold, bnew, (size_t)m * sizeof(double));
+        (void)memcpy(bold, bnew, (size_t)nn * sizeof(double));
     }
     *psnew = snew;
     *pitel = itel;
