@@ -1,4 +1,4 @@
-#include "smacof.h"
+#include "../../smacofInclude/smacof.h"
 
 void smacofRelax(const double *xold, double *xnew, const double *pechange,
                  const double *ppchange, const int *pnp, const int *pitel,

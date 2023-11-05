@@ -1,4 +1,4 @@
-#include "smacof.h"
+#include "../../smacofInclude/smacof.h"
 
 void smacofWeightedNormWeights(double *weights, const int *pm) {
     int m = *pm;

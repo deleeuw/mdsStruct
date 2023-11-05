@@ -1,4 +1,4 @@
-#include "smacof.h"
+#include "../../smacofInclude/smacof.h"
 
 void smacofJacobi(double *a, double *evec, double *eval, const int *pn,
                   const int *pm, const int *pitmax, const int *peps,

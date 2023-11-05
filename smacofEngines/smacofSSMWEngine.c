@@ -1,4 +1,4 @@
-#include <smacof.h>
+#include "../smacofInclude/smacof.h"
 
 // to be called from R
 
@@ -22,19 +22,19 @@ void smacofSSMWEngine(double *delta, double *weights, const int *irow,
     double *bold = (double *)calloc((size_t)nn, (size_t)sizeof(double));
     double *vmat = (double *)calloc((size_t)nn, (size_t)sizeof(double));
     double *vinv = (double *)calloc((size_t)nn, (size_t)sizeof(double));
-    (void)smacofNormWeights(weights, pm);
+    (void)smacofWeightedNormWeights(weights, pm);
     if (DEBUG) {
         printf("weights\n\n");
         (void)smacofPrintSHMatrixIJ(weights, &n, &m, irow, icol, &width,
                                     &precision);
     }
-    (void)smacofNormDelta(delta, weights, pm);
+    (void)smacofWeightedNormDelta(delta, weights, pm);
     if (DEBUG) {
         printf("delta\n\n");
         (void)smacofPrintSHMatrixIJ(delta, &n, &m, irow, icol, &width,
                                     &precision);
     }
-    (void)smacofMakeVMatrix(weights, vmat, irow, icol, pn, pm);
+    (void)smacofWeightedMakeVMatrix(weights, vmat, irow, icol, pn, pm);
     if (DEBUG) {
         printf("vmat\n\n");
         (void)smacofPrintSymmetricMatrix(vmat, &n, &width, &precision);
@@ -44,7 +44,7 @@ void smacofSSMWEngine(double *delta, double *weights, const int *irow,
         printf("vinv\n\n");
         (void)smacofPrintSymmetricMatrix(vinv, &n, &width, &precision);
     }
-    (void)smacofInitial(delta, weights, irow, icol, xini, pinit, pn, pp, pm);
+    (void)smacofWeightedInitial(delta, weights, irow, icol, xini, pinit, pn, pp, pm);
     if (DEBUG) {
         printf("xini\n\n");
         (void)smacofPrintAnyMatrix(xini, &n, &p, &width, &precision);
@@ -56,24 +56,24 @@ void smacofSSMWEngine(double *delta, double *weights, const int *irow,
     }
     (void)memcpy(xold, xini, (size_t)np * sizeof(double));
     (void)memcpy(dold, dini, (size_t)mm * sizeof(double));
-    (void)smacofMakeBMatrix(delta, weights, dold, bold, irow, icol, pn, pm);
+    (void)smacofWeightedMakeBMatrix(delta, weights, dold, bold, irow, icol, pn, pm);
     if (DEBUG) {
         printf("bold\n\n");
         (void)smacofPrintSymmetricMatrix(bold, &n, &width, &precision);
     }
-    (void)smacofStress(delta, weights, dold, pm, &sold);
+    (void)smacofWeightedMakeStress(delta, weights, dold, pm, &sold);
     if (DEBUG) {
         printf("sold %15.10f\n\n", sold);
     }
     while (true) {
-        (void)smacofGuttman(vinv, bold, xold, xnew, pn, pp);
+        (void)smacofWeightedGuttman(vinv, bold, xold, xnew, pn, pp);
         (void)smacofRMSDifference(xold, xnew, pn, pp, &echange);
         /// this is confusing, skip when relax == FALSE
         (void)smacofRelax(xold, xnew, &echange, &pchange, &np, &itel, prelax,
                           &rate);
         (void)smacofDistance(xnew, dnew, pn, pp);
-        (void)smacofMakeBMatrix(delta, weights, dnew, bnew, irow, icol, pn, pm);
-        (void)smacofStress(delta, weights, dnew, pm, &snew);
+        (void)smacofWeightedMakeBMatrix(delta, weights, dnew, bnew, irow, icol, pn, pm);
+        (void)smacofWeightedMakeStress(delta, weights, dnew, pm, &snew);
         if (verbose) {
             printf(
                 "itel %3d sold %12.10f snew %12.10f sdif %+12.10f rmsd "

@@ -1,6 +1,6 @@
-#include "smacof.h"
+#include "../../smacofInclude/smacof.h"
 
-void smacofUnweightedInitial(const double *delta, const double *weights, const int *irow,
+void smacofUnweightedInitial(const double *delta, const int *irow,
                    const int *icol, double *xini, const int *pinit,
                    const int *pn, const int *pp, const int *pm) {
     int init = *pinit, np = *pn * *pp;
@@ -15,7 +15,7 @@ void smacofUnweightedInitial(const double *delta, const double *weights, const i
             break;
         case 2:
             (void)smacofUnweightedInitMaximumSum(delta, irow, icol, xini, pn, pp,
-                                       pm, &itmax_j, &eps_j, &verbose_j);
+                                       pm);
             break;
         case 3:
             (void)smacofInitRandom(xini, pn, pp);
@@ -63,14 +63,6 @@ void smacofUnweightedInitTorgerson(const double *delta,
     free(evec);
     free(eval);
     free(dimp);
-    return;
-}
-
-void smacofInitRandom(double *xini, const int *pn, const int *pp) {
-    int n = *pn, p = *pp, np = n * p;
-    for (int i = 1; i <= np; i++) {
-        xini[VINDEX(i)] = drand48();
-    }
     return;
 }
 

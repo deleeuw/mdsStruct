@@ -1,4 +1,4 @@
-#include "smacof.h"
+#include "../../smacofInclude/smacof.h"
 
 void smacofWeightedGradient(const double *delta, const double *weights,
                     const double *vinv, const double *dold, const double *xold,

@@ -1,4 +1,4 @@
-#include <smacof.h>
+#include "../../smacofInclude/smacof.h"
 
 void smacofUnweightedMakeBMatrix(const double *delta, const double *dmat,
                                  double *bmat, const int *irow, const int *icol,

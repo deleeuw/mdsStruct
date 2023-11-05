@@ -1,4 +1,4 @@
-#include "smacof.h"
+#include "../../smacofInclude/smacof.h"
 
 void smacofInitRandom(double *xini, const int *pn, const int *pp) {
     int n = *pn, p = *pp, np = n * p;

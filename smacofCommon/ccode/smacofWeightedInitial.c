@@ -1,4 +1,4 @@
-#include "smacof.h"
+#include "../../smacofInclude/smacof.h"
 
 void smacofWeightedInitial(const double *delta, const double *weights, const int *irow,
                    const int *icol, double *xini, const int *pinit,
@@ -15,7 +15,7 @@ void smacofWeightedInitial(const double *delta, const double *weights, const int
             break;
         case 2:
             (void)smacofWeightedInitMaximumSum(delta, weights, irow, icol, xini, pn, pp,
-                                       pm, &itmax_j, &eps_j, &verbose_j);
+                                       pm);
             break;
         case 3:
             (void)smacofInitRandom(xini, pn, pp);

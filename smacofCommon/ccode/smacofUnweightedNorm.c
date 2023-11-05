@@ -1,5 +1,4 @@
-#include "smacof.h"
-
+#include "../../smacofInclude/smacof.h"
 
 void smacofUnweightedNormDelta(double *delta, const int *pm) {
     int m = *pm;

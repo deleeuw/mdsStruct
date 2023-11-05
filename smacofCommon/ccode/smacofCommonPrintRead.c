@@ -1,4 +1,4 @@
-#include "smacof.h"
+#include "../../smacofInclude/smacof.h"
 
 void smacofPrintAnyMatrix(const double *x, const int *pn, const int *pp,
                           const int *pw, const int *pr) {
