@@ -1,7 +1,7 @@
-clib: ofiles
+clib: ofiles 
 	ar rcs /usr/local/lib/libSmacof.a *.o
 	
-ofiles: include *.c
+ofiles: include *.c *.h
 	clang -c -O2 *.c
 		
 include: smacof.h

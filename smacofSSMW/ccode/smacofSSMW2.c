@@ -10,7 +10,7 @@ int main() {
     double dnew[6] = {0.0};
     double bnew[10] = {0.0};
     double snew = 0.0;
-    int init = 1;
+    int init = 2;
     int n = 4;
     int p = 2;
     int m = 6;

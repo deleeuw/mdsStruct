@@ -21,20 +21,3 @@ void smacofRelax(const double *xold, double *xnew, const double *pechange,
     *prate = rate;
 }
 
-/*
- * int main() {
-    int n = 4, p = 2, itmax = 100, eps = 10, width = 15, precision = 10,
-        m = n * (n - 1) / 2;
-    bool verbose = true;
-    double delta[6] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
-    double d[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-    double weights[6] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
-    double x[8] = {1.0, 1.0, -1.0, -1.0, -4.0, 4.0, -4.0, 4.0};
-    (void)smacofNormWeights(weights, &m);
-    (void)smacofNormDelta(delta, weights, &m);
-    (void)smacofDistance(x, d, &n, &p);
-    (void)smacofScale(delta, weights, d, x, &n, &p);
-    (void)smacofDiagonalAdjust(delta, weights, x, &n, &p, &itmax, &eps,
-                               &verbose);
-}
-*/

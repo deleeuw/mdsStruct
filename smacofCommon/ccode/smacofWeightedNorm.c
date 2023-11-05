@@ -1,6 +1,6 @@
 #include "smacof.h"
 
-void smacofNormWeights(double *weights, const int *pm) {
+void smacofWeightedNormWeights(double *weights, const int *pm) {
     int m = *pm;
     double sum = 0.0;
     for (int i = 1; i <= m; i++) {
@@ -12,7 +12,7 @@ void smacofNormWeights(double *weights, const int *pm) {
     return;
 }
 
-void smacofNormDelta(double *delta, const double *weights, const int *pm) {
+void smacofWeightedNormDelta(double *delta, const double *weights, const int *pm) {
     int m = *pm;
     double sum = 0.0;
     for (int i = 1; i <= m; i++) {
@@ -25,22 +25,9 @@ void smacofNormDelta(double *delta, const double *weights, const int *pm) {
     return;
 }
 
-void smacofCenter(double *x, const int *np, const int *pp) {
-    int n = *np, p = *pp;
-    for (int s = 1; s <= p; s++) {
-        double sum = 0.0;
-        for (int i = 1; i <= n; i++) {
-            sum += x[MINDEX(i, s, n)];
-        }
-        sum /= (double)n;
-        for (int i = 1; i <= n; i++) {
-            x[MINDEX(i, s, n)] -= sum;
-        }
-    }
-    return;
-}
 
-void smacofScale(const double *delta, const double *weights, double *dold,
+
+void smacofWeightedScale(const double *delta, const double *weights, double *dold,
                  double *xold, const int *pn, const int *pp, const int *pm) {
     int n = *pn, p = *pp, m = *pm;
     double swde = 0.0, swdd = 0.0, lbd = 0.0;

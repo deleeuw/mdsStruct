@@ -1,5 +1,13 @@
 #include "smacof.h"
 
+void smacofInitRandom(double *xini, const int *pn, const int *pp) {
+    int n = *pn, p = *pp, np = n * p;
+    for (int i = 1; i <= np; i++) {
+        xini[VINDEX(i)] = drand48();
+    }
+    return;
+}
+
 void smacofDoubleCenter(const double *delta, double *cross, const int *pn) {
     int n = *pn, ij = 0;
     double tsum = 0.0, cell = 0.0;
@@ -98,40 +106,4 @@ void smacofMakeIIandJJ(const int *pn, int *ii, int *jj) {
     return;
 }
 
-void smacofReadInputFile(char *fname, int *irow, int *icol, double *delta,
-                         double *weights) {
-    FILE *stream = fopen(fname, "r");
-    if (stream == NULL) {
-        printf("Error: cannot open %s\n", fname);
-        exit(EXIT_FAILURE);
-    }
-    int k = 0;
-    fscanf(stream, "%d %d %lf %lf", &irow[k], &icol[k], &delta[k], &weights[k]);
-    while (!feof(stream)) {
-        k++;
-        fscanf(stream, "%d %d %lf %lf", &irow[k], &icol[k], &delta[k],
-               &weights[k]);
-    }
-    fclose(stream);
-    return;
-}
 
-/*
- int main() {
-    int n = 4, p = 2, width = 10, precision = 6;
-    double v[6] = {-1.0, -2.0, -3.0, -4.0, -5.0, -6.0};
-    double x[8] = {1.0, 2.0, 3.0, 4.0, 4.0, 3.0, 2.0, 1.0};
-    double y[8] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-    (void)smacofPrintSDCLMatrix(v, &n, &width, &precision);
-    (void)smacofPrintAnyMatrix(x, &n, &p, &width, &precision);
-    (void)smacofMultiplySDCLMatrix(v, x, y, &n, &p);
-    (void)smacofPrintAnyMatrix(y, &n, &p, &width, &precision);
-    double sum = 0.0;
-    for (int i = 1; i <= 4; i++) {
-      for (int s = 1; s <= 2; s++) {
-        sum += x[MINDEX(i, s, 4)] * y[MINDEX(i, s, 4)];
-      }
-    }
-    printf("%10.6f\n", sum);
-}
-*/

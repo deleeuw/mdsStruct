@@ -4,10 +4,10 @@ int main() {
     double delta[4] = {1.0, 2.0, 3.0, 4.0};
     double weights[4] = {1.0, 1.0, 1.0, 1.0};
     int irow[4] = {3, 4, 3, 4};
-    int icol[4] = {1, 1, 2, 3};
+    int icol[4] = {1, 1, 2, 2};
     double xini[8] = {0.0};
     double xnew[8] = {0.0};
-    double dnew[4] = {0.0};
+    double dnew[6] = {0.0};
     double bnew[10] = {0.0};
     double snew = 0.0;
     int init = 2;
@@ -22,20 +22,19 @@ int main() {
     bool relax = true;
     int width = 15;
     int precision = 10;
-    int nrow = 2;
-    int ncol = 2;
     (void)smacofSSMWEngine(delta, weights, irow, icol, xini, xnew, dnew, bnew,
                            &snew, &init, &n, &p, &m, &itel, &itmax, &eps1,
                            &eps2, &verbose, &relax);
 
     printf("delta\n\n");
-    (void)smacofPrintAnyMatrix(delta, &nrow, &ncol, &width, &precision);
+    (void)smacofPrintSHMatrixIJ(delta, &n, &m, irow, icol, &width, &precision);
     printf("weights\n\n");
-    (void)smacofPrintAnyMatrix(weights, &nrow, &ncol, &width, &precision);
+    (void)smacofPrintSHMatrixIJ(weights, &n, &m, irow, icol, &width,
+                                &precision);
     printf("itel %4d snew %15.10f\n\n", itel, snew);
     printf("configuration\n\n");
     (void)smacofPrintAnyMatrix(xnew, &n, &p, &width, &precision);
     printf("distances\n\n");
-    (void)smacofPrintAnyMatrix(dnew, &nrow, &ncol, &width, &precision);
+    (void)smacofPrintSHMatrix(dnew, &n, &width, &precision);
     return (EXIT_SUCCESS);
 }
