@@ -14,6 +14,14 @@ common <- function() {
   setwd("/Users/deleeuw/Desktop/projects/mdsStruct/smacofCommon/ccode")
 }
 
+engines <- function() {
+  setwd("/Users/deleeuw/Desktop/projects/mdsStruct/smacofEngines")
+}
+
+build <- function() {
+  setwd("/Users/deleeuw/Desktop/projects/mdsStruct/smacofBuild")
+}
+
 project <- function() {
   setwd("/Users/deleeuw/Desktop/projects/mdsStruct")
 }
