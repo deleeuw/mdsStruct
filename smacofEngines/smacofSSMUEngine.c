@@ -11,11 +11,10 @@ void smacofSSMUEngine(double *delta, const int *irow, const int *icol,
     int n = *pn, p = *pp, np = p * n, m = *pm, nn = n * (n + 1) / 2,
         mm = n * (n - 1) / 2, itel = *pitel, itmax = *pitmax;
     int width = 15, precision = 10;
-    bool verbose = *pverbose, verbose_j = false, verbose_e = false;
-    double sold = 0.0, snew = *psnew, cchange = 0.0, dchange = 0.0,
+    bool verbose = *pverbose;
+    double sold = 0.0, snew = *psnew,
            pchange = 1.0, echange = 1.0, rate = 1.0;
-    double eps1 = pow(10.0, -(double)*peps1), eps2 = pow(10.0, -(double)*peps2),
-           eps_e = pow(10.0, -15.0);
+    double eps1 = pow(10.0, -(double)*peps1), eps2 = pow(10.0, -(double)*peps2);
     double *xold = (double *)calloc((size_t)np, (size_t)sizeof(double));
     double *dold = (double *)calloc((size_t)mm, (size_t)sizeof(double));
     double *dini = (double *)calloc((size_t)mm, (size_t)sizeof(double));

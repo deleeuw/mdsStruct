@@ -6,6 +6,10 @@ ssmw <- function() {
   setwd("/Users/deleeuw/Desktop/projects/mdsStruct/smacofSSMW/ccode")
 }
 
+ssmu <- function() {
+  setwd("/Users/deleeuw/Desktop/projects/mdsStruct/smacofSSMU/ccode")
+}
+
 common <- function() {
   setwd("/Users/deleeuw/Desktop/projects/mdsStruct/smacofCommon/ccode")
 }
@@ -28,11 +32,15 @@ rlib <- function() {
   system("make rlib")
 }
 
+dylib <- function() {
+  ssmw()
+  system("make dylib")
+}
+
 clean <- function() {
   system("make clean")
 }
 
-run <- function() {
-  ssmw()
-  system("./smacofSSMW")
+run <- function(path) {
+  system(path)
 }

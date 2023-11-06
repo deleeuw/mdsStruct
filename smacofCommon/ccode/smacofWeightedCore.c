@@ -6,7 +6,7 @@ void smacofWeightedMakeBMatrix(const double *delta, const double *weights,
                                const double *dmat, double *bmat,
                                const int *irow, const int *icol, const int *pn,
                                const int *pm) {
-    int m = *pm, n = *pn, nn = n * (n - 1) / 2, mm = n * (n + 1) / 2;
+    int m = *pm, n = *pn, mm = n * (n + 1) / 2;
     for (int k = 1; k <= mm; k++) {
         bmat[VINDEX(k)] = -0.0;
     }

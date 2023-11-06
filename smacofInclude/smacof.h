@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DEBUG true
+#define DEBUG false
 #define NaN (nan(""))
 
 // smacofEngine.c

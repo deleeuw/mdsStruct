@@ -165,7 +165,6 @@ void smacofInvertPDMatrix(const double *x, double *xinv, const int *pn) {
 void smacofMPInverseSDCLMatrix(const double *vmat, double *vinv,
                                const int *pn) {
     int n = *pn, nn = n * (n + 1) / 2;
-    int width = 15, precision = 10;
     double add = 1.0 / ((double)n);
     double *vadd = (double *)calloc((size_t)nn, (size_t)sizeof(double));
     for (int j = 1; j <= n; j++) {

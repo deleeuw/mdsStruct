@@ -4,9 +4,6 @@ void smacofUnweightedInitial(const double *delta, const int *irow,
                              const int *icol, double *xini, const int *pinit,
                              const int *pn, const int *pp, const int *pm) {
     int init = *pinit, np = *pn * *pp;
-    int itmax_j = 100, itmax_d = 100, eps_j = 10, eps_d = 10;
-    int width = 15, precision = 10;
-    bool verbose_j = false, verbose_d = false;
     double *dini = (double *)calloc((size_t)np, (size_t)sizeof(double));
     switch (init) {
         case 1:

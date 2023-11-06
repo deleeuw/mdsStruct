@@ -1,15 +1,38 @@
-smacofMakeData <- function(delta, weights = rep(1, length(delta)), fname) {
-  m <- length(delta)
-  n <- as.integer((1 + sqrt(1 + 8 * m)) / 2)
-  h <- fullIndex(n)
-  g <- cbind(h$ii, h$jj, delta, weights)
-  f <- rep(TRUE, m)
-for (k in 1:m) {
-    if ((g[k, 4] == 0) || is.na(g[k, 4]) || is.na(g[k, 3]))
-      f[k] = FALSE
+smacofMakeData <-
+  function(delta,
+           weights = rep(1, length(delta)),
+           winclude = FALSE,
+           fname) {
+    m <- length(delta)
+    n <- as.integer((1 + sqrt(1 + 8 * m)) / 2)
+    h <- fullIndex(n)
+    g <- cbind(h$ii, h$jj, delta, weights)
+    for (k in 1:m) {
+      if ((g[k, 4] == 0) || is.na(g[k, 4]) || is.na(g[k, 3])) {
+        continue
+      } else {
+        if (winclude) {
+          cat(
+            formatC(g[k, 1], digits = 3, format = "d"),
+            formatC(g[k, 2], digits = 3, format = "d"),
+            formatC(g[k, 3], digits = 6, format = "f"),
+            formatC(g[k, 4], digits = 6, format = "f"),
+            "\n",
+            file = fname, append = TRUE
+          )
+        } else {
+          cat(
+            formatC(g[k, 1], digits = 3, format = "d"),
+            formatC(g[k, 2], digits = 3, format = "d"),
+            formatC(g[k, 3], digits = 6, format = "f"),
+            "\n",
+            file = fname, append = TRUE
+          )
+        }
+      }
+    }
   }
-  write.table(g[f, ], file = fname, row.names = FALSE, col.names = FALSE)
-}
+
 
 fullIndex <- function(n) {
   ii <- c()
@@ -32,7 +55,7 @@ doubleCenter <- function(x) {
 }
 
 # mPrint() formats a matrix (or vector, or scalar) of numbers
-# for printing 
+# for printing
 
 mPrint <- function(x,
                    digits = 6,
