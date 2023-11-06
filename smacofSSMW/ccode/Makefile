@@ -1,21 +1,18 @@
-execs: Makefile \
-*.c \
-../../smacofCommon/ccode/*.c \
-../../smacofCommon/ccode/*.h \
-/usr/local/lib/libSmacof.a
-	$(CC) -o smacofSSMW1 -O2 smacofSSMW1.c smacofSSMWEngine.c -lSmacof
-	$(CC) -o smacofSSMW2 -O2 smacofSSMW2.c smacofSSMWEngine.c -lSmacof
-	$(CC) -o smacofSSMW3 -O2 smacofSSMW3.c smacofSSMWEngine.c -lSmacof
+all: run
 
-rlib: ../../smacofCommon/ccode/*.h *.c
-	R CMD SHLIB -o smacofSSMW.so smacofSSMWEngine.c -lSmacof
+smacofSSMW1: smacofSSMW1.c /usr/local/lib/libsmacof.a
+	clang -o smacofSSMW1 -O2 smacofSSMW1.c -lsmacof
 
-clean: 
-	rm -rf *.o *.dSym 
+smacofSSMW2: smacofSSMW2.c /usr/local/lib/libsmacof.a
+	clang -o smacofSSMW2 -O2 smacofSSMW2.c -lsmacof
 
-pristine: clean
-	rm -rf *.out smacofSSMW? *.so 
+smacofSSMW3: smacofSSMW3.c /usr/local/lib/libsmacof.a
+	clang -o smacofSSMW3 -O2 smacofSSMW3.c -lsmacof
 
-format:
-	clang-format -i -style="{BasedOnStyle: google, IndentWidth: 4}" *.c
+run: smacofSSMW1 smacofSSMW2 smacofSSMW3
+	./smacofSSMW1 > smacofSSMW1.txt
+	./smacofSSMW2 > smacofSSMW2.txt
+	./smacofSSMW3 > smacofSSMW3.txt
 
+clean:
+	rm -f smacofSSMW[1-9]

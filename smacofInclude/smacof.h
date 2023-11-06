@@ -33,15 +33,12 @@ void smacofWeightedMakeBMatrix(const double *delta, const double *weights,
                                const int *pm);
 void smacofWeightedMakeVMatrix(const double *weights, double *vmat, const int *irow,
                        const int *icol, const int *pn, const int *pm);
-void smacofWeightedEtaSquare(const double *weights, const double *dist,
-                             const int *pm, double *etasquare);
-void smacofWeightedRho(const double *delta, const double *weights,
-                       const double *dist, const int *pm, double *rho);
 void smacofWeightedGuttman(const double *vinv, const double *bmat,
                            const double *xold, double *xnew, const int *pn,
                            const int *pp);
-void smacofWeightedMakeStress(const double *delta, const double *w, const double *d,
-                          const int *m, double *stress);
+void smacofWeightedMakeStress(const double *delta, const double *weights,
+                              const double *dist, const int *irow, const int *icol, const int *pn, const int *pm,
+                              double *stress);
 
 // smacofUnweightedCore.c
 
@@ -125,9 +122,6 @@ void smacofJacobi(double *a, double *evec, double *eval, const int *pn,
                   const int *pm, const int *itmax, const int *eps,
                   const bool *verbose);
 void smacofInvertPDMatrix(const double *x, double *xinv, const int *pn);
-void smacofSimultaneousIteration(double *cross, double *xold, const int *pn,
-                                 const int *pp, const int *itmax,
-                                 const double *eps, const bool *verbose);
 void smacofGramSchmidt(double *x, double *r, int *pn, int *pp);
 void smacofMultiplySymmetricMatrix(const double *a, const double *x, double *y,
                                    const int *pn, const int *pp);

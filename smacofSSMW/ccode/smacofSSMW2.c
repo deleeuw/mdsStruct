@@ -18,18 +18,20 @@ int main() {
     int itmax = 10000;
     int eps1 = 15;
     int eps2 = 10;
-    bool verbose = false;
+    bool verbose = true;
     bool relax = true;
     int width = 15;
     int precision = 10;
     (void)smacofSSMWEngine(delta, weights, irow, icol, xini, xnew, dnew, bnew,
                            &snew, &init, &n, &p, &m, &itel, &itmax, &eps1,
                            &eps2, &verbose, &relax);
+    /*
     printf("delta\n\n");
     (void)smacofPrintSHMatrix(delta, &n, &width, &precision);
     printf("weights\n\n");
     (void)smacofPrintSHMatrix(weights, &n, &width, &precision);
     (void)printf("itel %4d snew %15.10f\n\n", itel, snew);
+    */
     printf("configuration\n\n");
     (void)smacofPrintAnyMatrix(xnew, &n, &p, &width, &precision);
     printf("distances\n\n");

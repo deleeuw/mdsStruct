@@ -1,8 +1,9 @@
 #include "../../smacofInclude/smacof.h"
 
-void smacofWeightedInitial(const double *delta, const double *weights, const int *irow,
-                   const int *icol, double *xini, const int *pinit,
-                   const int *pn, const int *pp, const int *pm) {
+void smacofWeightedInitial(const double *delta, const double *weights,
+                           const int *irow, const int *icol, double *xini,
+                           const int *pinit, const int *pn, const int *pp,
+                           const int *pm) {
     int init = *pinit, np = *pn * *pp;
     int itmax_j = 100, itmax_d = 100, eps_j = 10, eps_d = 10;
     int width = 15, precision = 10;
@@ -10,12 +11,12 @@ void smacofWeightedInitial(const double *delta, const double *weights, const int
     double *dini = (double *)calloc((size_t)np, (size_t)sizeof(double));
     switch (init) {
         case 1:
-            (void)smacofWeightedInitTorgerson(delta, weights, irow, icol, xini, pn, pp,
-                                      pm);
+            (void)smacofWeightedInitTorgerson(delta, weights, irow, icol, xini,
+                                              pn, pp, pm);
             break;
         case 2:
-            (void)smacofWeightedInitMaximumSum(delta, weights, irow, icol, xini, pn, pp,
-                                       pm);
+            (void)smacofWeightedInitMaximumSum(delta, weights, irow, icol, xini,
+                                               pn, pp, pm);
             break;
         case 3:
             (void)smacofInitRandom(xini, pn, pp);
@@ -31,8 +32,8 @@ void smacofWeightedInitial(const double *delta, const double *weights, const int
 }
 
 void smacofWeightedInitTorgerson(const double *delta, const double *weights,
-                         const int *irow, const int *icol, double *xold,
-                         const int *pn, const int *pp, const int *pm) {
+                                 const int *irow, const int *icol, double *xold,
+                                 const int *pn, const int *pp, const int *pm) {
     int n = *pn, p = *pp, m = *pm, nn = n * (n - 1) / 2, itmax = 100, eps = 10;
     int width = 15, precision = 10, nrow = 1;
     bool verbose = false;
@@ -67,10 +68,10 @@ void smacofWeightedInitTorgerson(const double *delta, const double *weights,
     return;
 }
 
-
 void smacofWeightedInitMaximumSum(const double *delta, const double *weights,
-                          const int *irow, const int *icol, double *xini,
-                          const int *pn, const int *pp, const int *pm) {
+                                  const int *irow, const int *icol,
+                                  double *xini, const int *pn, const int *pp,
+                                  const int *pm) {
     int n = *pn, p = *pp, m = *pm, nn = n * (n - 1) / 2, itmax = 100, eps = 10;
     bool verbose = false;
     double *a = (double *)calloc((size_t)m, (size_t)sizeof(double));
@@ -100,5 +101,3 @@ void smacofWeightedInitMaximumSum(const double *delta, const double *weights,
     free(eval);
     return;
 }
-
-

@@ -105,5 +105,3 @@ void smacofMakeIIandJJ(const int *pn, int *ii, int *jj) {
     }
     return;
 }
-
-

@@ -1,9 +1,9 @@
 #include "../../smacofInclude/smacof.h"
 
 void smacofWeightedGradient(const double *delta, const double *weights,
-                    const double *vinv, const double *dold, const double *xold,
-                    double *xnew, double *gradient, const int *pn,
-                    const int *pp) {
+                            const double *vinv, const double *dold,
+                            const double *xold, double *xnew, double *gradient,
+                            const int *pn, const int *pp) {
     int n = *pn, p = *pp, np = n * p, m = n * (n - 1) / 2;
     double *bmat = (double *)calloc((size_t)m, (size_t)sizeof(double));
     double *ymat = (double *)calloc((size_t)np, (size_t)sizeof(double));
@@ -35,8 +35,9 @@ void smacofWeightedGradient(const double *delta, const double *weights,
 // It makes sense to use an array of p(p+1)/2 pointers, each pointing to a block
 
 void smacofWeightedHessian(const double *delta, const double *weights,
-                   const double *xconf, const double *dmat, const double *bmat,
-                   const double *v, const int *pn, const int *pp) {
+                           const double *xconf, const double *dmat,
+                           const double *bmat, const double *v, const int *pn,
+                           const int *pp) {
     int n = *pn, p = *pp, m = n * (n - 1) / 2, q = p * (p - 1) / 2;
     double **diagH = (double **)calloc((size_t)p, (size_t)sizeof(double *));
     double **nonDiagH = (double **)calloc((size_t)q, (size_t)sizeof(double *));

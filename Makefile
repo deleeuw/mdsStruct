@@ -1,14 +1,16 @@
-sources = smacofEngines/smacofSSMWEngine.c \
+sources = smacofEngines/smacof*Engine.c \
 	smacofCommon/ccode/smacofCommon*.c \
 	smacofCommon/ccode/smacofWeighted*.c \
 	smacofCommon/ccode/smacofUnweighted*.c 
 
-objects = smacofEngines/smacofSSMWEngine.o \
+objects = smacofEngines/smacof*Engine.o \
 	smacofCommon/ccode/smacofCommon*.o \
 	smacofCommon/ccode/smacofWeighted*.o \
 	smacofCommon/ccode/smacofUnweighted*.o
+
+includes = smacofInclude/smacof.h
 	
-ofiles: smacofInclude/smacof.h $(sources)
+ofiles: $(includes) $(sources)
 	clang -c -O2 smacofEngines/*.c smacofCommon/ccode/*.c
 
 clib: ofiles
@@ -20,6 +22,9 @@ rlib: ofiles
 install: 
 	cp smacofInclude/smacof.h /usr/local/include 
 	cp smacofBinaries/libsmacof.a /usr/local/lib
+
+format: $(includes) $(sources)
+	clang-format -i -style="{BasedOnStyle: google, IndentWidth: 4}" $(sources)
 	
 clean:
 	rm -rf *.o $(objects)

@@ -13,7 +13,7 @@ void smacofUnweightedMakeBMatrix(const double *delta, const double *dmat,
         if (dfix < 1e-15) {
             cell = -0.0;
         } else {
-            cell = delta[kv] / dfix;
+            cell = delta[kv] / (dfix * (double)n);
         }
         bmat[TINDEX(ik, jk, n)] -= cell;
         bmat[TINDEX(ik, ik, n)] += cell;
@@ -37,6 +37,6 @@ void smacofUnweightedMakeStress(const double *delta, const double *dist,
         int ik = VINDEX(k);
         sum += SQUARE(delta[ik] - dist[ik]);
     }
-    *stress = sum / 2.0;
+    *stress = sum / (2.0 * (double)m);
     return;
 }

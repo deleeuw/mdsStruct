@@ -20,4 +20,3 @@ void smacofRelax(const double *xold, double *xnew, const double *pechange,
     }
     *prate = rate;
 }
-

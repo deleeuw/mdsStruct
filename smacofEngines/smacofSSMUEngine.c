@@ -2,10 +2,10 @@
 
 // to be called from R
 
-void smacofSSMUEngine(double *delta, const int *irow,
-                      const int *icol, double *xini, double *xnew, double *dnew,
-                      double *bnew, double *psnew, const int *pinit,
-                      const int *pn, const int *pp, const int *pm, int *pitel,
+void smacofSSMUEngine(double *delta, const int *irow, const int *icol,
+                      double *xini, double *xnew, double *dnew, double *bnew,
+                      double *psnew, const int *pinit, const int *pn,
+                      const int *pp, const int *pm, int *pitel,
                       const int *pitmax, const int *peps1, const int *peps2,
                       const bool *pverbose, const bool *prelax) {
     int n = *pn, p = *pp, np = p * n, m = *pm, nn = n * (n + 1) / 2,
@@ -54,7 +54,8 @@ void smacofSSMUEngine(double *delta, const int *irow,
         (void)smacofRelax(xold, xnew, &echange, &pchange, &np, &itel, prelax,
                           &rate);
         (void)smacofDistance(xnew, dnew, pn, pp);
-        (void)smacofUnweightedMakeBMatrix(delta, dnew, bnew, irow, icol, pn, pm);
+        (void)smacofUnweightedMakeBMatrix(delta, dnew, bnew, irow, icol, pn,
+                                          pm);
         (void)smacofUnweightedMakeStress(delta, dnew, pm, &snew);
         if (verbose) {
             printf(

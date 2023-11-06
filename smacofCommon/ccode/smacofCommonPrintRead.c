@@ -96,8 +96,8 @@ void smacofPrintSLTMatrix(const double *d, const int *pn, const int *pw,
     return;
 }
 
-void smacofWeightedReadInputFile(char *fname, int *irow, int *icol, double *delta,
-                         double *weights) {
+void smacofWeightedReadInputFile(char *fname, int *irow, int *icol,
+                                 double *delta, double *weights) {
     FILE *stream = fopen(fname, "r");
     if (stream == NULL) {
         printf("Error: cannot open %s\n", fname);
@@ -114,7 +114,8 @@ void smacofWeightedReadInputFile(char *fname, int *irow, int *icol, double *delt
     return;
 }
 
-void smacofUnweightedReadInputFile(char *fname, int *irow, int *icol, double *delta) {
+void smacofUnweightedReadInputFile(char *fname, int *irow, int *icol,
+                                   double *delta) {
     FILE *stream = fopen(fname, "r");
     if (stream == NULL) {
         printf("Error: cannot open %s\n", fname);

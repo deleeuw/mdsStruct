@@ -12,7 +12,8 @@ void smacofWeightedNormWeights(double *weights, const int *pm) {
     return;
 }
 
-void smacofWeightedNormDelta(double *delta, const double *weights, const int *pm) {
+void smacofWeightedNormDelta(double *delta, const double *weights,
+                             const int *pm) {
     int m = *pm;
     double sum = 0.0;
     for (int i = 1; i <= m; i++) {
@@ -25,10 +26,9 @@ void smacofWeightedNormDelta(double *delta, const double *weights, const int *pm
     return;
 }
 
-
-
-void smacofWeightedScale(const double *delta, const double *weights, double *dold,
-                 double *xold, const int *pn, const int *pp, const int *pm) {
+void smacofWeightedScale(const double *delta, const double *weights,
+                         double *dold, double *xold, const int *pn,
+                         const int *pp, const int *pm) {
     int n = *pn, p = *pp, m = *pm;
     double swde = 0.0, swdd = 0.0, lbd = 0.0;
     for (int k = 1; k <= m; k++) {

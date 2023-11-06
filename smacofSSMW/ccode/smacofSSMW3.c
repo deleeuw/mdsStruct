@@ -18,7 +18,7 @@ int main() {
     int itmax = 1000;
     int eps1 = 15;
     int eps2 = 10;
-    bool verbose = false;
+    bool verbose = true;
     bool relax = true;
     int width = 15;
     int precision = 10;
@@ -26,15 +26,17 @@ int main() {
                            &snew, &init, &n, &p, &m, &itel, &itmax, &eps1,
                            &eps2, &verbose, &relax);
 
+    /*
     printf("delta\n\n");
     (void)smacofPrintSHMatrixIJ(delta, &n, &m, irow, icol, &width, &precision);
     printf("weights\n\n");
     (void)smacofPrintSHMatrixIJ(weights, &n, &m, irow, icol, &width,
                                 &precision);
     printf("itel %4d snew %15.10f\n\n", itel, snew);
-    printf("configuration\n\n");
+    */
+    printf("\n\nfinal configuration\n\n");
     (void)smacofPrintAnyMatrix(xnew, &n, &p, &width, &precision);
-    printf("distances\n\n");
+    printf("final distances\n\n");
     (void)smacofPrintSHMatrix(dnew, &n, &width, &precision);
     return (EXIT_SUCCESS);
 }

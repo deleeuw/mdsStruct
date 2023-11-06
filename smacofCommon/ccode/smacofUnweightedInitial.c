@@ -1,8 +1,8 @@
 #include "../../smacofInclude/smacof.h"
 
 void smacofUnweightedInitial(const double *delta, const int *irow,
-                   const int *icol, double *xini, const int *pinit,
-                   const int *pn, const int *pp, const int *pm) {
+                             const int *icol, double *xini, const int *pinit,
+                             const int *pn, const int *pp, const int *pm) {
     int init = *pinit, np = *pn * *pp;
     int itmax_j = 100, itmax_d = 100, eps_j = 10, eps_d = 10;
     int width = 15, precision = 10;
@@ -11,11 +11,11 @@ void smacofUnweightedInitial(const double *delta, const int *irow,
     switch (init) {
         case 1:
             (void)smacofUnweightedInitTorgerson(delta, irow, icol, xini, pn, pp,
-                                      pm);
+                                                pm);
             break;
         case 2:
-            (void)smacofUnweightedInitMaximumSum(delta, irow, icol, xini, pn, pp,
-                                       pm);
+            (void)smacofUnweightedInitMaximumSum(delta, irow, icol, xini, pn,
+                                                 pp, pm);
             break;
         case 3:
             (void)smacofInitRandom(xini, pn, pp);
@@ -30,9 +30,9 @@ void smacofUnweightedInitial(const double *delta, const int *irow,
     return;
 }
 
-void smacofUnweightedInitTorgerson(const double *delta, 
-                         const int *irow, const int *icol, double *xold,
-                         const int *pn, const int *pp, const int *pm) {
+void smacofUnweightedInitTorgerson(const double *delta, const int *irow,
+                                   const int *icol, double *xold, const int *pn,
+                                   const int *pp, const int *pm) {
     int n = *pn, p = *pp, m = *pm, nn = n * (n - 1) / 2, itmax = 100, eps = 10;
     bool verbose = false;
     double *dimp = (double *)calloc((size_t)nn, (size_t)sizeof(double));
@@ -66,9 +66,10 @@ void smacofUnweightedInitTorgerson(const double *delta,
     return;
 }
 
-void smacofUnweightedInitMaximumSum(const double *delta, 
-                          const int *irow, const int *icol, double *xini,
-                          const int *pn, const int *pp, const int *pm) {
+void smacofUnweightedInitMaximumSum(const double *delta, const int *irow,
+                                    const int *icol, double *xini,
+                                    const int *pn, const int *pp,
+                                    const int *pm) {
     int n = *pn, p = *pp, m = *pm, nn = n * (n - 1) / 2, itmax = 100, eps = 10;
     bool verbose = false;
     double *b = (double *)calloc((size_t)(m + n), (size_t)sizeof(double));
@@ -96,5 +97,3 @@ void smacofUnweightedInitMaximumSum(const double *delta,
     free(eval);
     return;
 }
-
-

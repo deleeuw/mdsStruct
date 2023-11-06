@@ -1,6 +1,5 @@
 #include "../../smacofInclude/smacof.h"
 
-
 // bmat always has to be a complete SDCL matrix
 
 void smacofWeightedMakeBMatrix(const double *delta, const double *weights,
@@ -26,11 +25,11 @@ void smacofWeightedMakeBMatrix(const double *delta, const double *weights,
     return;
 }
 
-
 // vmat always has to be a complete SDCL matrix
 
-void smacofWeightedMakeVMatrix(const double *weights, double *vmat, const int *irow,
-                       const int *icol, const int *pn, const int *pm) {
+void smacofWeightedMakeVMatrix(const double *weights, double *vmat,
+                               const int *irow, const int *icol, const int *pn,
+                               const int *pm) {
     int m = *pm, n = *pn, nn = n * (n - 1) / 2;
     for (int k = 1; k <= nn; k++) {
         vmat[VINDEX(k)] = -0.0;
@@ -56,45 +55,17 @@ void smacofWeightedGuttman(const double *vinv, const double *bmat,
     return;
 }
 
-
-
 void smacofWeightedMakeStress(const double *delta, const double *weights,
-                              const double *dist, const int *pm,
+                              const double *dist, const int *irow,
+                              const int *icol, const int *pn, const int *pm,
                               double *stress) {
-    int m = *pm;
+    int m = *pm, n = *pn;
+    ;
     double sum = 0.0;
     for (int k = 1; k <= m; k++) {
-        int ik = VINDEX(k);
-        sum += weights[ik] * SQUARE(delta[ik] - dist[ik]);
+        int kk = VINDEX(k), ik = irow[kk], jk = icol[kk];
+        sum += weights[kk] * SQUARE(delta[kk] - dist[SINDEX(ik, jk, n)]);
     }
     *stress = sum / 2.0;
     return;
 }
-
-
-
-/*
-void smacofWeightedEtaSquare(const double *weights, const double *dist, const int *pm,
-                     double *etasquare) {
-    int m = *pm;
-    double sum = 0.0;
-    for (int k = 1; k <= m; k++) {
-        int ik = VINDEX(k);
-        sum += weights[ik] * SQUARE(dist[ik]);
-    }
-    *etasquare = sum;
-    return;
-}
-
-void smacofWeightedRho(const double *delta, const double *weights, const double *dist,
-               const int *pm, double *rho) {
-    int m = *pm;
-    double sum = 0.0;
-    for (int k = 1; k <= m; k++) {
-        int ik = VINDEX(k);
-        sum += weights[ik] * delta[ik] * dist[ik];
-    }
-    *rho = sum;
-    return;
-}
-*/

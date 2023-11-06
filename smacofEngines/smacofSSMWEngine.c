@@ -44,7 +44,8 @@ void smacofSSMWEngine(double *delta, double *weights, const int *irow,
         printf("vinv\n\n");
         (void)smacofPrintSymmetricMatrix(vinv, &n, &width, &precision);
     }
-    (void)smacofWeightedInitial(delta, weights, irow, icol, xini, pinit, pn, pp, pm);
+    (void)smacofWeightedInitial(delta, weights, irow, icol, xini, pinit, pn, pp,
+                                pm);
     if (DEBUG) {
         printf("xini\n\n");
         (void)smacofPrintAnyMatrix(xini, &n, &p, &width, &precision);
@@ -56,12 +57,14 @@ void smacofSSMWEngine(double *delta, double *weights, const int *irow,
     }
     (void)memcpy(xold, xini, (size_t)np * sizeof(double));
     (void)memcpy(dold, dini, (size_t)mm * sizeof(double));
-    (void)smacofWeightedMakeBMatrix(delta, weights, dold, bold, irow, icol, pn, pm);
+    (void)smacofWeightedMakeBMatrix(delta, weights, dold, bold, irow, icol, pn,
+                                    pm);
     if (DEBUG) {
         printf("bold\n\n");
         (void)smacofPrintSymmetricMatrix(bold, &n, &width, &precision);
     }
-    (void)smacofWeightedMakeStress(delta, weights, dold, pm, &sold);
+    (void)smacofWeightedMakeStress(delta, weights, dold, irow, icol, pn, pm,
+                                   &sold);
     if (DEBUG) {
         printf("sold %15.10f\n\n", sold);
     }
@@ -72,8 +75,10 @@ void smacofSSMWEngine(double *delta, double *weights, const int *irow,
         (void)smacofRelax(xold, xnew, &echange, &pchange, &np, &itel, prelax,
                           &rate);
         (void)smacofDistance(xnew, dnew, pn, pp);
-        (void)smacofWeightedMakeBMatrix(delta, weights, dnew, bnew, irow, icol, pn, pm);
-        (void)smacofWeightedMakeStress(delta, weights, dnew, pm, &snew);
+        (void)smacofWeightedMakeBMatrix(delta, weights, dnew, bnew, irow, icol,
+                                        pn, pm);
+        (void)smacofWeightedMakeStress(delta, weights, dnew, irow, icol, pn, pm,
+                                       &snew);
         if (verbose) {
             printf(
                 "itel %3d sold %12.10f snew %12.10f sdif %+12.10f rmsd "
