@@ -1,9 +1,10 @@
 library(MASS)
 source("../../smacofCommon/rcode/smacofUtils.R")
 
-smacofR <-
+DEBUG <- FALSE
+
+smacofSSMU <-
   function(delta,
-           weights = 1 - diag(nrow(delta)),
            p = 2,
            xold = NULL,
            itmax = 1000,
@@ -11,57 +12,61 @@ smacofR <-
            eps2 = 10,
            verbose = TRUE) {
     n <- nrow(delta)
+    m <- length(delta)
     deps1 <- 10 ^ -eps1
     deps2 <- 10 ^ -eps2
-    weights <- 2 * weights / sum(weights)
-    print("weights")
-    mPrint(weights)
-    delta <- sqrt(2) * delta / sqrt(sum(weights * (delta ^ 2)))
-    print("delta")
-    mPrint(delta)
-    vmat <- -weights
-    diag(vmat) <- -rowSums(vmat)
-    print("vmat")
-    mPrint(vmat)
-    vinv <- ginv(vmat)
-    print("vinv")
-    mPrint(vinv)
+    delta <- sqrt(2) * delta / sqrt(m * sum((delta ^ 2)))
     if (is.null(xold)) {
       xold <- torgerson(delta, p)
     }
+    if (DEBUG) {
+      print("delta")
+      mPrint(delta)
+    }
     dold <- as.matrix(dist(xold))
     dold <- ifelse(dold < 1e-10, 1e-10, dold)
-    lbd <- sum(weights * delta * dold) / sum(weights * (dold ^ 2))
+    lbd <- sum(delta * dold) / sum((dold ^ 2))
     xold <- lbd * xold
     dold <- lbd * dold
-    print("xini scaled")
-    mPrint(xold)
-    print("dini scaled")
-    mPrint(dold)
-    sold <- sum(weights * (delta - dold) ^ 2) / 4.0
-    print("sold")
-    mPrint(sold)
+    if (DEBUG) {
+      print("xini scaled")
+      mPrint(xold)
+      print("dini scaled")
+      mPrint(dold)
+    }
+    sold <- sum((delta - dold) ^ 2) / (4.0 * length(delta))
+    if (DEBUG) {
+      print("sold")
+      mPrint(sold)
+    }
     dinv <- ifelse(dold < 1e-10, 0, 1 / dold)
-    bold <- -weights * delta * dinv
+    bold <- -delta * dinv
     diag(bold) <- -rowSums(bold)
-    print("bold")
-    mPrint(bold)
+    if (DEBUG) {
+      print("bold")
+      mPrint(bold)
+    }
     itel <- 1
     repeat {
-      xnew <- vinv %*% bold %*% xold
-      print("xnew")
-      mPrint(xnew)
+      xnew <- bold %*% xold
+      if (DEBUG) {
+        print("xnew")
+        mPrint(xnew)
+      }
       dnew <- as.matrix(dist(xnew))
-      print("dnew")
-      mPrint(dnew)
+      if (DEBUG) {
+        print("dnew")
+        mPrint(dnew)
+      }
       dinv <- ifelse(dnew < 1e-10, 0, 1 / dnew)
-      bnew <- -weights * delta * dinv
+      bnew <- -delta * dinv
       diag(bnew) <- -rowSums(bnew)
-      print("bnew")
-      mPrint(bnew)
-      snew <- sum(weights * (delta - dnew) ^ 2) / 4.0
+      if (DEBUG) {
+        print("bnew")
+        mPrint(bnew)
+      }
+      snew <- sum((delta - dnew) ^ 2) / (4.0 * length(delta))
       cchange <- max(abs(xold - xnew))
-      dchange <- max(abs(dold - dnew))
       diff <- sold - snew
       if (verbose) {
         cat(
@@ -90,55 +95,7 @@ smacofR <-
       conf = xnew,
       dist = dnew,
       loss = snew,
-      weights = weights,
       delta = delta,
       itel = itel
     ))
   }
-
-delta <- matrix(
-  c(
-    0,
-    1,
-    2,
-    3,
-    4,
-    5,
-    1,
-    0,
-    6,
-    7,
-    8,
-    9,
-    2,
-    6,
-    0,
-    10,
-    11,
-    12,
-    3,
-    7,
-    10,
-    0,
-    13,
-    14,
-    4,
-    8,
-    11,
-    13,
-    0,
-    15,
-    5,
-    9,
-    12,
-    14,
-    15,
-    0
-  ),
-  6,
-  6
-)
-weights <- 1 - diag(6)
-weights[5, 1] <-
-  weights[6, 1] <- weights[1, 5] <- weights[1, 6] <- 0.0
-weights[6, 5] <- weights[5, 6] <- 10.0

@@ -13,17 +13,18 @@
 // smacofEngine.c
 
 void smacofSSMWEngine(double *delta, double *weights, const int *irow,
-                      const int *icol, double *xini, double *xnew, double *dnew,
-                      double *bnew, double *psnew, const int *pinit,
-                      const int *pn, const int *pp, const int *pm, int *pitel,
-                      const int *pitmax, const int *peps1, const int *peps2,
-                      const bool *pverbose, const bool *prelax);
+                      const int *icol, double *xini, double *xnew, 
+                      double *dnew, double *bnew, double *psnew, 
+                      const int *pinit, const int *pn, const int *pp, 
+                      const int *pm, int *pitel, const int *pitmax, 
+                      const int *peps1, const int *peps2, const bool *pverbose, 
+                      const bool *prelax);
 void smacofSSMUEngine(double *delta, const int *irow, const int *icol,
-                      double *xini, double *xnew, double *dnew, double *bnew,
-                      double *psnew, const int *pinit, const int *pn,
-                      const int *pp, const int *pm, int *pitel,
-                      const int *pitmax, const int *peps1, const int *peps2,
-                      const bool *pverbose, const bool *prelax);
+                      double *xini, double *xnew, double *dnew, 
+                      double *bnew, double *psnew, const int *pinit, 
+                      const int *pn, const int *pp, const int *pm, 
+                      int *pitel, const int *pitmax, const int *peps1, 
+                      const int *peps2, const bool *pverbose, const bool *prelax);
 
 // smacofWeightedCore.c
 

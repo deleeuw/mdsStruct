@@ -135,7 +135,7 @@
   \setlength{\itemsep}{#2\baselineskip}}}
  {\end{list}}
 \usepackage{calc}
-\newcommand{\CSLBlock}[1]{\hfill\break#1\hfill\break}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
 \newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
 \newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
 \newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
@@ -190,7 +190,7 @@
 
 \title{Notes on the C Version of Smacof}
 \author{Jan de Leeuw - University of California Los Angeles}
-\date{Started October 10 2023, Version of October 30, 2023}
+\date{Started October 10 2023, Version of November 07, 2023}
 
 \begin{document}
 \maketitle
@@ -247,6 +247,39 @@ Compile with ``clang -o runner -O2 smacofSort.c'' and then start ``runner'' in t
 The C code uses the .C() interface in R, which can be improved using .Call(),
 but probably in this case with little gain.
 
+\section{smacofMaximumSum}\label{smacofmaximumsum}
+
+Maximize
+\[
+\jis w_{ij}\delta_{ij}^2d_{ij}^2(X)
+\]
+over \(X\) with \(\text{tr}\ (X'X)^2=1\). This gives \(BX=X\Lambda\), with
+\[
+B=\jis w_{ij}\delta_{ij}^2A_{ij}
+\]
+There is also a non-metric version. Maximize over \(\text{tr}\ (X'X)^2\)
+\[
+\jis\mathop{\sum\sum}_{1\leq k<l\leq n} w_{ij,kl}\text{sign}(\delta_{ij}-\delta_{kl})(d_{ij}^2(X)-d_{kl}^2(X))
+\]
+which simplifies to
+\[
+2\ \jis d_{ij}^2(X)\mathop{\sum\sum}_{1\leq k<l\leq n}w_{ij,kl}\text{sign}(\delta_{ij}-\delta_{kl})
+\]
+Simplifies more \(w_{ij,kl}=w_{ij}\) or \(_{ij,kl}=w_{ij}w_{kl}\)
+
+Also note
+\[
+\rho(X)=\jis w_{ij}\delta_{ij}d_{ij}(X)=
+\jis \frac{w_{ij}}{\delta_{ij}d_{ij}(X)}\delta_{ij}^2d_{ij}^2(X)\approx\jis
+\frac{w_{ij}}{\delta_{ij}^2}\delta_{ij}^2d_{ij}^2(X)=\eta^2(X)
+\]
+
+\section{smacofElegant}\label{smacofelegant}
+
+\section{smacofAdjustDiagonal}\label{smacofadjustdiagonal}
+
+\section{smacofImpute}\label{smacofimpute}
+
 \section{smacofHildreth}\label{smacofhildreth}
 
 Hildreth (1957)
@@ -298,6 +331,20 @@ and go to the next \(j\).
 
 taken from De Leeuw (2017)
 
+partial jacobi
+
+\section{smacofIndividualDifferenceModels.c}\label{smacofindividualdifferencemodels.c}
+
+\begin{align}
+X_k&=X,\\
+X_k&=X\Lambda_k \text{ with }\Lambda_k\text{ diagonal},\\
+X_k&=XC_k,\\
+X_k&=X\Lambda_k Y' \text{ with }\Lambda_k\text{ diagonal},\\
+X_k&=XC_kY',\\
+X_k&=X\Lambda_k Y_k'\text{ with }\Lambda_k\text{ diagonal}\\
+X_k&=XC_k Y'\text{ with } C_k=\sum_{s=1}^r z_{ks}H_s.
+\end{align}
+
 \section{smacofSort}\label{smacofsort}
 
 \section{Code}\label{code}
@@ -308,52 +355,7 @@ taken from De Leeuw (2017)
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\PreprocessorTok{\#include }\ImportTok{"smacof.h"}
 
-\DataTypeTok{int}\NormalTok{ smacofComparison}\OperatorTok{(}\DataTypeTok{const} \DataTypeTok{void} \OperatorTok{*}\NormalTok{px}\OperatorTok{,} \DataTypeTok{const} \DataTypeTok{void} \OperatorTok{*}\NormalTok{py}\OperatorTok{)} \OperatorTok{\{}
-    \DataTypeTok{double}\NormalTok{ x }\OperatorTok{=} \OperatorTok{((}\KeywordTok{struct}\NormalTok{ fiveTuple }\OperatorTok{*)}\NormalTok{px}\OperatorTok{){-}\textgreater{}}\NormalTok{delta}\OperatorTok{;}
-    \DataTypeTok{double}\NormalTok{ y }\OperatorTok{=} \OperatorTok{((}\KeywordTok{struct}\NormalTok{ fiveTuple }\OperatorTok{*)}\NormalTok{py}\OperatorTok{){-}\textgreater{}}\NormalTok{delta}\OperatorTok{;}
-    \ControlFlowTok{return} \OperatorTok{(}\DataTypeTok{int}\OperatorTok{)}\NormalTok{copysign}\OperatorTok{(}\FloatTok{1.0}\OperatorTok{,}\NormalTok{ x }\OperatorTok{{-}}\NormalTok{ y}\OperatorTok{);}
-\OperatorTok{\}}
-
-\DataTypeTok{void}\NormalTok{ smacofSort}\OperatorTok{(}\DataTypeTok{double} \OperatorTok{*}\NormalTok{delta}\OperatorTok{,} \DataTypeTok{double} \OperatorTok{*}\NormalTok{weight}\OperatorTok{,} \DataTypeTok{int} \OperatorTok{*}\NormalTok{row}\OperatorTok{,} \DataTypeTok{int} \OperatorTok{*}\NormalTok{col}\OperatorTok{,} \DataTypeTok{int} \OperatorTok{*}\NormalTok{index}\OperatorTok{,}
-                \DataTypeTok{const} \DataTypeTok{int} \OperatorTok{*}\NormalTok{ndata}\OperatorTok{)} \OperatorTok{\{}
-    \DataTypeTok{int}\NormalTok{ n }\OperatorTok{=} \OperatorTok{*}\NormalTok{ndata}\OperatorTok{;}
-    \KeywordTok{struct}\NormalTok{ fiveTuple }\OperatorTok{*}\NormalTok{xi }\OperatorTok{=}
-        \OperatorTok{(}\KeywordTok{struct}\NormalTok{ fiveTuple }\OperatorTok{*)}\NormalTok{calloc}\OperatorTok{((}\DataTypeTok{size\_t}\OperatorTok{)}\NormalTok{n}\OperatorTok{,} \OperatorTok{(}\DataTypeTok{size\_t}\OperatorTok{)}\KeywordTok{sizeof}\OperatorTok{(}\KeywordTok{struct}\NormalTok{ fiveTuple}\OperatorTok{));}
-    \ControlFlowTok{for} \OperatorTok{(}\DataTypeTok{int}\NormalTok{ i }\OperatorTok{=} \DecValTok{0}\OperatorTok{;}\NormalTok{ i }\OperatorTok{\textless{}}\NormalTok{ n}\OperatorTok{;}\NormalTok{ i}\OperatorTok{++)} \OperatorTok{\{}
-\NormalTok{        xi}\OperatorTok{[}\NormalTok{i}\OperatorTok{].}\NormalTok{index }\OperatorTok{=}\NormalTok{ i}\OperatorTok{;}
-\NormalTok{        xi}\OperatorTok{[}\NormalTok{i}\OperatorTok{].}\NormalTok{row }\OperatorTok{=}\NormalTok{ row}\OperatorTok{[}\NormalTok{i}\OperatorTok{];}
-\NormalTok{        xi}\OperatorTok{[}\NormalTok{i}\OperatorTok{].}\NormalTok{col }\OperatorTok{=}\NormalTok{ col}\OperatorTok{[}\NormalTok{i}\OperatorTok{];}
-\NormalTok{        xi}\OperatorTok{[}\NormalTok{i}\OperatorTok{].}\NormalTok{delta }\OperatorTok{=}\NormalTok{ delta}\OperatorTok{[}\NormalTok{i}\OperatorTok{];}
-\NormalTok{        xi}\OperatorTok{[}\NormalTok{i}\OperatorTok{].}\NormalTok{weight }\OperatorTok{=}\NormalTok{ weight}\OperatorTok{[}\NormalTok{i}\OperatorTok{];}
-    \OperatorTok{\}}
-    \OperatorTok{(}\DataTypeTok{void}\OperatorTok{)}\NormalTok{qsort}\OperatorTok{(}\NormalTok{xi}\OperatorTok{,} \OperatorTok{(}\DataTypeTok{size\_t}\OperatorTok{)}\NormalTok{n}\OperatorTok{,} \OperatorTok{(}\DataTypeTok{size\_t}\OperatorTok{)}\KeywordTok{sizeof}\OperatorTok{(}\KeywordTok{struct}\NormalTok{ fiveTuple}\OperatorTok{),}
-\NormalTok{                smacofComparison}\OperatorTok{);}
-    \ControlFlowTok{for} \OperatorTok{(}\DataTypeTok{int}\NormalTok{ i }\OperatorTok{=} \DecValTok{0}\OperatorTok{;}\NormalTok{ i }\OperatorTok{\textless{}}\NormalTok{ n}\OperatorTok{;}\NormalTok{ i}\OperatorTok{++)} \OperatorTok{\{}
-\NormalTok{        index}\OperatorTok{[}\NormalTok{i}\OperatorTok{]} \OperatorTok{=}\NormalTok{ xi}\OperatorTok{[}\NormalTok{i}\OperatorTok{].}\NormalTok{index}\OperatorTok{;}
-\NormalTok{        row}\OperatorTok{[}\NormalTok{i}\OperatorTok{]} \OperatorTok{=}\NormalTok{ xi}\OperatorTok{[}\NormalTok{i}\OperatorTok{].}\NormalTok{row}\OperatorTok{;}
-\NormalTok{        col}\OperatorTok{[}\NormalTok{i}\OperatorTok{]} \OperatorTok{=}\NormalTok{ xi}\OperatorTok{[}\NormalTok{i}\OperatorTok{].}\NormalTok{col}\OperatorTok{;}
-\NormalTok{        delta}\OperatorTok{[}\NormalTok{i}\OperatorTok{]} \OperatorTok{=}\NormalTok{ xi}\OperatorTok{[}\NormalTok{i}\OperatorTok{].}\NormalTok{delta}\OperatorTok{;}
-\NormalTok{        weight}\OperatorTok{[}\NormalTok{i}\OperatorTok{]} \OperatorTok{=}\NormalTok{ xi}\OperatorTok{[}\NormalTok{i}\OperatorTok{].}\NormalTok{weight}\OperatorTok{;}
-    \OperatorTok{\}}
-\NormalTok{    free}\OperatorTok{(}\NormalTok{xi}\OperatorTok{);}
-    \ControlFlowTok{return}\OperatorTok{;}
-\OperatorTok{\}}
-
-\DataTypeTok{void}\NormalTok{ smacofTieBlocks}\OperatorTok{(}\DataTypeTok{const} \DataTypeTok{double} \OperatorTok{*}\NormalTok{delta}\OperatorTok{,} \DataTypeTok{int} \OperatorTok{*}\NormalTok{block}\OperatorTok{,} \DataTypeTok{double} \OperatorTok{*}\NormalTok{eps}\OperatorTok{,}
-                     \DataTypeTok{const} \DataTypeTok{int} \OperatorTok{*}\NormalTok{ndata}\OperatorTok{)} \OperatorTok{\{}
-    \DataTypeTok{int}\NormalTok{ n }\OperatorTok{=} \OperatorTok{*}\NormalTok{ndata}\OperatorTok{;}
-\NormalTok{    block}\OperatorTok{[}\DecValTok{0}\OperatorTok{]} \OperatorTok{=} \DecValTok{1}\OperatorTok{;}
-    \ControlFlowTok{for} \OperatorTok{(}\DataTypeTok{int}\NormalTok{ i }\OperatorTok{=} \DecValTok{1}\OperatorTok{;}\NormalTok{ i }\OperatorTok{\textless{}}\NormalTok{ n}\OperatorTok{;}\NormalTok{ i}\OperatorTok{++)} \OperatorTok{\{}
-        \ControlFlowTok{if} \OperatorTok{(}\NormalTok{fabs}\OperatorTok{(}\NormalTok{delta}\OperatorTok{[}\NormalTok{i}\OperatorTok{]} \OperatorTok{{-}}\NormalTok{ delta}\OperatorTok{[}\NormalTok{i }\OperatorTok{{-}} \DecValTok{1}\OperatorTok{])} \OperatorTok{\textless{}} \OperatorTok{*}\NormalTok{eps}\OperatorTok{)} \OperatorTok{\{}
-\NormalTok{            block}\OperatorTok{[}\NormalTok{i}\OperatorTok{]} \OperatorTok{=}\NormalTok{ block}\OperatorTok{[}\NormalTok{i }\OperatorTok{{-}} \DecValTok{1}\OperatorTok{];}
-        \OperatorTok{\}} \ControlFlowTok{else} \OperatorTok{\{}
-\NormalTok{            block}\OperatorTok{[}\NormalTok{i}\OperatorTok{]} \OperatorTok{=}\NormalTok{ block}\OperatorTok{[}\NormalTok{i }\OperatorTok{{-}} \DecValTok{1}\OperatorTok{]} \OperatorTok{+} \DecValTok{1}\OperatorTok{;}
-        \OperatorTok{\}}
-    \OperatorTok{\}}
-    \ControlFlowTok{return}\OperatorTok{;}
-\OperatorTok{\}}
 \end{Highlighting}
 \end{Shaded}
 

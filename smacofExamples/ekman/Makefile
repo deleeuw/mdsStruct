@@ -1,6 +1,6 @@
-runEkman: runEkmanU.c runEkmanW.c /usr/local/lib/libsmacof.a
-	clang -o runEkmanU -O2 runEkmanU.c -lsmacof
-	clang -o runEkmanW -O2 runEkmanW.c -lsmacof
+runEkman: runEkmanU.c runEkmanW.c 
+	clang -o runEkmanU -O2 runEkmanU.c -L../../smacofBuild -lsmacof
+	clang -o runEkmanW -O2 runEkmanW.c -L../../smacofBuild -lsmacof
 
 timer: 
 	/usr/bin/time -ph runEkmanU

@@ -1,44 +1,56 @@
-sources = ../smacofEngines/smacof*Engine.c \
-	../smacofCommon/ccode/smacofCommon*.c \
-	../smacofCommon/ccode/smacofWeighted*.c \
-	../smacofCommon/ccode/smacofUnweighted*.c 
+sources = ../smacofEngines/smacofSSMWEngine.c \
+	../smacofEngines/smacofSSMUEngine.c \
+	../smacofCommon/ccode/smacofCommonAccelerate.c \
+	../smacofCommon/ccode/smacofCommonLinearAlgebra.c \
+	../smacofCommon/ccode/smacofCommonPrintRead.c \
+	../smacofCommon/ccode/smacofCommonUtils.c \
+	../smacofCommon/ccode/smacofWeightedCore.c \
+	../smacofCommon/ccode/smacofWeightedDerivatives.c \
+	../smacofCommon/ccode/smacofWeightedInitial.c \
+	../smacofCommon/ccode/smacofWeightedNorm.c \
+	../smacofCommon/ccode/smacofUnweightedCore.c \
+	../smacofCommon/ccode/smacofUnweightedInitial.c \
+	../smacofCommon/ccode/smacofUnweightedNorm.c 
 
-objects = ../smacofEngines/smacof*Engine.o \
-	../smacofCommon/ccode/smacofCommon*.o \
-	../smacofCommon/ccode/smacofWeighted*.o \
-	../smacofCommon/ccode/smacofUnweighted*.o
+
+objects = smacofSSMWEngine.o \
+	smacofSSMUEngine.o \
+	smacofCommonAccelerate.o \
+	smacofCommonLinearAlgebra.o \
+	smacofCommonPrintRead.o \
+	smacofCommonUtils.o \
+	smacofWeightedCore.o \
+	smacofWeightedDerivatives.o \
+	smacofWeightedInitial.o \
+	smacofWeightedNorm.o \
+	smacofUnweightedCore.o \
+	smacofUnweightedInitial.o \
+	smacofUnweightedNorm.o
 
 includes = ../smacofInclude/smacof.h
 
-all: clib dylib rlib
+all: clib rlib
 
 clib: $(includes) $(sources)
-	$(CC) -c -O2 -Wall $(sources)
-	ar rcs libsmacof.a *.o
-	rm -f *.o
+	@$(CC) -c -O2 -g -Wall -Winline -pedantic $(sources)
+	@ar rcs libsmacof.a $(objects)
+#	@ranlib libsmacof.a
 
+#dylib: $(includes) $(sources)
+#	$(CC) -O2 -Wall -dynamiclib -current_version 1.0 -compatibility_version 1.0 \
+#	$(sources) -o libsmacof.1.dylib
+#	@ln -s libsmacof.1.dylib libsmacof.dylib
+#	@rm -f *.o $(objects)
 
-dylib: $(includes) $(sources)
-	$(CC) -c -g -Wall -fPIC -O2 ../smacofEngines/*.c ../smacofCommon/ccode/*.c 
-	$(CC) -arch arm64 -dynamiclib -Wl,-headerpad_max_install_names \
-		-undefined dynamic_lookup -o libsmacof.dylib *.o
-	rm -f *.o
-
-rlib: $(includes) $(sources)
-	R CMD SHLIB -o smacofShareLib.so $(sources)
-	rm -f *.o
-
-install: 
-	cp ../smacofInclude/smacof.h /usr/local/include 
-	cp libsmacof.a /usr/local/lib
-	cp libsmacof.dylib /usr/local/lib
+rlib: clib $(includes) $(sources)
+	@R CMD SHLIB -o libsmacof.so $(sources)
+	@rm -f *.o $(objects)
 
 format: $(includes) $(sources)
-	clang-format -i -style="{BasedOnStyle: google, IndentWidth: 4}" $(sources)
+	@clang-format -i -style="{BasedOnStyle: google, IndentWidth: 4}" $(sources)
 	
 clean:
-	rm -f *.o
+	@rm -f *.o $(objects) ../smacofCommon/ccode/*.o
 
 pristine: clean
-	rm -rf ../smacofBinaries/* 
-
+	rm -rf libsmacof.a libsmacof.so *.dylib

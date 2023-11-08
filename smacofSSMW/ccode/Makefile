@@ -1,13 +1,13 @@
 all: run
 
-smacofSSMW1: smacofSSMW1.c /usr/local/lib/libsmacof.a
-	clang -o smacofSSMW1 -O2 smacofSSMW1.c -lsmacof
+smacofSSMW1: smacofSSMW1.c 
+	clang -o smacofSSMW1 -O2 smacofSSMW1.c -L/usr/local/lib -lsmacof
 
-smacofSSMW2: smacofSSMW2.c /usr/local/lib/libsmacof.a
-	clang -o smacofSSMW2 -O2 smacofSSMW2.c -lsmacof
+smacofSSMW2: smacofSSMW2.c 
+	clang -o smacofSSMW2 -O2 smacofSSMW2.c -L/usr/local/lib -lsmacof
 
-smacofSSMW3: smacofSSMW3.c /usr/local/lib/libsmacof.a
-	clang -o smacofSSMW3 -O2 smacofSSMW3.c -lsmacof
+smacofSSMW3: smacofSSMW3.c 
+	clang -o smacofSSMW3 -O2 smacofSSMW3.c -L/usr/local/lib -lsmacof
 
 run: smacofSSMW1 smacofSSMW2 smacofSSMW3
 	./smacofSSMW1 > smacofSSMW1.txt

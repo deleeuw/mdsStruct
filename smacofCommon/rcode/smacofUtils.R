@@ -77,8 +77,10 @@ mPrint <- function(x,
 
 torgerson <- function(delta, p = 2) {
   cross <- -.5 * doubleCenter(as.matrix(delta) ^ 2)
-  print("cross")
-  mPrint(cross)
+  if (DEBUG) {
+    print("cross")
+    mPrint(cross)
+  }
   e <- eigen(cross)
   l <- sqrt(pmax(0, e$values[1:p]))
   if (p == 1) {
