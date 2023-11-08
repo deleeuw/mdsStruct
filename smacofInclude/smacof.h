@@ -19,12 +19,13 @@ void smacofSSMWEngine(double *delta, double *weights, const int *irow,
                       const int *pm, int *pitel, const int *pitmax, 
                       const int *peps1, const int *peps2, const bool *pverbose, 
                       const bool *prelax);
-void smacofSSMUEngine(double *delta, const int *irow, const int *icol,
-                      double *xini, double *xnew, double *dnew, 
-                      double *bnew, double *psnew, const int *pinit, 
-                      const int *pn, const int *pp, const int *pm, 
-                      int *pitel, const int *pitmax, const int *peps1, 
-                      const int *peps2, const bool *pverbose, const bool *prelax);
+
+void smacofSSMUEngine(double *delta, 
+                      double *xini, double *xnew, double *dnew, double *bnew,
+                      double *psnew, const int *pinit, const int *pn,
+                      const int *pp, const int *pm, int *pitel,
+                      const int *pitmax, const int *peps1, const int *peps2,
+                      const bool *pverbose, const bool *prelax);
 
 // smacofWeightedCore.c
 
@@ -43,14 +44,12 @@ void smacofWeightedMakeStress(const double *delta, const double *weights,
 
 // smacofUnweightedCore.c
 
-void smacofUnweightedMakeBMatrix(const double *delta, const double *dold,
-                                 double *bmat, const int *irow, const int *icol,
-                                 const int *pn, const int *pm);
+void smacofUnweightedMakeBMatrix(const double *delta, const double *dmat,
+                                 double *bmat, const int *pn);
 void smacofUnweightedGuttman(const double *bmat, const double *xold,
                              double *xnew, const int *pn, const int *pp);
-void smacofUnweightedMakeStress(const double *delta, const double *d, const int *m,
-                            double *stress);
-
+void smacofUnweightedMakeStress(const double *delta, const double *dist, 
+                                double *stress, const int *pn);
 
 // smacofWeightedNorm.c
 
@@ -65,8 +64,8 @@ void smacofWeightedNormWeights(double *weights, const int *pm);
 
 void smacofUnweightedScale(const double *delta, 
                          double *dold, double *xold, const int *pn,
-                         const int *pp, const int *pm);
-void smacofUnweightedNormDelta(double *delta,  const int *pm);
+                         const int *pp);
+void smacofUnweightedNormDelta(double *delta,  const int *pn);
 
 // smacofCommonUtils.c
 
@@ -105,17 +104,10 @@ void smacofWeightedInitial(const double *delta, const double *weights,
 
 // smacofUnweightedInitial.c
 
-void smacofUnweightedInitTorgerson(const double *delta, 
-                                 const int *irow, const int *icol, double *xold,
-                                 const int *pn, const int *pp, const int *pm);
-void smacofUnweightedInitMaximumSum(const double *delta, 
-                                  const int *irow, const int *icol,
-                                  double *xini, const int *pn, const int *pp,
-                                  const int *pm);
-void smacofUnweightedInitial(const double *delta,
-                           const int *irow, const int *icol, double *xini,
-                           const int *pinit, const int *pn, const int *pp,
-                           const int *pm);
+void smacofUnweightedInitTorgerson(const double *delta, double *xold, const int *pn, const int *pp);
+void smacofUnweightedInitMaximumSum(const double *delta, double *xini, const int *pn, const int *pp);
+void smacofUnweightedInitial(const double *delta, double *xini,
+                           const int *pinit, const int *pn, const int *pp);
 
 // smacofLinearAlgebra.c
 
@@ -160,7 +152,7 @@ void smacofPrintSymmetricMatrix(const double *x, const int *pn, const int *pw,
                                 const int *pr);
 void smacofWeightedReadInputFile(char *fname, int *irow, int *icol, double *delta,
                                  double *weights);
-void smacofUnweightedReadInputFile(char *fname, int *irow, int *icol, double *delta);
+void smacofUnweightedReadInputFile(char *fname, double *delta);
 
 // smacofCommonAccelerate.c
 

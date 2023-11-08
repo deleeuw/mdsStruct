@@ -1,23 +1,24 @@
 #include "../../smacofInclude/smacof.h"
 
 void smacofUnweightedMakeBMatrix(const double *delta, const double *dmat,
-                                 double *bmat, const int *irow, const int *icol,
-                                 const int *pn, const int *pm) {
-    int m = *pm, n = *pn, mm = n * (n + 1) / 2;
-    for (int k = 1; k <= mm; k++) {
+                                 double *bmat, const int *pn) {
+    int n = *pn, nn = n * (n + 1) / 2;
+    for (int k = 1; k <= nn; k++) {
         bmat[VINDEX(k)] = -0.0;
     }
-    for (int k = 1; k <= m; k++) {
-        int kv = VINDEX(k), ik = irow[kv], jk = icol[kv];
-        double dfix = dmat[SINDEX(ik, jk, n)], cell = 0.0;
-        if (dfix < 1e-15) {
-            cell = -0.0;
-        } else {
-            cell = delta[kv] / (dfix * (double)n);
+    for (int j = 1; j <= (n - 1); j++) {
+        for (int i = (j + 1); i <= n; i++) {
+            int ij = SINDEX(i, j, n);
+            double dfix = dmat[ij], cell = 0.0;
+            if (dfix < 1e-15) {
+                cell = -0.0;
+            } else {
+                cell = delta[ij] / (dfix * (double)n);
+            }
+            bmat[TINDEX(i, j, n)] -= cell;
+            bmat[TINDEX(i, i, n)] += cell;
+            bmat[TINDEX(j, j, n)] += cell;
         }
-        bmat[TINDEX(ik, jk, n)] -= cell;
-        bmat[TINDEX(ik, ik, n)] += cell;
-        bmat[TINDEX(jk, jk, n)] += cell;
     }
     return;
 }
@@ -29,8 +30,8 @@ void smacofUnweightedGuttman(const double *bmat, const double *xold,
 }
 
 void smacofUnweightedMakeStress(const double *delta, const double *dist,
-                                const int *pm, double *stress) {
-    int m = *pm;
+                                double *stress, const int *pn) {
+    int n = *pn, m = n * (n - 1) / 2;
     double sum = 0.0;
     for (int k = 1; k <= m; k++) {
         int ik = VINDEX(k);

@@ -114,18 +114,19 @@ void smacofWeightedReadInputFile(char *fname, int *irow, int *icol,
     return;
 }
 
-void smacofUnweightedReadInputFile(char *fname, int *irow, int *icol,
-                                   double *delta) {
+// read dissimilarities in standard order from a file
+
+void smacofUnweightedReadInputFile(char *fname, double *delta) {
     FILE *stream = fopen(fname, "r");
     if (stream == NULL) {
         printf("Error: cannot open %s\n", fname);
         exit(EXIT_FAILURE);
     }
     int k = 0;
-    fscanf(stream, "%d %d %lf", &irow[k], &icol[k], &delta[k]);
+    fscanf(stream, "%lf", &delta[k]);
     while (!feof(stream)) {
         k++;
-        fscanf(stream, "%d %d %lf", &irow[k], &icol[k], &delta[k]);
+        fscanf(stream, "%lf", &delta[k]);
     }
     fclose(stream);
     return;

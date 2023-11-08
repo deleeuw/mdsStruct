@@ -34,7 +34,6 @@ all: clib rlib
 clib: $(includes) $(sources)
 	@$(CC) -c -O2 -g -Wall -Winline -pedantic $(sources)
 	@ar rcs libsmacof.a $(objects)
-#	@ranlib libsmacof.a
 
 #dylib: $(includes) $(sources)
 #	$(CC) -O2 -Wall -dynamiclib -current_version 1.0 -compatibility_version 1.0 \
