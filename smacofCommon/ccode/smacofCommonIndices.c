@@ -1,5 +1,18 @@
 #include "../../smacofInclude/smacof.h"
 
+// VINDEX takes 1,...,n to 0,...,n-1
+
+int VINDEX(const int i) { 
+  return (i - 1); 
+}
+
+// MINDEX retrieves element (i,j) from an n x m matrix in
+// column-major-order storage
+
+int MINDEX(const int i, const int j, const int n) {
+  return ((i - 1) + (j - 1) * n);
+}
+
 // SINDEX retrieves element (i, j) from a strictly lower triangular matrix
 // of order n. Thus always i > j.
 

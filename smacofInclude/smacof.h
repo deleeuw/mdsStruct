@@ -9,14 +9,15 @@
 
 #define DEBUG false
 #define NaN (nan(""))
+#define PI (2.0 * asin(1.0))
+#define EPS(i) ((double)pow(10.0, -(i)))
 
 #define SQUARE(x) ((x) * (x))
 #define THIRD(x) ((x) * (x) * (x))
+#define FOURTH(x) ((x) * (x) * (x) * (x))
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #define KDELTA(i, j) (((i) == (j)) ? 1 : 0)
-#define VINDEX(i) ((i)-1)
-#define MINDEX(i, j, n) ((((i)-1) + ((j)-1) * n))
 
 // smacofEngine.c
 
