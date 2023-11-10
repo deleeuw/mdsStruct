@@ -4,8 +4,9 @@ void smacofWeightedInitial(const double *delta, const double *weights,
                            const int *irow, const int *icol, double *xini,
                            const int *pinit, const int *pn, const int *pp,
                            const int *pm) {
-    int init = *pinit, np = *pn * *pp;
-    double *dini = (double *)calloc((size_t)np, (size_t)sizeof(double));
+    int init = *pinit, n = *pn, p = *pp, np = n * p, nn = n * (n - 1) / 2,
+        m = *pm;
+    double *dini = (double *)calloc((size_t)m, (size_t)sizeof(double));
     switch (init) {
         case 1:
             (void)smacofWeightedInitTorgerson(delta, weights, irow, icol, xini,

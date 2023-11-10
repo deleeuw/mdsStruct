@@ -63,8 +63,7 @@ void smacofUnweightedInitTorgerson(const double *delta, double *xold,
 
 void smacofUnweightedInitMaximumSum(const double *delta, double *xini,
                                     const int *pn, const int *pp) {
-    int n = *pn, p = *pp, nn = n * (n + 1) / 2,
-        itmax = 100, eps = 10;
+    int n = *pn, p = *pp, nn = n * (n + 1) / 2, itmax = 100, eps = 10;
     bool verbose = false;
     double *b = (double *)calloc((size_t)nn, (size_t)sizeof(double));
     double *evec = (double *)calloc((size_t)SQUARE(n), (size_t)sizeof(double));

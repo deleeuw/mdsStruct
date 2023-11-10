@@ -2,18 +2,17 @@
 
 // global variables
 
-double delta[91];
-double bnew[105];
-double dnew[91];
-double xini[28];
-double xnew[28];
-int irow[91];
-int icol[91];
-char fname[] = "ekmanU.txt";
-int n = 14, p = 2, m = 91, itel = 1, itmax = 100, init = 1, eps1 = 15,
-    eps2 = 10, width = 6, precision = 4;
-double snew;
-bool verbose = false, relax = true, timer = true;
+double delta[630];
+double bnew[666];
+double dnew[630];
+double xini[72];
+double xnew[72];
+char fname[] = "morseU.txt";
+int n = 36, p = 2, m = 630, itel = 1, itmax = 1000, init = 1, eps1 = 15,
+    eps2 = 10, width = 2, precision = 2;
+double snew = 0.0;
+bool verbose = false, relax = true;
+
 int main(void) {
     (void)smacofUnweightedReadInputFile(fname, delta);
     (void)smacofSSMUEngine(delta, xini, xnew, dnew, bnew, &snew, &init, &n, &p,

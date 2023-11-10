@@ -10,12 +10,11 @@ double xnew[30];
 double weights[105];
 int irow[105];
 int icol[105];
-int ntimes = 10000;
 char fname[] = "eqdistW.txt";
-int n = 15, p = 2, m = 105, itel = 1, itmax = 100, init = 3, eps1 = 15,
+int n = 15, p = 2, m = 105, itel = 1, itmax = 10000, init = 3, eps1 = 15,
     eps2 = 10, width = 6, precision = 4;
 double snew = 0.0;
-bool verbose = false, relax = true, timer = true;
+bool verbose = false, relax = true;
 
 int main(void) {
     (void)smacofWeightedReadInputFile(fname, irow, icol, delta, weights);

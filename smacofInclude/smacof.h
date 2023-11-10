@@ -10,20 +10,26 @@
 #define DEBUG false
 #define NaN (nan(""))
 
+#define SQUARE(x) ((x) * (x))
+#define THIRD(x) ((x) * (x) * (x))
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
+#define KDELTA(i, j) (((i) == (j)) ? 1 : 0)
+#define VINDEX(i) ((i)-1)
+#define MINDEX(i, j, n) ((((i)-1) + ((j)-1) * n))
+
 // smacofEngine.c
 
 void smacofSSMWEngine(double *delta, double *weights, const int *irow,
-                      const int *icol, double *xini, double *xnew, 
-                      double *dnew, double *bnew, double *psnew, 
-                      const int *pinit, const int *pn, const int *pp, 
-                      const int *pm, int *pitel, const int *pitmax, 
-                      const int *peps1, const int *peps2, const bool *pverbose, 
-                      const bool *prelax);
+                      const int *icol, double *xini, double *xnew, double *dnew,
+                      double *bnew, double *psnew, const int *pinit,
+                      const int *pn, const int *pp, const int *pm, int *pitel,
+                      const int *pitmax, const int *peps1, const int *peps2,
+                      const bool *pverbose, const bool *prelax);
 
-void smacofSSMUEngine(double *delta, 
-                      double *xini, double *xnew, double *dnew, double *bnew,
-                      double *psnew, const int *pinit, const int *pn,
-                      const int *pp, const int *pm, int *pitel,
+void smacofSSMUEngine(double *delta, double *xini, double *xnew, double *dnew,
+                      double *bnew, double *psnew, const int *pinit,
+                      const int *pn, const int *pp, const int *pm, int *pitel,
                       const int *pitmax, const int *peps1, const int *peps2,
                       const bool *pverbose, const bool *prelax);
 
@@ -33,13 +39,15 @@ void smacofWeightedMakeBMatrix(const double *delta, const double *weights,
                                const double *dold, double *bmat,
                                const int *irow, const int *icol, const int *pn,
                                const int *pm);
-void smacofWeightedMakeVMatrix(const double *weights, double *vmat, const int *irow,
-                       const int *icol, const int *pn, const int *pm);
+void smacofWeightedMakeVMatrix(const double *weights, double *vmat,
+                               const int *irow, const int *icol, const int *pn,
+                               const int *pm);
 void smacofWeightedGuttman(const double *vinv, const double *bmat,
                            const double *xold, double *xnew, const int *pn,
                            const int *pp);
 void smacofWeightedMakeStress(const double *delta, const double *weights,
-                              const double *dist, const int *irow, const int *icol, const int *pn, const int *pm,
+                              const double *dist, const int *irow,
+                              const int *icol, const int *pn, const int *pm,
                               double *stress);
 
 // smacofUnweightedCore.c
@@ -48,7 +56,7 @@ void smacofUnweightedMakeBMatrix(const double *delta, const double *dmat,
                                  double *bmat, const int *pn);
 void smacofUnweightedGuttman(const double *bmat, const double *xold,
                              double *xnew, const int *pn, const int *pp);
-void smacofUnweightedMakeStress(const double *delta, const double *dist, 
+void smacofUnweightedMakeStress(const double *delta, const double *dist,
                                 double *stress, const int *pn);
 
 // smacofWeightedNorm.c
@@ -62,10 +70,9 @@ void smacofWeightedNormWeights(double *weights, const int *pm);
 
 // smacofUnweightedNorm.c
 
-void smacofUnweightedScale(const double *delta, 
-                         double *dold, double *xold, const int *pn,
-                         const int *pp);
-void smacofUnweightedNormDelta(double *delta,  const int *pn);
+void smacofUnweightedScale(const double *delta, double *dold, double *xold,
+                           const int *pn, const int *pp);
+void smacofUnweightedNormDelta(double *delta, const int *pn);
 
 // smacofCommonUtils.c
 
@@ -79,7 +86,6 @@ void smacofRMSDifference(const double *x, double *y, const int *pn,
                          const int *pp, double *diff);
 void smacofMakeIIandJJ(const int *pn, int *ii, int *jj);
 void smacofDoubleCenter(const double *delta, double *cross, const int *pn);
-
 
 // smacofSort.c
 
@@ -104,10 +110,12 @@ void smacofWeightedInitial(const double *delta, const double *weights,
 
 // smacofUnweightedInitial.c
 
-void smacofUnweightedInitTorgerson(const double *delta, double *xold, const int *pn, const int *pp);
-void smacofUnweightedInitMaximumSum(const double *delta, double *xini, const int *pn, const int *pp);
+void smacofUnweightedInitTorgerson(const double *delta, double *xold,
+                                   const int *pn, const int *pp);
+void smacofUnweightedInitMaximumSum(const double *delta, double *xini,
+                                    const int *pn, const int *pp);
 void smacofUnweightedInitial(const double *delta, double *xini,
-                           const int *pinit, const int *pn, const int *pp);
+                             const int *pinit, const int *pn, const int *pp);
 
 // smacofLinearAlgebra.c
 
@@ -150,8 +158,8 @@ void smacofPrintSLTMatrix(const double *d, const int *pn, const int *pw,
                           const int *pr);
 void smacofPrintSymmetricMatrix(const double *x, const int *pn, const int *pw,
                                 const int *pr);
-void smacofWeightedReadInputFile(char *fname, int *irow, int *icol, double *delta,
-                                 double *weights);
+void smacofWeightedReadInputFile(char *fname, int *irow, int *icol,
+                                 double *delta, double *weights);
 void smacofUnweightedReadInputFile(char *fname, double *delta);
 
 // smacofCommonAccelerate.c
@@ -159,6 +167,13 @@ void smacofUnweightedReadInputFile(char *fname, double *delta);
 void smacofRelax(const double *xold, double *xnew, const double *pechange,
                  const double *ppchange, const int *pnp, const int *pitel,
                  const bool *prelax, double *prate);
+
+// smacofCommonIndices.c
+
+int SINDEX(const int i, const int j, const int n);
+int TINDEX(const int i, const int j, const int n);
+int PINDEX(const int i, const int j, const int n);
+int UINDEX(const int i, const int j, const int n);
 
 // structures
 
@@ -169,81 +184,5 @@ struct data {
     double delta;
     double weight;
 };
-
-// VINDEX takes 1,...,n to 0,...,n-1
-
-static inline int VINDEX(const int i) { return (i - 1); }
-
-// MINDEX retrieves element (i,j) from an n x m matrix in
-// column-major-order storage
-
-static inline int MINDEX(const int i, const int j, const int n) {
-    return ((i - 1) + (j - 1) * n);
-}
-
-// SINDEX retrieves element (i, j) from a strictly lower triangular matrix
-// of order n. Thus always i > j.
-
-static inline int SINDEX(const int i, const int j, const int n) {
-    if (i <= j) {
-        printf("SINDEX error\n");
-        return EXIT_FAILURE;
-    }
-    return (((j - 1) * n) - (j * (j - 1) / 2) + (i - j) - 1);
-}
-
-// PINDEX retrieves element (max(i, j), min(i,j)) from a strictly lower
-// triangularmatrix of order n. Thus always i ≠ j.
-
-static inline int PINDEX(const int i, const int j, const int n) {
-    if (i == j) {
-        printf("PINDEX error\n");
-        return EXIT_FAILURE;
-    }
-    if (i > j) {
-        return (SINDEX(i, j, n));
-    } else {
-        return (SINDEX(j, i, n));
-    }
-}
-
-// TINDEX retrieves element (i, j) from a lower triangular matrix
-// of order n. Thus always i >= j.
-
-static inline int TINDEX(const int i, const int j, const int n) {
-    if (i < j) {
-        printf("TINDEX error\n");
-        return EXIT_FAILURE;
-    }
-    return ((j - 1) * n) - ((j - 1) * (j - 2) / 2) + (i - (j - 1)) - 1;
-}
-
-static inline int UINDEX(const int i, const int j, const int n) {
-    if (i >= j) {
-        return (TINDEX(i, j, n));
-    } else {
-        return (TINDEX(j, i, n));
-    }
-}
-
-static inline double SQUARE(const double x) { return (x * x); }
-
-static inline double THIRD(const double x) { return (x * x * x); }
-
-static inline double MAX(const double x, const double y) {
-    return ((x > y) ? x : y);
-}
-
-static inline double MIN(const double x, const double y) {
-    return ((x < y) ? x : y);
-}
-
-static inline int IMAX(const int x, const int y) { return ((x > y) ? x : y); }
-
-static inline int IMIN(const int x, const int y) { return ((x < y) ? x : y); }
-
-static inline int KDELTA(const int i, const int j) {
-    return ((i == j) ? 1 : 0);
-}
 
 #endif /* SMACOF_H */

@@ -2,20 +2,19 @@
 
 // global variables
 
-double delta[105];
-double bnew[120];
-double dnew[105];
-double xini[30];
-double xnew[30];
-double weights[105];
-int irow[105];
-int icol[105];
-int ntimes = 10000;
-char fname[] = "eqdistW.txt";
-int n = 15, p = 2, m = 105, itel = 1, itmax = 100, init = 3, eps1 = 15,
+double delta[36];
+double bnew[45];
+double dnew[36];
+double xini[18];
+double xnew[18];
+double weights[36];
+int irow[36];
+int icol[36];
+char fname[] = "gruijterW.txt";
+int n = 9, p = 2, m = 36, itel = 1, itmax = 1000, init = 1, eps1 = 15,
     eps2 = 10, width = 6, precision = 4;
 double snew = 0.0;
-bool verbose = false, relax = true, timer = true;
+bool verbose = false, relax = true;
 
 int main(void) {
     (void)smacofWeightedReadInputFile(fname, irow, icol, delta, weights);

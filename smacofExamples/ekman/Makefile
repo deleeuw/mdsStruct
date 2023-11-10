@@ -1,11 +1,10 @@
+
 runEkman: runEkmanU.c runEkmanW.c 
-	clang -o runEkmanU -O2 runEkmanU.c -L../../smacofBuild -lsmacof
-	clang -o runEkmanW -O2 runEkmanW.c -L../../smacofBuild -lsmacof
+	clang -o runEkmanU -O2 -Wall -pedantic runEkmanU.c -lsmacof
+	clang -o runEkmanW -O2 -Wall -pedantic runEkmanW.c -lsmacof
 
-timer: 
-	/usr/bin/time -ph runEkmanU
-	/usr/bin/time -ph runEkmanW
-
+timer:
+	hyperfine -m 100 -w 25 -N runEkmanU runEkmanW
 
 clean:
 	rm -f runEkmanU runEkmanW *.o

@@ -1,5 +1,6 @@
 sources = ../smacofEngines/smacofSSMWEngine.c \
 	../smacofEngines/smacofSSMUEngine.c \
+	../smacofCommon/ccode/smacofCommonIndices.c \
 	../smacofCommon/ccode/smacofCommonAccelerate.c \
 	../smacofCommon/ccode/smacofCommonLinearAlgebra.c \
 	../smacofCommon/ccode/smacofCommonPrintRead.c \
@@ -15,6 +16,7 @@ sources = ../smacofEngines/smacofSSMWEngine.c \
 
 objects = smacofSSMWEngine.o \
 	smacofSSMUEngine.o \
+	smacofCommonIndices.o \
 	smacofCommonAccelerate.o \
 	smacofCommonLinearAlgebra.o \
 	smacofCommonPrintRead.o \
@@ -29,27 +31,28 @@ objects = smacofSSMWEngine.o \
 
 includes = ../smacofInclude/smacof.h
 
-all: clib rlib
+all: ofiles clib rlib dylib
 
-clib: $(includes) $(sources)
-	@$(CC) -c -O2 -g -Wall -Winline -pedantic $(sources)
-	@ar rcs libsmacof.a $(objects)
+ofiles: $(includes) $(sources)
+	$(CC) -c -O2 -g -Wall -Winline -pedantic $(sources)
 
-#dylib: $(includes) $(sources)
-#	$(CC) -O2 -Wall -dynamiclib -current_version 1.0 -compatibility_version 1.0 \
-#	$(sources) -o libsmacof.1.dylib
-#	@ln -s libsmacof.1.dylib libsmacof.dylib
-#	@rm -f *.o $(objects)
+clib: ofiles
+	ar rcs libsmacof.a $(objects)
 
-rlib: clib $(includes) $(sources)
-	@R CMD SHLIB -o libsmacof.so $(sources)
-	@rm -f *.o $(objects)
+rlib: ofiles
+	R CMD SHLIB -o libsmacof.so $(objects)
+
+dylib: ofiles
+	$(CC) -O2 -Wall -Wall -Winline -pedantic -dynamiclib  \
+		-current_version 0.0 -compatibility_version 0.1 \
+		$(objects) -o libsmacof.0.dylib 
+	ln -s libsmacof.0.dylib libsmacof.dylib
 
 format: $(includes) $(sources)
-	@clang-format -i -style="{BasedOnStyle: google, IndentWidth: 4}" $(sources)
+	clang-format -i -style="{BasedOnStyle: google, IndentWidth: 4}" $(sources) $(includes)
 	
 clean:
-	@rm -f *.o $(objects) ../smacofCommon/ccode/*.o
+	rm -f $(objects)
 
 pristine: clean
 	rm -rf libsmacof.a libsmacof.so *.dylib

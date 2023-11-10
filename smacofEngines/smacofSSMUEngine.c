@@ -2,8 +2,6 @@
 
 // to be called from R
 
-// assume m = n(n - 1) / 2; no irow and icol
-
 void smacofSSMUEngine(double *delta, double *xini, double *xnew, double *dnew,
                       double *bnew, double *psnew, const int *pinit,
                       const int *pn, const int *pp, const int *pm, int *pitel,

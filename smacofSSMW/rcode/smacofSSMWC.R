@@ -1,7 +1,7 @@
 dyn.load("/Users/deleeuw/Desktop/projects/mdsStruct/smacofBuild/libsmacof.so")
 
 smacofSSMWC <-
-  function(delta,
+  function(delta = 1:15,
            p = 2,
            n = as.integer((1 + sqrt(1 + 8 * length(delta)) / 2)),
            xold = rbind(diag(p),matrix(0, n - p, p)),

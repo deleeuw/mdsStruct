@@ -31,18 +31,18 @@ void smacofJacobi(double *a, double *evec, double *eval, const int *pn,
                 u = sqrt((1 + t) / 2);
                 v = s * sqrt((1 - t) / 2);
                 for (int k = 1; k <= n; k++) {
-                    int ik = IMIN(i, k);
-                    int ki = IMAX(i, k);
-                    int jk = IMIN(j, k);
-                    int kj = IMAX(j, k);
+                    int ik = MIN(i, k);
+                    int ki = MAX(i, k);
+                    int jk = MIN(j, k);
+                    int kj = MAX(j, k);
                     oldi[VINDEX(k)] = a[TINDEX(ki, ik, n)];
                     oldj[VINDEX(k)] = a[TINDEX(kj, jk, n)];
                 }
                 for (int k = 1; k <= n; k++) {
-                    int ik = IMIN(i, k);
-                    int ki = IMAX(i, k);
-                    int jk = IMIN(j, k);
-                    int kj = IMAX(j, k);
+                    int ik = MIN(i, k);
+                    int ki = MAX(i, k);
+                    int jk = MIN(j, k);
+                    int kj = MAX(j, k);
                     a[TINDEX(ki, ik, n)] =
                         u * oldi[VINDEX(k)] - v * oldj[VINDEX(k)];
                     a[TINDEX(kj, jk, n)] =
