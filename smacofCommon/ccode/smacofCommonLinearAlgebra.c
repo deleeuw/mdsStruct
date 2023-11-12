@@ -1,4 +1,4 @@
-#include "../../smacofInclude/smacof.h"
+#include "smacofAlt.h"
 
 void smacofJacobi(double *a, double *evec, double *eval, const int *pn,
                   const int *pm, const int *pitmax, const int *peps,
@@ -86,25 +86,25 @@ void smacofJacobi(double *a, double *evec, double *eval, const int *pn,
 }
 
 void smacofGramSchmidt(double *x, double *r, int *pn, int *pp) {
-    int n = *pn, p = *pp, s = 1;
-    while (s <= p) {
-        for (int t = 1; t < s; t++) {
+    int n = *pn, p = *pp, s = 0;
+    while (s < p) {
+        for (int t = 0; t < s; t++) {
             double sum = 0.0;
-            for (int i = 1; i <= n; i++) {
-                sum += x[MINDEX(i, t, n)] * x[MINDEX(i, s, n)];
+            for (int i = 0; i < n; i++) {
+                sum += x[i][t] * x[i][t];
             }
-            for (int i = 1; i <= n; i++) {
-                x[MINDEX(i, s, n)] -= sum * x[MINDEX(i, t, n)];
+            for (int i = 0; i < n; i++) {
+                x[i][t] -= sum * x[i][t];
             }
         }
         double sum = 0.0;
-        for (int i = 1; i <= n; i++) {
-            sum += x[MINDEX(i, s, n)] * x[MINDEX(i, s, n)];
+        for (int i = 0; i < n; i++) {
+            sum += SQUARE(x[i][s]); 
         }
         sum = sqrt(sum);
-        r[VINDEX(s)] = sum;
+        r[s] = sum;
         for (int i = 1; i <= n; i++) {
-            x[MINDEX(i, s, n)] /= sum;
+            x[i][s] /= sum;
         }
         s++;
     }
@@ -113,98 +113,45 @@ void smacofGramSchmidt(double *x, double *r, int *pn, int *pp) {
 
 void smacofCenter(double *x, const int *np, const int *pp) {
     int n = *np, p = *pp;
-    for (int s = 1; s <= p; s++) {
+    for (int s = 0; s < p; s++) {
         double sum = 0.0;
-        for (int i = 1; i <= n; i++) {
-            sum += x[MINDEX(i, s, n)];
+        for (int i = 0; i < n; i++) {
+            sum += x[i][s];
         }
         sum /= (double)n;
-        for (int i = 1; i <= n; i++) {
-            x[MINDEX(i, s, n)] -= sum;
+        for (int i = 0; i < n; i++) {
+            x[i][s] -= sum;
         }
     }
     return;
 }
 
-void smacofInvertPDMatrix(const double *x, double *xinv, const int *pn) {
-    int n = *pn, m = n * (n + 1) / 2, ik = 0, jk = 0, ij = 0;
-    for (int k = 1; k <= m; k++) {
-        xinv[VINDEX(k)] = x[VINDEX(k)];
-    }
-    for (int k = 1; k <= n; k++) {
-        double piv = xinv[TINDEX(k, k, n)];
-        for (int j = 1; j <= n; j++) {
-            if (j == k) {
-                continue;
-            }
-            jk = UINDEX(j, k, n);
-            for (int i = j; i <= n; i++) {
-                if (i == k) {
-                    continue;
-                }
-                ik = UINDEX(i, k, n);
-                ij = TINDEX(i, j, n);
-                xinv[ij] = xinv[ij] - xinv[ik] * xinv[jk] / piv;
-            }
-        }
-        for (int i = 1; i <= n; i++) {
-            if (i == k) {
-                continue;
-            }
-            ik = UINDEX(i, k, n);
-            xinv[ik] = xinv[ik] / piv;
-        }
-        xinv[TINDEX(k, k, n)] = -1 / piv;
-    }
-    for (int k = 1; k <= m; k++) {
-        xinv[VINDEX(k)] = -xinv[VINDEX(k)];
-    }
-    return;
-}
-
-void smacofMPInverseSDCLMatrix(const double *vmat, double *vinv,
-                               const int *pn) {
-    int n = *pn, nn = n * (n + 1) / 2;
-    double add = 1.0 / ((double)n);
-    double *vadd = (double *)calloc((size_t)nn, (size_t)sizeof(double));
-    for (int j = 1; j <= n; j++) {
-        for (int i = j; i <= n; i++) {
-            vadd[TINDEX(i, j, n)] = vmat[TINDEX(i, j, n)] + add;
-        }
-    }
-    (void)smacofInvertPDMatrix(vadd, vinv, pn);
-    for (int k = 1; k <= nn; k++) {
-        vinv[VINDEX(k)] -= add;
-    }
-    free(vadd);
-    return;
-}
-
-void smacofMultiplySymmetricMatrix(const double *a, const double *x, double *y,
+void smacofMultiplySymmetricMatrixAlt(const double *a, const double *x, double *y,
                                    const int *pn, const int *pp) {
     int n = *pn, p = *pp;
-    for (int s = 1; s <= p; s++) {
-        for (int i = 1; i <= n; i++) {
+    for (int s = 0; s < p; s++) {
+        for (int i = 0; i < n; i++) {
             double sum = 0.0;
-            for (int j = 1; j <= n; j++) {
-                int ij = UINDEX(i, j, n);
-                sum += a[ij] * x[MINDEX(j, s, n)];
+            for (int j = 0; j < n; j++) {
+                sum += a[i][j] * x[j][s];
             }
-            y[MINDEX(i, s, n)] = sum;
+            y[i][s] = sum;
         }
     }
     return;
 }
 
-void smacofDistance(const double *x, double *d, const int *pn, const int *pp) {
+void smacofDistanceAlt(const double *x, double *d, const int *pn, const int *pp) {
     int n = *pn, p = *pp;
-    for (int j = 1; j <= (n - 1); j++) {
-        for (int i = (j + 1); i <= n; i++) {
+    for (int j = 0; j < (n - 1); j++) {
+        for (int i = (j + 1); i < n; i++) {
             double sum = 0.0;
-            for (int s = 1; s <= p; s++) {
-                sum += SQUARE(x[MINDEX(i, s, n)] - x[MINDEX(j, s, n)]);
+            for (int s = 0; s < p; s++) {
+                sum += SQUARE(x[i][s] - x[j][s]);
             }
-            d[SINDEX(i, j, n)] = sqrt(fabs(sum));
+            double dij = sqrt(fabs(sum))
+            d[i][j] = dij;
+            d[j][i] = dij;
         }
     }
     return;
