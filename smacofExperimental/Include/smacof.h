@@ -1,6 +1,7 @@
 #ifndef SMACOF_H
 #define SMACOF_H
 
+#include <assert.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -10,7 +11,6 @@
 #define DEBUG true
 #define NaN (nan(""))
 #define PI (2.0 * asin(1.0))
-#define EPS(i) ((double)pow(10.0, -(i)))
 
 #define SQUARE(x) ((x) * (x))
 #define THIRD(x) ((x) * (x) * (x))
@@ -19,189 +19,186 @@
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #define KDELTA(i, j) (((i) == (j)) ? 1 : 0)
 
-// smacofRCTranslation.c
+// smacofCommonRCTranslation.c
 
-void smacofFromAnyRtoC(const double *rmatrix, const size_t nrow,
-                       const size_t ncol, double cmatrix[nrow][ncol]);
-void smacofFromSymmetricHollowRtoC(const double *rmatrix, const size_t order,
-                                   double cmatrix[order][order]);
-void smacofFromSymmetricRtoC(const double *rmatrix, const size_t order,
-                             double cmatrix[order][order]);
+void smacofFromAnyRtoC(const int nrow, const int ncol, const double *rmatrix,
+                       double (*cmatrix)[nrow]);
+void smacofFromSymmetricHollowRtoC(const int n, const double *rmatrix,
+                                   double (*cmatrix)[n]);
+void smacofFromSymmetricRtoC(const int n, const double *rmatrix,
+                             double (*cmatrix)[n]);
+void smacofFromCtoR(const int nrow, const int ncol,
+                    const double (*cmatrix)[nrow], double *rmatrix);
 
 // smacofEngine.c
 
-void smacofSSMWEngine(double *delta, double *weights, const size_t *irow,
-                      const size_t *icol, double *xini, double *xnew, double *dnew,
-                      double *bnew, double *psnew, const size_t *pinit,
-                      const size_t *pn, const size_t *pp, const size_t *pm, size_t *pitel,
-                      const size_t *pitmax, const size_t *peps1, const size_t *peps2,
+void smacofSSMWEngine(double *delta, double *weights, const int *irow,
+                      const int *icol, double *xini, double *xnew, double *dnew,
+                      double *bnew, double *psnew, const int *pinit,
+                      const int *pn, const int *pp, const int *pm, int *pitel,
+                      const int *pitmax, const int *peps1, const int *peps2,
                       const bool *pverbose, const bool *prelax);
 
-void smacofSSMUEngine(const size_t n, const size_t p, double *delta,
-                      double *xini, double *xnew, double *dnew, double *bnew,
-                      const size_t init, const size_t itmax,
-                      const size_t eps1, const size_t eps2,
-                      const bool verbose, const bool relax, size_t itel,
+void smacofSSMUEngine(const int n, const int p, double *delta, double *xini,
+                      double *xnew, double *dnew, double *bnew, const int init,
+                      const int itmax, const int ieps1, const int ieps2,
+                      const bool verbose, const bool relax, int *pitel,
                       double *psnew);
+
+// smacofCommonUtils.c
+
+void smacofInitRandom(const int n, const int p, double (*xini)[n]);
+void smacofDoubleCenter(const int n, const double (*delta)[n],
+                        double (*cross)[n]);
+double smacofMaxConfigurationDifference(const int n, const int p,
+                                        const double (*x)[n],
+                                        const double (*y)[n]);
+double smacofMaxDistanceDifference(const int n, const double (*dold)[n],
+                                   const double (*dnew)[n]);
+double smacofRMSDifference(const int n, const int p, const double x[n][p],
+                           double (*y)[n]);
+
+// smacofCommonSort.c
+
+int smacofComparison(const void *px, const void *py);
+void smacofWeightedSort(double *delta, double *weights, int *knum, int *irow,
+                        int *icol, const int *pn);
+void smacofTieBlocks(const double *x, int *it, double *eps, const int *n);
+
+// smacofCommonLinearAlgebra.c
+
+void smacofJacobi(const int n, const int p, double (*a)[n], double (*evec)[n],
+                  double *eval, const int itmax, const int eps,
+                  const bool verbose);
+void smacofInvertPDMatrix(const double *x, double *xinv, const int *pn);
+void smacofGramSchmidt(const int n, const int p, double (*x)[n], double r[n]);
+void smacofMultiplySymmetricMatrix(const int n, const int p,
+                                   const double (*a)[n], const double (*x)[n],
+                                   double (*y)[n]);
+void smacofMPInverseSDCLMatrix(const double *w, double *vinv, const int *ndim);
+void smacofDistance(const int n, const int p, const double (*x)[n],
+                    double (*d)[n]);
+void smacofCenter(const int n, const int p, double (*x)[n]);
+
+// smacofCommonPrintRead.c
+
+void smacofPrintSDCLMatrix(const double *v, const int *ndim, const int *pw,
+                           const int *pr);
+void smacofPrintAnyMatrix(const int n, const int p, const int width,
+                          const int precision, double (*x)[n]);
+void smacofPrintSHMatrix(const double *d, const int *pn, const int *pw,
+                         const int *pr);
+void smacofPrintSHMatrixIJ(const double *d, const int *pn, int *pm,
+                           const int *irow, const int *icol, const int *pw,
+                           const int *pr);
+void smacofPrintLTMatrix(const double *d, const int *pn, const int *pw,
+                         const int *pr);
+void smacofPrintSLTMatrix(const double *d, const int *pn, const int *pw,
+                          const int *pr);
+void smacofPrintSymmetricMatrix(const double *x, const int *pn, const int *pw,
+                                const int *pr);
+void smacofWeightedReadInputFile(char *fname, int *irow, int *icol,
+                                 double *delta, double *weights);
+void smacofUnweightedReadInputFile(char *fname, double *delta);
+
+// smacofCommonAccelerate.c
+
+void smacofRelax(const int n, const int p, const double (*xold)[n],
+                 double (*xnew)[n], const double echange, const double pchange,
+                 const int itel, const bool relax);
+double smacofRate(const double echange, const double pchange, const int itel);
+
+// smacofCommonIndices.c
+
+int SINDEX(const int i, const int j, const int n);
+int TINDEX(const int i, const int j, const int n);
+int PINDEX(const int i, const int j, const int n);
+int UINDEX(const int i, const int j, const int n);
+
+// smacofUnweightedNorm.c
+
+void smacofUnweightedScale(const int n, const int p, const double (*delta)[n],
+                           double (*dold)[n], double (*xold)[n]);
+void smacofUnweightedNormDelta(const int n, double (*delta)[n]);
+
+// smacofUnweightedCore.c
+
+void smacofUnweightedMakeBMatrix(const int n, const double (*delta)[n],
+                                 const double (*dmat)[n], double (*bmat)[n]);
+void smacofUnweightedGuttman(const int n, const int p, const double (*bmat)[n],
+                             const double (*xold)[n], double (*xnew)[n]);
+void smacofUnweightedMakeStress(const int n, const double (*delta)[n],
+                                const double (*dist)[n], double *stress);
+
+// smacofUnweightedInitial.c
+
+void smacofUnweightedInitTorgerson(const int n, const int p,
+                                   const double delta[n][n], double xold[n][p]);
+void smacofUnweightedInitMaximumSum(const int n, const int p,
+                                    const double delta[n][n],
+                                    double xold[n][p]);
+void smacofUnweightedInitial(const int n, const int p, const int init,
+                             const double delta[n][n], double xold[n][p]);
 
 // smacofWeightedCore.c
 
 void smacofWeightedMakeBMatrix(const double *delta, const double *weights,
                                const double *dold, double *bmat,
-                               const size_t *irow, const size_t *icol, const size_t *pn,
-                               const size_t *pm);
+                               const int *irow, const int *icol, const int *pn,
+                               const int *pm);
 void smacofWeightedMakeVMatrix(const double *weights, double *vmat,
-                               const size_t *irow, const size_t *icol, const size_t *pn,
-                               const size_t *pm);
+                               const int *irow, const int *icol, const int *pn,
+                               const int *pm);
 void smacofWeightedGuttman(const double *vinv, const double *bmat,
-                           const double *xold, double *xnew, const size_t *pn,
-                           const size_t *pp);
+                           const double *xold, double *xnew, const int *pn,
+                           const int *pp);
 void smacofWeightedMakeStress(const double *delta, const double *weights,
-                              const double *dist, const size_t *irow,
-                              const size_t *icol, const size_t *pn, const size_t *pm,
+                              const double *dist, const int *irow,
+                              const int *icol, const int *pn, const int *pm,
                               double *stress);
-
-// smacofUnweightedCore.c
-
-void smacofUnweightedMakeBMatrix(const size_t n, const double delta[n][n],
-                                 const double dmat[n][n], double bmat[n][n]);
-void smacofUnweightedGuttman(const size_t n, const size_t p,
-                             const double bmat[n][n], const double xold[n][p],
-                             double xnew[n][p]);
-void smacofUnweightedMakeStress(const size_t n, const double delta[n][n],
-                                const double dist[n][n], double *stress);
 
 // smacofWeightedNorm.c
 
 void smacofWeightedScale(const double *delta, const double *weights,
-                         double *dold, double *xold, const size_t *pn,
-                         const size_t *pp, const size_t *pm);
+                         double *dold, double *xold, const int *pn,
+                         const int *pp, const int *pm);
 void smacofWeightedNormDelta(double *delta, const double *weights,
-                             const size_t *pm);
-void smacofWeightedNormWeights(double *weights, const size_t *pm);
-
-// smacofUnweightedNorm.c
-
-void smacofUnweightedScale(const size_t n, const size_t p,
-                           const double delta[n][n], double dold[n][n],
-                           double xold[n][p]);
-void smacofUnweightedNormDelta(const size_t n, double delta[n][n]);
-
-// smacofCommonUtils.c
-
-void smacofInitRandom(const size_t n, const size_t p, double xini[n][p]);
-void smacofMaxConfigurationDifference(const size_t n, const size_t p,
-                                      const double x[n][p],
-                                      const double y[n][p], double *maxdiff);
-void smacofMaxDistanceDifference(const size_t n, const double dold[n][n],
-                                 const double dnew[n][n], double *pdchange);
-void smacofRMSDifference(const size_t n, const size_t p,
-                         const double x[n][p], double y[n][p], double *diff);
-void smacofDoubleCenter(const size_t n, const double delta[n][n],
-                        double cross[n][n]);
-
-// smacofSort.c
-
-int smacofComparison(const void *px, const void *py);
-void smacofWeightedSort(double *delta, double *weights, size_t *knum, size_t *irow,
-                        size_t *icol, const size_t *pn);
-void smacofTieBlocks(const double *x, size_t *it, double *eps, const size_t *n);
+                             const int *pm);
+void smacofWeightedNormWeights(double *weights, const int *pm);
 
 // smacofWeightedInitial.c
 
 void smacofWeightedInitTorgerson(const double *delta, const double *weights,
-                                 const size_t *irow, const size_t *icol, double *xold,
-                                 const size_t *pn, const size_t *pp, const size_t *pm);
+                                 const int *irow, const int *icol, double *xold,
+                                 const int *pn, const int *pp, const int *pm);
 void smacofWeightedInitMaximumSum(const double *delta, const double *weights,
-                                  const size_t *irow, const size_t *icol,
-                                  double *xini, const size_t *pn, const size_t *pp,
-                                  const size_t *pm);
+                                  const int *irow, const int *icol,
+                                  double *xini, const int *pn, const int *pp,
+                                  const int *pm);
 void smacofWeightedInitial(const double *delta, const double *weights,
-                           const size_t *irow, const size_t *icol, double *xini,
-                           const size_t *pinit, const size_t *pn, const size_t *pp,
-                           const size_t *pm);
-
-// smacofUnweightedInitial.c
-
-void smacofUnweightedInitTorgerson(const size_t n, const size_t p,
-                                   const double delta[n][n], double xold[n][p]);
-void smacofUnweightedInitMaximumSum(const size_t n, const size_t p,
-                                    const double delta[n][n],
-                                    double xold[n][p]);
-void smacofUnweightedInitial(const size_t n, const size_t p,
-                             const size_t init, const double delta[n][n],
-                             double xold[n][p]);
-
-// smacofCommonLinearAlgebra.c
-
-void smacofJacobi(const size_t n, const size_t p, double a[n][n],
-                  double evec[n][n], double *eval, const size_t itmax,
-                  const size_t eps, const bool verbose);
-void smacofInvertPDMatrix(const double *x, double *xinv, const size_t *pn);
-void smacofGramSchmidt(const size_t n, const size_t p, double x[n][p],
-                       double r[n]);
-void smacofMultiplySymmetricMatrix(const size_t n, const size_t p,
-                                   const double a[n][n], const double x[n][p],
-                                   double y[n][p]);
-void smacofMPInverseSDCLMatrix(const double *w, double *vinv, const size_t *ndim);
-void smacofDistance(const size_t n, const size_t p, const double x[n][p],
-                    double d[n][n]);
-void smacofCenter(const size_t n, const size_t p, double x[n][p]);
+                           const int *irow, const int *icol, double *xini,
+                           const int *pinit, const int *pn, const int *pp,
+                           const int *pm);
 
 // smacofWeightedDerivatives.c
 
 void smacofWeightedGradient(const double *delta, const double *weights,
                             const double *vinv, const double *dold,
                             const double *xold, double *xnew, double *gradient,
-                            const size_t *pn, const size_t *pp);
+                            const int *pn, const int *pp);
 void smacofWeightedHessian(const double *delta, const double *weights,
                            const double *xconf, const double *dmat,
-                           const double *bmat, const double *v, const size_t *pn,
-                           const size_t *pp);
-
-// smacofCommonPrintRead.c
-
-void smacofPrintSDCLMatrix(const double *v, const size_t *ndim, const size_t *pw,
-                           const size_t *pr);
-void smacofPrintAnyMatrix(const size_t n, const size_t p,
-                          const int width, const int precision,
-                          double x[n][p]);
-void smacofPrintSHMatrix(const double *d, const size_t *pn, const size_t *pw,
-                         const size_t *pr);
-void smacofPrintSHMatrixIJ(const double *d, const size_t *pn, size_t *pm,
-                           const size_t *irow, const size_t *icol, const size_t *pw,
-                           const size_t *pr);
-void smacofPrintLTMatrix(const double *d, const size_t *pn, const size_t *pw,
-                         const size_t *pr);
-void smacofPrintSLTMatrix(const double *d, const size_t *pn, const size_t *pw,
-                          const size_t *pr);
-void smacofPrintSymmetricMatrix(const double *x, const size_t *pn, const size_t *pw,
-                                const size_t *pr);
-void smacofWeightedReadInputFile(char *fname, size_t *irow, size_t *icol,
-                                 double *delta, double *weights);
-void smacofUnweightedReadInputFile(char *fname, double *delta);
-
-// smacofCommonAccelerate.c
-
-void smacofRelax(const size_t n, const size_t p, const double xold[n][p],
-                 double xnew[n][p], const double echange, const double pchange,
-                 const size_t itel, const bool relax, double *prate);
-
-// smacofCommonIndices.c
-
-size_t SINDEX(const size_t i, const size_t j, const size_t n);
-size_t TINDEX(const size_t i, const size_t j, const size_t n);
-size_t PINDEX(const size_t i, const size_t j, const size_t n);
-size_t UINDEX(const size_t i, const size_t j, const size_t n);
+                           const double *bmat, const double *v, const int *pn,
+                           const int *pp);
 
 // structures
 
 struct data {
-    size_t order;
-    size_t irow;
-    size_t icol;
-    double delta;
-    double weight;
+  int order;
+  int irow;
+  int icol;
+  double delta;
+  double weight;
 };
 
 #endif /* SMACOF_H */

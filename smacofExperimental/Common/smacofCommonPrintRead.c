@@ -1,8 +1,7 @@
 #include "../Include/smacof.h"
 
-void smacofPrintAnyMatrix(const size_t n, const size_t p,
-                          const int width, const int precision,
-                          double x[n][p]) {
+void smacofPrintAnyMatrix(const size_t n, const size_t p, const int width,
+                          const int precision, double (*x)[n]) {
     for (size_t i = 0; i < n; i++) {
         for (size_t s = 0; s < p; s++) {
             printf("%+*.*f", width, precision, x[i][s]);

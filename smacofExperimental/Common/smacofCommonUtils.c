@@ -1,6 +1,6 @@
 #include "../Include/smacof.h"
 
-void smacofInitRandom(const size_t n, const size_t p, double xini[n][p]) {
+void smacofInitRandom(const size_t n, const size_t p, double (*xini)[n]) {
     for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < p; j++) {
             xini[i][j] = drand48();
@@ -12,7 +12,7 @@ void smacofInitRandom(const size_t n, const size_t p, double xini[n][p]) {
 void smacofDoubleCenter(const size_t n, const double delta[n][n],
                         double cross[n][n]) {
     double tsum = 0.0, cell = 0.0;
-    double *rsum = malloc((sizeof * rsum) * n);
+    double *rsum = malloc((sizeof *rsum) * n);
     for (size_t i = 0; i < n; i++) {
         double sum = 0.0;
         for (size_t j = 0; j < n; j++) {
@@ -66,8 +66,8 @@ void smacofMaxDistanceDifference(const size_t n, const double dold[n][n],
     return;
 }
 
-void smacofRMSDifference(const size_t n, const size_t p,
-                         const double x[n][p], double y[n][p], double *diff) {
+void smacofRMSDifference(const size_t n, const size_t p, const double x[n][p],
+                         double y[n][p], double *diff) {
     size_t np = n * p;
     double sum = 0.0;
     for (size_t s = 0; s < p; s++) {

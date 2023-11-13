@@ -1,38 +1,8 @@
-#ifndef SMACOF_H
-#define SMACOF_H
-
-#include <math.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#define DEBUG false
-#define NaN (nan(""))
-#define PI (2.0 * asin(1.0))
-#define EPS(i) ((double)pow(10.0, -(i)))
-
-#define SQUARE(x) ((x) * (x))
-#define THIRD(x) ((x) * (x) * (x))
-#define FOURTH(x) ((x) * (x) * (x) * (x))
-#define MAX(x, y) (((x) > (y)) ? (x) : (y))
-#define MIN(x, y) (((x) < (y)) ? (x) : (y))
-#define KDELTA(i, j) (((i) == (j)) ? 1 : 0)
-
-// smacofEngine.c
-
-void smacofSSMWEngine(double *delta, double *weights, const int *irow,
-                      const int *icol, double *xini, double *xnew, double *dnew,
-                      double *bnew, double *psnew, const int *pinit,
-                      const int *pn, const int *pp, const int *pm, int *pitel,
-                      const int *pitmax, const int *peps1, const int *peps2,
-                      const bool *pverbose, const bool *prelax);
-
-void smacofSSMUEngine(double *delta, double *xini, double *xnew, double *dnew,
-                      double *bnew, double *psnew, const int *pinit,
-                      const int *pn, const int *pp, const int *pm, int *pitel,
-                      const int *pitmax, const int *peps1, const int *peps2,
-                      const bool *pverbose, const bool *prelax);
+void smacofSSMUEngine(const size_t n, const size_t p, double *delta,
+                      double *xini, double *xnew, double *dnew, double *bnew,
+                      const size_t init, const size_t itmax, const size_t ieps1,
+                      const size_t ieps2, const bool verbose, const bool relax,
+                      size_t *pitel, double *psnew);
 
 // smacofWeightedCore.c
 

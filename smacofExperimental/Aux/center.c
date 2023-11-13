@@ -7,10 +7,10 @@ void center(size_t n, size_t p, double (*mat)[n]);
 
 int main(void) {
     size_t n = 10, p = 4;
-    double (*mat)[n] = malloc((sizeof *mat) * p);
+    double(*mat)[n] = malloc((sizeof *mat) * p);
     if (mat == NULL) {
-      fprintf(stderr, "MALLOC FAILURE\n"); 
-      exit(EXIT_FAILURE); 
+        fprintf(stderr, "MALLOC FAILURE\n");
+        exit(EXIT_FAILURE);
     }
     (void)fill(n, p, mat);
     (void)display(n, p, mat);
@@ -21,16 +21,16 @@ int main(void) {
 }
 
 void fill(size_t n, size_t p, double (*mat)[n]) {
-  for (size_t i = 0; i < n; ++i) {
+    for (size_t i = 0; i < n; ++i) {
         for (size_t j = 0; j < p; ++j) {
             mat[i][j] = (double)(i + j);
         }
     }
-    return;   
+    return;
 }
 
 void display(size_t n, size_t p, double (*mat)[n]) {
-  for (size_t i = 0; i < n; ++i) {
+    for (size_t i = 0; i < n; ++i) {
         for (size_t j = 0; j < p; ++j) {
             printf("%6.2f ", mat[i][j]);
         }
@@ -41,7 +41,7 @@ void display(size_t n, size_t p, double (*mat)[n]) {
 }
 
 void center(size_t n, size_t p, double (*mat)[n]) {
-  for (size_t j = 0; j < p; j++) {
+    for (size_t j = 0; j < p; j++) {
         double sum = 0.0;
         for (size_t i = 0; i < n; ++i) {
             sum += mat[i][j];
@@ -53,4 +53,3 @@ void center(size_t n, size_t p, double (*mat)[n]) {
     }
     return;
 }
-

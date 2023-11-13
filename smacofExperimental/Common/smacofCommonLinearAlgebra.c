@@ -6,7 +6,7 @@ void smacofJacobi(const size_t n, const size_t ndim, double a[n][n],
     size_t itel = 1;
     double d = 0.0, s = 0.0, t = 0.0, u = 0.0, v = 0.0, p = 0.0, q = 0.0,
            r = 0.0;
-    double fold = 0.0, fnew = 0.0, eps = EPS(ieps);
+    double fold = 0.0, fnew = 0.0, eps = pow(10.0, -(double)ieps);
     double *oldi = malloc((sizeof *oldi) * n);
     double *oldj = malloc((sizeof *oldj) * n);
     for (size_t i = 0; i < n; i++) {
@@ -107,7 +107,7 @@ void smacofGramSchmidt(const size_t n, const size_t p, double x[n][p],
     return;
 }
 
-void smacofCenter(const size_t n, const size_t p, double x[n][p]) {
+void smacofCenter(const size_t n, const size_t p, double (*x)[n]) {
     for (size_t s = 0; s < p; s++) {
         double sum = 0.0;
         for (size_t i = 0; i < n; i++) {
@@ -178,8 +178,8 @@ void smacofMPInverseSDCLMatrix(const double *vmat, double *vinv,
 */
 
 void smacofMultiplySymmetricMatrix(const size_t n, const size_t p,
-                                   const double a[n][n], const double x[n][p],
-                                   double y[n][p]) {
+                                   const double (*a)[n], const double (*x)[n],
+                                   double (*y)[n]) {
     for (size_t s = 0; s < p; s++) {
         for (size_t i = 0; i < n; i++) {
             double sum = 0.0;
@@ -192,8 +192,8 @@ void smacofMultiplySymmetricMatrix(const size_t n, const size_t p,
     return;
 }
 
-void smacofDistance(const size_t n, const size_t p, const double x[n][p],
-                    double d[n][n]) {
+void smacofDistance(const size_t n, const size_t p, const double (*x)[n],
+                    double (*d)[n]) {
     for (size_t j = 0; j < n; j++) {
         for (size_t i = 0; i < n; i++) {
             double sum = 0.0;
@@ -205,5 +205,3 @@ void smacofDistance(const size_t n, const size_t p, const double x[n][p],
     }
     return;
 }
-
-int main(void) {}
