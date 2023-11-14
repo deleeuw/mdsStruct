@@ -2,13 +2,13 @@
 
 // to be called from R
 
-double delta[6] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
+double delta[6] = {1.0, 1.4142, 1.0, 1.0, 1.4142, 1.0};
 double xini[8];
 double xnew[8];
 double dnew[6];
 double bnew[10];
 double snew = 0.0;
-size_t init = 3, n = 4, p = 2, itel = 1, itmax = 1;
+unsigned init = 3, n = 4, p = 2, itel = 1, itmax = 1000;
 int ieps1 = 15, ieps2 = 10;
 bool verbose = true, relax = true;
 
@@ -18,39 +18,39 @@ int main(void) {
     return EXIT_SUCCESS;
 }
 
-void smacofSSMUEngine(const size_t n, const size_t p, double *delta,
+void smacofSSMUEngine(const unsigned n, const unsigned p, double *rdelta,
                       double *xini, double *xnew, double *dnew, double *bnew,
-                      const size_t init, const size_t itmax, const size_t ieps1,
-                      const size_t ieps2, const bool verbose, const bool relax,
-                      size_t *pitel, double *psnew) {
-    size_t np = p * n, nn = SQUARE(n), itel = *pitel;
-    int width = 15, precision = 10;
+                      const unsigned init, const unsigned itmax, const unsigned ieps1,
+                      const unsigned ieps2, const bool verbose, const bool relax,
+                      unsigned *pitel, double *psnew) {
+    unsigned np = p * n, nn = SQUARE(n), itel = *pitel;
+    unsigned width = 15, precision = 10;
     double sold = 0.0, snew = *psnew, pchange = 1.0, echange = 1.0, rate = 1.0;
     double eps1 = pow(10.0, -(double)ieps1), eps2 = pow(10.0, -(double)ieps2);
     /*
      * Convert delta from an R vector to a C matrix
      */
-    double(*cdelta)[n] = malloc((sizeof *cdelta) * n);
+    double(*cdelta)[n][n] = malloc(sizeof *cdelta);
     assert(!(cdelta == NULL));
-    (void)smacofFromSymmetricHollowRtoC(delta, n, cdelta);
+    (void)smacofFromSymmetricHollowRtoC(n, delta, cdelta);
     if (DEBUG) {
         (void)smacofPrintAnyMatrix(n, n, width, precision, cdelta);
     }
-    double(*cxini)[n] = malloc((sizeof *cxini) * p);
+    double(*cxini)[n][p] = malloc(sizeof *cxini);
     assert(!(cxini == NULL));
-    double(*cxold)[n] = malloc((sizeof *cxold) * p);
+    double(*cxold)[n][p] = malloc(sizeof *cxold);
     assert(!(cxold == NULL));
-    double(*cdold)[n] = malloc((sizeof *cdold) * n);
+    double(*cdold)[n][n] = malloc(sizeof *cdold);
     assert(!(cdold == NULL));
-    double(*cdini)[n] = malloc((sizeof *cdini) * n);
+    double(*cdini)[n][n] = malloc(sizeof *cdini);
     assert(!(cdini == NULL));
-    double(*cbold)[n] = malloc((sizeof *cbold) * n);
+    double(*cbold)[n][n] = malloc(sizeof *cbold);
     assert(!(cbold == NULL));
-    double(*cdnew)[n] = malloc((sizeof *cdnew) * n);
+    double(*cdnew)[n][n] = malloc(sizeof *cdnew);
     assert(!(cdnew == NULL));
-    double(*cbnew)[n] = malloc((sizeof *cbnew) * n);
+    double(*cbnew)[n][n] = malloc(sizeof *cbnew);
     assert(!(cbnew == NULL));
-    double(*cxnew)[n] = malloc((sizeof *cxnew) * p);
+    double(*cxnew)[n][p] = malloc(sizeof *cxnew);
     assert(!(cxnew == NULL));
     (void)smacofUnweightedNormDelta(n, cdelta);
     if (DEBUG) {
@@ -60,19 +60,15 @@ void smacofSSMUEngine(const size_t n, const size_t p, double *delta,
     (void)smacofUnweightedInitial(n, p, init, cdelta, cxini);
     if (DEBUG) {
         printf("xini\n\n");
-        (void)smacofPrintAnyMatrix(n, n, width, precision, cxini);
+        (void)smacofPrintAnyMatrix(n, p, width, precision, cxini);
     }
     (void)smacofDistance(n, p, cxini, cdini);
     if (DEBUG) {
         printf("dini\n\n");
         (void)smacofPrintAnyMatrix(n, n, width, precision, cdini);
     }
-    cxold = cxini;
-    cdold = cdini;
-    /*
-    (void)memcpy(cxold, cxini, (sizeof *cxold) * n);
-    (void)memcpy(cdold, cdini, (sizeof *cdold) * n);
-    */
+    (void)memcpy(cxold, cxini, sizeof *cxold);
+    (void)memcpy(cdold, cdini, sizeof *cdold);
     if (DEBUG) {
         printf("xold\n\n");
         (void)smacofPrintAnyMatrix(n, p, width, precision, cxold);
@@ -86,7 +82,7 @@ void smacofSSMUEngine(const size_t n, const size_t p, double *delta,
         printf("bold\n\n");
         (void)smacofPrintAnyMatrix(n, n, width, precision, cbold);
     }
-    (void)smacofUnweightedMakeStress(n, cdelta, cdold, &sold);
+    sold = smacofUnweightedMakeStress(n, cdelta, cdold);
     if (DEBUG) {
         printf("sold %15.10f\n\n", sold);
     }
@@ -96,9 +92,8 @@ void smacofSSMUEngine(const size_t n, const size_t p, double *delta,
             printf("xnew\n\n");
             (void)smacofPrintAnyMatrix(n, p, width, precision, cxnew);
         }
-        (void)smacofRMSDifference(cxold, cxnew, n, p, &echange);
-        /// this is confusing, skip when relax == FALSE
-        (void)smacofRelax(n, p, cxold, cxnew, echange, pchange, &itel, relax);
+        echange = smacofRMSDifference(n, p, cxold, cxnew);
+        //(void)smacofRelax(n, p, cxold, cxnew, echange, pchange, itel, relax);
         if (DEBUG) {
             printf("xrelaced\n\n");
             (void)smacofPrintAnyMatrix(n, p, width, precision, cxnew);
@@ -113,7 +108,7 @@ void smacofSSMUEngine(const size_t n, const size_t p, double *delta,
             printf("bnew\n\n");
             (void)smacofPrintAnyMatrix(n, n, width, precision, cbnew);
         }
-        (void)smacofUnweightedMakeStress(n, cdelta, cdnew, &snew);
+        snew = smacofUnweightedMakeStress(n, cdelta, cdnew);
         if (DEBUG) {
             printf("snew %15.10f\n\n", snew);
         }
@@ -130,14 +125,9 @@ void smacofSSMUEngine(const size_t n, const size_t p, double *delta,
         itel++;
         sold = snew;
         pchange = echange;
-        cxold = cxnew;
-        cdold = cdnew;
-        cbold = cbnew;
-        /*
-        (void)memcpy(xold, xnew, (size_t)np * sizeof(double));
-        (void)memcpy(dold, dnew, (size_t)m * sizeof(double));
-        (void)memcpy(bold, bnew, (size_t)nn * sizeof(double));
-        */
+        (void)memcpy(cxold, cxnew, sizeof *cxold);
+        (void)memcpy(cdold, cdnew, sizeof *cdold);
+        (void)memcpy(cbold, cbnew, sizeof *cbold);
     }
     free(cdelta);
     free(cdold);
