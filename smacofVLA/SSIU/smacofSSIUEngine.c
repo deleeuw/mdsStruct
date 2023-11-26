@@ -2,26 +2,28 @@
 
 // to be called from R
 
-// double delta[6] = {1.0, 1.4142, 1.0, 1.0, 1.4142, 1.0};
-double delta[6] = {1.0, 3.0, 1.0, 1.0, 3.0, 1.0};
+//double delta[6] = {1.0, 1.4142, 1.0, 1.0, 1.4142, 1.0};
+double delta[6] = {2.0, 2.4142, 2.0, 2.0, 2.4142, 2.0};
+//double delta[6] = {1.0, -3.0, 1.0, 1.0, -3.0, 1.0};
 double xini[8] = {0.0, -2.0, -2.0, 4.0, 1.0, -1.0, -2.0, 2.0};
 double xnew[8] = {0};
 double dnew[6] = {0};
 double dhat[6] = {0};
 double bnew[10] = {0};
 double snew = 0.0;
-unsigned init = 4, n = 4, p = 2, itel = 1, itmax = 100;
+unsigned init = 4, n = 4, p = 2, itel = 1, itmax = 1000;
 unsigned ieps1 = 15, ieps2 = 10;
-bool verbose = true, relax = true, interval = false;
+bool verbose = true, relax = false, interval = true;
+unsigned width = 10, precision = 6;
 
 int main(void) {
-    (void)smacofSSMIEngine(n, p, delta, xini, xnew, dnew, dhat, bnew, init,
+    (void)smacofSSIUEngine(n, p, delta, xini, xnew, dnew, dhat, bnew, init,
                            itmax, ieps1, ieps2, verbose, relax, &itel, &snew,
                            interval);
     return EXIT_SUCCESS;
 }
 
-void smacofSSMIEngine(const unsigned n, const unsigned p, double *delta, double *xini, 
+void smacofSSIUEngine(const unsigned n, const unsigned p, double *delta, double *xini, 
                       double *xnew, double *dnew, double *dhat, double *bnew, 
                       const unsigned init, const unsigned itmax,
                       const unsigned ieps1, const unsigned ieps2,

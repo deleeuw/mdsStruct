@@ -44,7 +44,7 @@ void smacofSSMUEngine(const unsigned n, const unsigned p, double *delta,
                       const unsigned init, const unsigned itmax, unsigned ieps1,
                       unsigned ieps2, const bool verbose, const bool relax,
                       unsigned *pitel, double *psnew);
-void smacofSSMIEngine(const unsigned n, const unsigned p, double *delta,
+void smacofSSIUEngine(const unsigned n, const unsigned p, double *delta,
                       double *xini, double *xnew, double *dnew, double *dhat,
                       double *bnew, const unsigned init, const unsigned itmax,
                       const unsigned ieps1, const unsigned ieps2,
