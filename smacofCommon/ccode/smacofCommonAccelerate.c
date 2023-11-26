@@ -1,8 +1,9 @@
 #include "../../smacofInclude/smacof.h"
 
-void smacofRelax(const double *xold, double *xnew, const double *pechange,
-                 const double *ppchange, const int *pnp, const int *pitel,
-                 const bool *prelax, double *prate) {
+void smacofRelax(const int n, const int p, const double (*xold)[n][p], double (*xnew)[n][p], 
+                 const double *pechange,
+                 const double *ppchange, const int *pitel,
+                 const bool *prelax) {
     int np = *pnp, itel = *pitel;
     double echange = *pechange, pchange = *ppchange, rate = *prate;
     bool relax = *prelax;
@@ -13,7 +14,6 @@ void smacofRelax(const double *xold, double *xnew, const double *pechange,
         if (relax) {
             double eopt = MAX(0, MIN(1, rate / (2 - rate)));
             for (int i = 1; i <= np; i++) {
-                int iv = VINDEX(i);
                 xnew[iv] = (1 + eopt) * xnew[iv] - eopt * xold[iv];
             }
         }
@@ -21,4 +21,3 @@ void smacofRelax(const double *xold, double *xnew, const double *pechange,
     *prate = rate;
 }
 
-void smacofRate(void) {}
