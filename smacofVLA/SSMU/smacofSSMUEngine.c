@@ -24,6 +24,12 @@ void smacofSSMUEngine(const unsigned n, const unsigned p, double *delta,
                       const unsigned ieps1, const unsigned ieps2,
                       const bool verbose, const bool relax, unsigned *pitel,
                       double *psnew) {
+    /*
+     * Suppress some warnings
+     */
+    (void)sizeof(xnew);
+    (void)sizeof(dnew);
+    (void)sizeof(bnew);
     unsigned itel = *pitel;
     unsigned width = 15, precision = 10;
     double sold = 0.0, snew = *psnew, ddiff = 0.0;
@@ -36,20 +42,12 @@ void smacofSSMUEngine(const unsigned n, const unsigned p, double *delta,
     double(*cdelta)[n][n] = malloc(sizeof *cdelta);
     assert(!(cdelta == NULL));
     (void)smacofFromSymmetricHollowRtoC(n, delta, cdelta);
-    if (DEBUG) {
-        printf("delta\n\n");
-        (void)smacofPrintAnyMatrix(n, n, width, precision, cdelta);
-    }
     /*
      * Convert xini from an R vector to a C matrix
      */
     double(*cxini)[n][p] = malloc(sizeof *cxini);
     assert(!(cxini == NULL));
     (void)smacofFromAnyRtoC(n, p, xini, cxini);
-    if (DEBUG) {
-        printf("xini\n\n");
-        (void)smacofPrintAnyMatrix(n, p, width, precision, cxini);
-    }
     /*
      * Convert xnew from an R vector to a C matrix
      */
@@ -68,65 +66,25 @@ void smacofSSMUEngine(const unsigned n, const unsigned p, double *delta,
     double(*cbold)[n][n] = malloc(sizeof *cbold);
     assert(!(cbold == NULL));
     (void)smacofUnweightedNormDelta(n, cdelta);
-    if (DEBUG) {
-        printf("delta normalized\n\n");
-        (void)smacofPrintAnyMatrix(n, n, width, precision, cdelta);
-    }
     (void)smacofUnweightedInitial(n, p, init, cdelta, cxini);
     (void)smacofDistance(n, p, cxini, cdini);
     (void)memcpy(cxold, cxini, sizeof *cxold);
     (void)memcpy(cdold, cdini, sizeof *cdold);
-    if (DEBUG) {
-        printf("xold = xini\n\n");
-        (void)smacofPrintAnyMatrix(n, p, width, precision, cxold);
-    }
-    if (DEBUG) {
-        printf("dold = dini\n\n");
-        (void)smacofPrintAnyMatrix(n, n, width, precision, cdold);
-    }
     (void)smacofUnweightedMakeBMatrix(n, cdelta, cdold, cbold);
-    if (DEBUG) {
-        printf("bold\n\n");
-        (void)smacofPrintAnyMatrix(n, n, width, precision, cbold);
-    }
     sold = smacofUnweightedMakeStress(n, cdelta, cdold);
-    if (DEBUG) {
-        printf("sold %+*.*f\n\n", width, precision, sold);
-    }
     /*
      * This is where the fun begins
      */
     while (true) {
         (void)smacofUnweightedGuttman(n, p, cbold, cxold, cxnew);
-        if (DEBUG) {
-            printf("xnew\n\n");
-            (void)smacofPrintAnyMatrix(n, p, width, precision, cxnew);
-        }
         /*
         (void)smacofRelax(n, p, cxold, cxnew, chold, &chnew, &rate, itel,
-        relax); if (DEBUG) { printf("xrelaxed\n\n");
-            (void)smacofPrintAnyMatrix(n, p, width, precision, cxnew);
-        }
+        relax); 
         */
         (void)smacofDistance(n, p, cxnew, cdnew);
-        if (DEBUG) {
-            printf("dnew\n\n");
-            (void)smacofPrintAnyMatrix(n, n, width, precision, cdnew);
-        }
         ddiff = smacofMaxDistanceDifference(n, cdold, cdnew);
         (void)smacofUnweightedMakeBMatrix(n, cdelta, cdnew, cbnew);
-        if (DEBUG) {
-            printf("** dnew\n\n");
-            (void)smacofPrintAnyMatrix(n, n, width, precision, cdnew);
-        }
-        if (DEBUG) {
-            printf("bnew\n\n");
-            (void)smacofPrintAnyMatrix(n, n, width, precision, cbnew);
-        }   
         snew = smacofUnweightedMakeStress(n, cdelta, cdnew);
-        if (DEBUG) {
-            printf("snew %15.10f\n\n", snew);
-        }
         if (verbose) {
             printf(
                 "itel %3d sold %12.10f snew %12.10f sdif %+12.10f rmsd "
@@ -144,14 +102,14 @@ void smacofSSMUEngine(const unsigned n, const unsigned p, double *delta,
         (void)memcpy(cbold, cbnew, sizeof *cbold);
     }
     /*
-    * We hand everything back to R
-    * delta, dnew, xnew, bnew
-    * how about snew, itel
-    *
-    * Consider passing a block of storage from R large enough
-    * to contain the matrices and pass the block back to R
-    * appropriately filled
-    */
+     * We hand everything back to R
+     * delta, dnew, xnew, bnew
+     * how about snew, itel
+     *
+     * Consider passing a block of storage from R large enough
+     * to contain the matrices and pass the block back to R
+     * appropriately filled
+     */
     free(cdelta);
     free(cdold);
     free(cdnew);

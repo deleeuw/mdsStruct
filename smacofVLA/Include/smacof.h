@@ -26,7 +26,7 @@ void smacofFromSymmetricHollowRtoC(const unsigned n, const double *rmatrix,
                                    double (*cmatrix)[n][n]);
 void smacofFromSymmetricRtoC(const unsigned n, const double *rmatrix,
                              double (*cmatrix)[n][n]);
-void smacofFromCtoR(const unsigned nrow, const unsigned ncol,
+void smacofFromAnyCtoR(const unsigned nrow, const unsigned ncol,
                     const double (*cmatrix)[nrow][ncol], double *rmatrix);
 
 // smacofEngine.c
@@ -68,14 +68,14 @@ void smacofZeroAnyMatrix(const unsigned n, const unsigned p, double (*x)[n][p]);
 // smacofCommonLinearAlgebra.c
 
 void smacofJacobi(const unsigned n, const unsigned p, double (*a)[n][n],
-                  double (*evec)[n][p], double (*eval)[n], const unsigned itmax,
+                  double (*evec)[n][p], double *eval, const unsigned itmax,
                   const unsigned eps, const bool verbose);
 void smacofInvertPDMatrix(const double *x, double *xinv, const unsigned *pn);
 void smacofGramSchmidt(const unsigned n, const unsigned p, double (*x)[n][p],
-                       double (*r)[n]);
-void smacofMultiplySymmetricMatrix(const unsigned n, const unsigned p,
-                                   const double (*a)[n][n],
-                                   const double (*x)[n][p], double (*y)[n][p]);
+                       double (*q)[n][n]);
+void smacofMultiplyAnyAnyMatrix(const unsigned n, const unsigned p,
+                                const unsigned m, const double (*a)[n][p],
+                                const double (*x)[p][m], double (*y)[n][m]);
 void smacofMPInverseSDCLMatrix(const double *w, double *vinv,
                                const unsigned *ndim);
 void smacofDistance(const unsigned n, const unsigned p, const double (*x)[n][p],
@@ -92,19 +92,6 @@ void smacofUnweightedReadInputFile(const char *fname, double *delta);
 void smacofUnweightedInterval(const unsigned n, const double (*delta)[n][n],
                               const double (*dmat)[n][n], double (*dhat)[n][n]);
 
-/*
-void smacofPrintSDCLMatrix(const double *v, const unsigned *ndim, const unsigned
-*pw, const unsigned *pr); void smacofPrintSHMatrix(const double *d, const
-unsigned *pn, const unsigned *pw, const unsigned *pr); void
-smacofPrintSHMatrixIJ(const double *d, const unsigned *pn, unsigned *pm, const
-unsigned *irow, const unsigned *icol, const unsigned *pw, const unsigned *pr);
-void smacofPrintLTMatrix(const double *d, const unsigned *pn, const unsigned
-*pw, const unsigned *pr); void smacofPrintSLTMatrix(const double *d, const
-unsigned *pn, const unsigned *pw, const unsigned *pr); void
-smacofPrintSymmetricMatrix(const double *x, const unsigned *pn, const unsigned
-*pw, const unsigned *pr); void smacofWeightedReadInputFile(char *fname, unsigned
-*irow, unsigned *icol, double *delta, double *weights);
-*/
 
 // smacofCommonAccelerate.c
 
@@ -113,14 +100,20 @@ void smacofRelax(const unsigned n, const unsigned p,
                  const double chold, double *pchnew, double *prate,
                  const unsigned itel, const bool relax);
 
-// smacofCommonIndices.c
+// smacofCommonBases.c
 
-/*
- * int SINDEX(const unsigned i, const unsigned j, const unsigned n);
-int TINDEX(const unsigned i, const unsigned j, const unsigned n);
-int PINDEX(const unsigned i, const unsigned j, const unsigned n);
-int UINDEX(const unsigned i, const unsigned j, const unsigned n);
- */
+void smacofBernsteinBase(const unsigned n, const unsigned m, const double *x, const bool ordinal,
+                         double (*z)[n][m]);
+void smacofCumsumMatrix(const unsigned n, const unsigned m, double (*x)[n][m]);
+void smacofCheckIncreasing(const double *, const double *, const double *,
+                     const int *, bool *);
+void smacofExtendPartition(const double *, const int *, const int *, const int *,
+                     const double *, const double *, double *);
+void smacofBisect(const double *, const double *, const int *, const int *, int *);
+void smacofBsplines(const double *, const double *, const int *, const int *, int *,
+              double *);
+void smacofBsplineBasis(const double *, const double *, const int *, const int *,
+                  const int *, double *);
 
 // smacofUnweightedNorm.c
 

@@ -32,7 +32,7 @@ void smacofUnweightedMakeBMatrix(const unsigned n, const double (*delta)[n][n],
 void smacofUnweightedGuttman(const unsigned n, const unsigned p,
                              const double (*bmat)[n][n],
                              const double (*xold)[n][p], double (*xnew)[n][p]) {
-    (void)smacofMultiplySymmetricMatrix(n, p, bmat, xold, xnew);
+    (void)smacofMultiplyAnyAnyMatrix(n, n, p, bmat, xold, xnew);
     for (unsigned i = 0; i < n; i++) {
         for (unsigned j = 0; j < p; j++) {
             (*xnew)[i][j] *= (double)((n - 1) / 2.0);

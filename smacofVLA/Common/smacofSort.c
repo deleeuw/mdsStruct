@@ -6,8 +6,8 @@ int smacofComparison(const void *px, const void *py) {
     return (int)copysign(1.0, x - y);
 }
 
-void smacofSort(double *delta, double *weights, int *order, int *irow, int *icol,
-                const int *pn) {
+void smacofSort(double *delta, double *weights, int *order, int *irow,
+                int *icol, const int *pn) {
     int n = *pn;
     struct data *xi =
         (struct data *)calloc((size_t)n, (size_t)sizeof(struct data));
@@ -56,15 +56,15 @@ int main() {
     double delta[6] = {3, 1, 5, 5, 6, 1};
     for (int i = 1; i <= n; i++) {
         int ii = VINDEX(i);
-        printf("%3d %3d %3d %6.2f %6.2f\n",
-            order[ii], irow[ii], icol[ii], delta[ii], weights[ii]);
+        printf("%3d %3d %3d %6.2f %6.2f\n", order[ii], irow[ii], icol[ii],
+               delta[ii], weights[ii]);
     }
     printf("\n\n");
     (void)smacofSort(delta, weights, order, irow, icol, &n);
     (void)smacofTieBlocks(delta, block, &eps, &n);
     for (int i = 1; i <= n; i++) {
         int ii = VINDEX(i);
-        printf("%3d %3d %3d %6.2f %6.2f %3d\n",
-            order[ii], irow[ii], icol[ii], delta[ii], weights[ii], block[ii]);
+        printf("%3d %3d %3d %6.2f %6.2f %3d\n", order[ii], irow[ii], icol[ii],
+               delta[ii], weights[ii], block[ii]);
     }
 }

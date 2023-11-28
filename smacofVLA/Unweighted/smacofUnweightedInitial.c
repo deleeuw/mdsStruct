@@ -15,8 +15,6 @@ void smacofUnweightedInitial(const unsigned n, const unsigned p,
         case 3:
             (void)smacofInitRandom(n, p, xini);
             break;
-        case 4:;
-            break;
     }
     (void)smacofCenter(n, p, xini);
     (void)smacofDistance(n, p, xini, dini);

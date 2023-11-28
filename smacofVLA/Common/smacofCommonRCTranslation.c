@@ -1,7 +1,7 @@
 #include "../Include/smacof.h"
 
-void smacofFromCtoR(const unsigned nrow, const unsigned ncol,
-                    const double (*cmatrix)[nrow][ncol], double *rmatrix) {
+void smacofFromAnyCtoR(const unsigned nrow, const unsigned ncol,
+                       const double (*cmatrix)[nrow][ncol], double *rmatrix) {
     unsigned k = 0;
     for (unsigned j = 0; j < ncol; j++) {
         for (unsigned i = 0; i < nrow; i++) {

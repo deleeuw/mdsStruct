@@ -1,7 +1,7 @@
 #include "../Include/smacof.h"
 
 void smacofJacobi(const unsigned n, const unsigned ndim, double (*a)[n][n],
-                  double (*evec)[n][n], double (*eval)[n], const unsigned itmax,
+                  double (*evec)[n][n], double *eval, const unsigned itmax,
                   const unsigned ieps, const bool verbose) {
     unsigned itel = 1;
     double d = 0.0, s = 0.0, t = 0.0, u = 0.0, v = 0.0, p = 0.0, q = 0.0,
@@ -73,24 +73,28 @@ void smacofJacobi(const unsigned n, const unsigned ndim, double (*a)[n][n],
         itel++;
     }
     for (unsigned i = 0; i < n; i++) {
-        (*eval)[i] = (*a)[i][i];
+        eval[i] = (*a)[i][i];
     }
     free(oldi);
     free(oldj);
     return;
 }
 
+// for now without pivoting
+
 void smacofGramSchmidt(const unsigned n, const unsigned p, double (*x)[n][p],
-                       double (*r)[n]) {
-    unsigned s = 0;
-    while (s < p) {
-        for (unsigned t = 0; t < s; t++) {
-            double sum = 0.0;
-            for (unsigned i = 1; i < n; i++) {
-                sum += (*x)[i][t] * (*x)[i][s];
-            }
-            for (unsigned i = 1; i < n; i++) {
-                (*x)[i][s] -= sum * (*x)[i][t];
+                       double (*q)[p][p]) {
+    for (unsigned s = 0; s < p; s++) {
+        if (s > 0) {
+            for (unsigned t = 0; t < s; t++) {
+                double sum = 0.0;
+                for (unsigned i = 0; i < n; i++) {
+                    sum += (*x)[i][s] * (*x)[i][t];
+                }
+                (*q)[t][s] = sum;
+                for (unsigned i = 0; i < n; i++) {
+                    (*x)[i][s] -= sum * (*x)[i][t];
+                }
             }
         }
         double sum = 0.0;
@@ -98,13 +102,11 @@ void smacofGramSchmidt(const unsigned n, const unsigned p, double (*x)[n][p],
             sum += SQUARE((*x)[i][s]);
         }
         sum = sqrt(sum);
-        (*r)[s] = sum;  // update all of r
-        for (unsigned i = 1; i <= n; i++) {
+        (*q)[s][s] = sum;
+        for (unsigned i = 0; i < n; i++) {
             (*x)[i][s] /= sum;
         }
-        s++;
     }
-    return;
 }
 
 void smacofCenter(const unsigned n, const unsigned p, double (*x)[n][p]) {
@@ -177,16 +179,16 @@ void smacofMPInverseSDCLMatrix(const double *vmat, double *vinv,
 }
 */
 
-void smacofMultiplySymmetricMatrix(const unsigned n, const unsigned p,
-                                   const double (*a)[n][n],
-                                   const double (*x)[n][p], double (*y)[n][p]) {
-    for (unsigned s = 0; s < p; s++) {
+void smacofMultiplyAnyAnyMatrix(const unsigned n, const unsigned p,
+                                const unsigned m, const double (*a)[n][p],
+                                const double (*x)[p][m], double (*y)[n][m]) {
+    for (unsigned j = 0; j < m; j++) {
         for (unsigned i = 0; i < n; i++) {
             double sum = 0.0;
-            for (unsigned j = 0; j < n; j++) {
-                sum += (*a)[i][j] * (*x)[j][s];
+            for (unsigned s = 0; s < p; s++) {
+                sum += (*a)[i][s] * (*x)[s][j];
             }
-            (*y)[i][s] = sum;
+            (*y)[i][j] = sum;
         }
     }
     return;
@@ -206,24 +208,42 @@ void smacofDistance(const unsigned n, const unsigned p, const double (*x)[n][p],
     return;
 }
 
-/*int main(void) {
-  unsigned n = 3;
-  unsigned p = 2;
-  unsigned width = 6;
-  unsigned precision = 2;
-  double rr[6] = {6.0, -4.0, -2.0, 6.0, -2.0, 4.0};
-  double rx[6] = {1.0, 2.0, 3.0, 3.0, 2.0, 1.0};
-  double(*cr)[n][n] = malloc(sizeof(*cr));
-  assert(!(cr == NULL));
-  double(*cx)[n][p] = malloc(sizeof(*cx));
-  assert(!(cx == NULL));
-  double(*cy)[n][p] = malloc(sizeof(*cy));
-  assert(!(cy == NULL));
-  (void)smacofFromSymmetricRtoC(n, rr, cr);
-  (void)smacofPrintAnyMatrix(n, n, width, precision, cr);
-  (void)smacofFromAnyRtoC(n, p, rx, cx);
-  (void)smacofPrintAnyMatrix(n, p, width, precision, cx);
-  (void)smacofMultiplySymmetricMatrix(n, p, cr, cx, cy);
-  (void)smacofPrintAnyMatrix(n, p, width, precision, cy);
-  return EXIT_SUCCESS;
-}*/
+/*
+int main(void) {
+    unsigned n = 5;
+    unsigned p = 2;
+    unsigned width = 15;
+    unsigned precision = 10;
+    double rr[15] = {4, -1, -1, -1, -1, 5, -1, -1, -1, 6, -1, -1, 7, -1, 8};
+    double rx[10] = {1.0, 2.0, 3.0, 4.0, 5.0, 5.0, 1.0, 2.0, 4.0, 3.0};
+    double(*cr)[n][n] = malloc(sizeof(*cr));
+    assert(!(cr == NULL));
+    double(*cx)[n][p] = malloc(sizeof(*cx));
+    assert(!(cx == NULL));
+    double(*cy)[n][p] = malloc(sizeof(*cy));
+    assert(!(cy == NULL));
+    double(*evec)[n][n] = malloc(sizeof(*evec));
+    assert(!(evec == NULL));
+    double(*cd)[p][p] = malloc(sizeof(*cd));
+    assert(!(cd == NULL));
+    double eval[] = {0.0, 0.0, 0.0, 0.0, 0.0};
+    (void)smacofFromSymmetricRtoC(n, rr, cr);
+    (void)smacofPrintAnyMatrix(n, n, width, precision, cr);
+    (void)smacofFromAnyRtoC(n, p, rx, cx);
+    (void)smacofPrintAnyMatrix(n, p, width, precision, cx);
+    (void)smacofCenter(n, p, cx);
+    (void)smacofPrintAnyMatrix(n, p, width, precision, cx);
+    (void)smacofGramSchmidt(n, p, cx, cd);
+    (void)smacofPrintAnyMatrix(n, p, width, precision, cx);
+    (void)smacofPrintAnyMatrix(p, p, width, precision, cd);
+    (void)smacofMultiplyAnyAnyMatrix(n, p, cr, cx, cy);
+    (void)smacofPrintAnyMatrix(n, p, width, precision, cy);
+    (void)smacofJacobi(n, p, cr, evec, eval, 100, 10, true);
+    (void)smacofPrintAnyMatrix(n, n, width, precision, evec);
+    for (unsigned i = 0; i < p; i++) {
+        printf("%10.6f ", eval[i]);
+    }
+    printf("\n");
+    return EXIT_SUCCESS;
+}
+*/

@@ -1,44 +1,131 @@
-#include "Include/smacof.h"
+#include "../Include/smacof.h"
 
 /*
-int n = 20;
-int m = 4;
-double x[20] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 3, 1, 1, 4, 5, 3, 2, 1, 2, 3};
-int width = 10;
-int precision = 6;
-*/
 
-void smacofBernsteinBase(const int n, const int m, const double *x,
-                         double (*z)[n][m]);
-
-/*
-int main() {
-    double(*z)[n][m] = malloc(sizeof *z);
-    assert(!(z == NULL));
-    double *y = malloc(n * sizeof(double));
-    assert(!(y == NULL));
-    double max = -INFINITY, min = INFINITY;
-    for (int i = 0; i < n; i++) {
-        max = MAX(max, x[i]);
-        min = MIN(min, x[i]);
+bool smacofCheckIncreasing(const unsigned ninner, const double *innerknots,
+const double lowend, const double highend) { if (lowend >= innerknots[0]) {
+        return true;
     }
-    for (int i = 0; i < n; i++) {
-        y[i] = (x[i] - min) / (max - min);
+    if (highend <= innerknots[ninner - 1]) {
+        return true;
     }
-    (void)smacofBernsteinBase(n, m, y, z);
-    (void)smacofPrintAnyMatrix(n, m, width, precision, z);
-    free(z);
-    free(y);
+    for (int i = 1; i < ninner; i++) {
+        if (innerknots[i] <= innerknots[i - 1]) {
+          return true;
+        }
+    }
+    return false;
 }
 
+void smacofExtendPartition(const double *innerknots, const int *multiplicities,
+                     const int *order, const int *ninner, const double *lowend,
+                     const double *highend, double *extended) {
+    int k = 1;
+    for (int i = 1; i <= *order; i++) {
+        extended[VINDEX(k)] = *lowend;
+        k++;
+    }
+    for (int j = 1; j <= *ninner; j++)
+        for (int i = 1; i <= multiplicities[VINDEX(j)]; i++) {
+            extended[VINDEX(k)] = innerknots[VINDEX(j)];
+            k++;
+        }
+    for (int i = 1; i <= *order; i++) {
+        extended[VINDEX(k)] = *highend;
+        k++;
+    }
+}
+
+void smacofBisect(const double *x, const double *knots, const int *lowindex,
+            const int *highindex, int *index) {
+    int l = *lowindex, u = *highindex, mid = 0;
+    while ((u - l) > 1) {
+        mid = (int)floor((u + l) / 2);
+        if (*x < knots[VINDEX(mid)])
+            u = mid;
+        else
+            l = mid;
+    }
+    *index = l;
+    return;
+}
+
+void smacofBsplines(const double *x, const double *knots, const int *order,
+              const int *nknots, int *index, double *q) {
+    int lowindex = 1, highindex = *nknots, m = *order, j, jp1;
+    double drr, dll, saved, term;
+    double *dr = (double *)calloc((size_t)m, sizeof(double));
+    double *dl = (double *)calloc((size_t)m, sizeof(double));
+    (void)bisect(x, knots, &lowindex, &highindex, index);
+    int l = *index;
+    for (j = 1; j <= m; j++) {
+        q[VINDEX(j)] = 0.0;
+    }
+    if (*x == knots[VINDEX(*nknots)]) {
+        q[VINDEX(m)] = 1.0;
+        return;
+    }
+    q[VINDEX(1)] = 1.0;
+    j = 1;
+    if (j >= m) return;
+    while (j < m) {
+        dr[VINDEX(j)] = knots[VINDEX(l + j)] - *x;
+        dl[VINDEX(j)] = *x - knots[VINDEX(l + 1 - j)];
+        jp1 = j + 1;
+        saved = 0.0;
+        for (int r = 1; r <= j; r++) {
+            drr = dr[VINDEX(r)];
+            dll = dl[VINDEX(jp1 - r)];
+            term = q[VINDEX(r)] / (drr + dll);
+            q[VINDEX(r)] = saved + drr * term;
+            saved = dll * term;
+        }
+        q[VINDEX(jp1)] = saved;
+        j = jp1;
+    }
+    free(dr);
+    free(dl);
+    return;
+}
+
+void smacofBsplineBasis(const double *x, const double *knots, const int *order,
+                  const int *nknots, const int *nvalues, double *result) {
+    int m = *order, l = 0;
+    double *q = (double *)calloc((size_t)m + 1, sizeof(double));
+    for (int i = 1; i <= *nvalues; i++) {
+        (void)bsplines(x + VINDEX(i), knots, order, nknots, &l, q);
+        for (int j = 1; j <= m; j++) {
+            int r = IMIN(l - m + j, *nknots - m);
+            result[MINDEX(i, r, *nvalues)] = q[VINDEX(j)];
+        }
+    }
+    free(q);
+    return;
+}
 */
 
-void smacofBernsteinBase(const int n, const int m, const double *y,
-                         double (*z)[n][m]) {
+// Given a matrix X form the matrix of decreasing sums in the same space
+// y_{ij} = sum_{k=j}^m x_{ik}
+
+void smacofCumsumMatrix(const unsigned n, const unsigned m, double (*x)[n][m]) {
+    for (unsigned j = 0; j < m; j++) {
+        for (unsigned i = 0; i < n; i++) {
+            double sum = 0.0;
+            for (unsigned k = j; k < m; k++) {
+                sum += (*x)[i][k];
+            }
+            (*x)[i][j] = sum;
+        }
+    }
+    return;
+}
+
+void smacofBernsteinBase(const unsigned n, const unsigned m, const double *y,
+                         const bool ordinal, double (*z)[n][m]) {
     double fac = 0.0, rat = 0.0;
-    for (int i = 0; i < n; i++) {
+    for (unsigned i = 0; i < n; i++) {
         (*z)[i][0] = pow(1.0 - y[i], (double)(m - 1));
-        for (int j = 1; j < m; j++) {
+        for (unsigned j = 1; j < m; j++) {
             rat = ((double)(m - j)) / ((double)j);
             if (y[i] == 0.0) {
                 (*z)[i][j] = 0.0;
@@ -56,12 +143,38 @@ void smacofBernsteinBase(const int n, const int m, const double *y,
             (*z)[i][j] = rat * fac * (*z)[i][j - 1];
         }
     }
+    if (ordinal) {
+        (void)smacofCumsumMatrix(n, m, z);
+    }
+    return;
 }
 
-void smacofBSplineBase(void) {
+/*
+ int n = 20;
+ int m = 4;
+ double x[20] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 3, 1, 1, 4, 5, 3, 2, 1, 2, 3};
+ int width = 10;
+ int precision = 6;
+ bool ordinal = false;
 
-}
 
-void smacofMonomialBase(void) {
-
-}
+ int main() {
+ double(*z)[n][m] = malloc(sizeof *z);
+ assert(!(z == NULL));
+ double *y = malloc(n * sizeof(double));
+ assert(!(y == NULL));
+ double max = -INFINITY, min = INFINITY;
+ for (unsigned i = 0; i < n; i++) {
+ max = MAX(max, x[i]);
+ min = MIN(min, x[i]);
+ }
+ for (unsigned i = 0; i < n; i++) {
+ y[i] = (x[i] - min) / (max - min);
+ }
+ (void)smacofBernsteinBase(n, m, y, ordinal, z);
+ (void)smacofPrintAnyMatrix(n, m, width, precision, z);
+ free(z);
+ free(y);
+ return EXIT_SUCCESS;
+ }
+ */

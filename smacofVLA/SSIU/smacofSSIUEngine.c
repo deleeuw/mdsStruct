@@ -2,16 +2,16 @@
 
 // to be called from R
 
-//double delta[6] = {1.0, 1.4142, 1.0, 1.0, 1.4142, 1.0};
-double delta[6] = {2.0, 2.4142, 2.0, 2.0, 2.4142, 2.0};
-//double delta[6] = {1.0, -3.0, 1.0, 1.0, -3.0, 1.0};
+// double delta[6] = {1.0, 1.4142, 1.0, 1.0, 1.4142, 1.0};
+// double delta[6] = {2.0, 2.4142, 2.0, 2.0, 2.4142, 2.0};
+double delta[6] = {1.0, -3.0, 1.0, 1.0, -3.0, 1.0};
 double xini[8] = {0.0, -2.0, -2.0, 4.0, 1.0, -1.0, -2.0, 2.0};
 double xnew[8] = {0};
 double dnew[6] = {0};
 double dhat[6] = {0};
 double bnew[10] = {0};
 double snew = 0.0;
-unsigned init = 4, n = 4, p = 2, itel = 1, itmax = 1000;
+unsigned init = 4, n = 4, p = 2, itel = 1, itmax = 100;
 unsigned ieps1 = 15, ieps2 = 10;
 bool verbose = true, relax = false, interval = true;
 unsigned width = 10, precision = 6;
@@ -23,21 +23,21 @@ int main(void) {
     return EXIT_SUCCESS;
 }
 
-void smacofSSIUEngine(const unsigned n, const unsigned p, double *delta, double *xini, 
-                      double *xnew, double *dnew, double *dhat, double *bnew, 
-                      const unsigned init, const unsigned itmax,
+void smacofSSIUEngine(const unsigned n, const unsigned p, double *delta,
+                      double *xini, double *xnew, double *dnew, double *dhat,
+                      double *bnew, const unsigned init, const unsigned itmax,
                       const unsigned ieps1, const unsigned ieps2,
                       const bool verbose, const bool relax, unsigned *pitel,
                       double *psnew, const bool interval) {
     /*
      * Suppress some warnings
      */
-    (void)sizeof(xnew); 
+    (void)sizeof(xnew);
     (void)sizeof(dnew);
     (void)sizeof(dhat);
     (void)sizeof(bnew);
     unsigned itel = *pitel;
-    double sold = 0.0, snew = *psnew, ddiff = 0.0;
+    double sold = 0.0, smid = 0.0, snew = *psnew, ddiff = 0.0;
     double eps1 = pow(10.0, -(double)ieps1), eps2 = pow(10.0, -(double)ieps2);
     double chnew = 1.0, chold = 1.0, rate = 1.0;
     double *pchnew = &chnew, *prate = &rate;
@@ -73,13 +73,13 @@ void smacofSSIUEngine(const unsigned n, const unsigned p, double *delta, double 
     double(*cbold)[n][n] = malloc(sizeof *cbold);
     assert(!(cbold == NULL));
     (void)smacofUnweightedNormDelta(n, cdelta);
-    (void)smacofUnweightedInitial(n, p, init, cdelta, cxini);
+    (void)memcpy(cdhat, cdelta, sizeof *cdhat);
+    (void)smacofUnweightedInitial(n, p, init, cdhat, cxini);
     (void)smacofDistance(n, p, cxini, cdini);
     (void)memcpy(cxold, cxini, sizeof *cxold);
     (void)memcpy(cdold, cdini, sizeof *cdold);
-    (void)smacofUnweightedMakeBMatrix(n, cdelta, cdold, cbold);
-    sold = smacofUnweightedMakeStress(n, cdelta, cdold);
-    (void)memcpy(cdhat, cdelta, sizeof *cdhat);
+    (void)smacofUnweightedMakeBMatrix(n, cdhat, cdold, cbold);
+    sold = smacofUnweightedMakeStress(n, cdhat, cdold);
     /*
      * This is where the fun begins
      */
@@ -96,6 +96,8 @@ void smacofSSIUEngine(const unsigned n, const unsigned p, double *delta, double 
                               relax);
         }
         (void)smacofDistance(n, p, cxnew, cdnew);
+        smid =
+            smacofUnweightedMakeStress(n, cdhat, cdnew);  // after Guttman step
         /*
          * The ALS step transforming delta
          */
@@ -103,14 +105,16 @@ void smacofSSIUEngine(const unsigned n, const unsigned p, double *delta, double 
             (void)smacofUnweightedInterval(n, cdelta, cdnew, cdhat);
             (void)smacofUnweightedNormDelta(n, cdhat);
         }
+        snew = smacofUnweightedMakeStress(n, cdhat,
+                                          cdnew);  // after optimal scaling
         ddiff = smacofMaxDistanceDifference(n, cdold, cdnew);
         (void)smacofUnweightedMakeBMatrix(n, cdhat, cdnew, cbnew);
-        snew = smacofUnweightedMakeStress(n, cdhat, cdnew);
         if (verbose) {
             printf(
-                "itel %3d sold %12.10f snew %12.10f sdif %+12.10f rmsd "
+                "itel %3d sold %12.10f smid %12.10f snew %12.10f sdif %+12.10f "
+                "rmsd "
                 "%+12.10f rate %12.10f ddiff %12.10f\n",
-                itel, sold, snew, sold - snew, *pchnew, *prate, ddiff);
+                itel, sold, smid, snew, sold - snew, *pchnew, *prate, ddiff);
         }
         if ((itel == itmax) || (((sold - snew) < eps1) && (ddiff < eps2))) {
             break;
@@ -123,10 +127,10 @@ void smacofSSIUEngine(const unsigned n, const unsigned p, double *delta, double 
         (void)memcpy(cbold, cbnew, sizeof *cbold);
     }
     /*
-     * Make R vectors from C VLA's 
-     */ 
+     * Make R vectors from VLA's
+     */
 
-    /* 
+    /*
      * And clean up
      */
     free(cdelta);
