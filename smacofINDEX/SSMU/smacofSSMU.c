@@ -16,18 +16,11 @@ int main(void) {
     unsigned eps1 = 15;
     unsigned eps2 = 10;
     bool verbose = true;
-    bool relax = false;
+    bool relax = true;
     unsigned width = 15;
     unsigned precision = 10;
     (void)smacofSSMUEngine(n, p, delta, xini, xnew, dnew, bnew,
                            init, itmax, eps1,
                            eps2, verbose, relax, &itel, &snew);
-    printf("delta\n\n");
-    (void)smacofPrintSHMatrix(n, delta, width, precision);
-    printf("itel %4d snew %15.10f\n\n", itel, snew);
-    printf("configuration\n\n");
-    (void)smacofPrintAnyMatrix(n, p, xnew, width, precision);
-    printf("distances\n\n");
-    (void)smacofPrintSHMatrix(n, dnew, width, precision);
-    return (EXIT_SUCCESS);
+    return EXIT_SUCCESS;
 }

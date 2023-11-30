@@ -1,7 +1,7 @@
 #include "../Include/smacof.h"
 
 void smacofUnweightedCCD(const unsigned n, const unsigned m, const double *y,
-                         double *b, double *dhat, const double (*x)[n][m],
+                         double *b, double *dhat, const double **x,
                          const unsigned itmax, const unsigned eps,
                          const bool verbose, const bool nonnegative) {
     double *s = (double *)calloc((size_t)m, (size_t)sizeof(double));
@@ -12,7 +12,7 @@ void smacofUnweightedCCD(const unsigned n, const unsigned m, const double *y,
     for (unsigned j = 0; j < m; j++) {
         double sum = 0.0;
         for (unsigned i = 0; i < n; i++) {
-            sum += SQUARE((*x)[i][j]);
+            sum += SQUARE(x[i][j]);
         }
         s[j] = sum;
     }
@@ -26,7 +26,7 @@ void smacofUnweightedCCD(const unsigned n, const unsigned m, const double *y,
         for (unsigned j = 0; j < m; j++) {
             double sum = 0.0;
             for (unsigned i = 0; i < n; i++) {
-                sum += (*x)[i][j] * r[i];
+                sum += x[i][j] * r[i];
             }
             chng = -sum / s[j];
             if (nonnegative) {
@@ -36,8 +36,8 @@ void smacofUnweightedCCD(const unsigned n, const unsigned m, const double *y,
             b[j] += chng;
             snew -= s[j] * chng * chng;
             for (unsigned i = 0; i < n; i++) {
-                dhat[i] += chng * (*x)[i][j];
-                r[i] += chng * (*x)[i][j];
+                dhat[i] += chng * x[i][j];
+                r[i] += chng * x[i][j];
             }
         }  // end of CCD cycle
         if (verbose) {

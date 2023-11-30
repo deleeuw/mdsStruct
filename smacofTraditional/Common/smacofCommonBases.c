@@ -1,4 +1,4 @@
-#include "../Include/smacof.h"
+#include "smacofCommon.h"
 
 /*
 
@@ -107,40 +107,40 @@ void smacofBsplineBasis(const double *x, const double *knots, const int *order,
 // Given a matrix X form the matrix of decreasing sums in the same space
 // y_{ij} = sum_{k=j}^m x_{ik}
 
-void smacofCumsumMatrix(const unsigned n, const unsigned m, double (*x)[n][m]) {
+void smacofCumsumMatrix(const unsigned n, const unsigned m, double **x) {
     for (unsigned j = 0; j < m; j++) {
         for (unsigned i = 0; i < n; i++) {
             double sum = 0.0;
             for (unsigned k = j; k < m; k++) {
-                sum += (*x)[i][k];
+                sum += x[i][k];
             }
-            (*x)[i][j] = sum;
+            x[i][j] = sum;
         }
     }
     return;
 }
 
 void smacofBernsteinBase(const unsigned n, const unsigned m, const double *y,
-                         const bool ordinal, double (*z)[n][m]) {
+                         const bool ordinal, double **z) {
     double fac = 0.0, rat = 0.0;
     for (unsigned i = 0; i < n; i++) {
         (*z)[i][0] = pow(1.0 - y[i], (double)(m - 1));
         for (unsigned j = 1; j < m; j++) {
             rat = ((double)(m - j)) / ((double)j);
             if (y[i] == 0.0) {
-                (*z)[i][j] = 0.0;
+                z[i][j] = 0.0;
                 continue;
             }
             if (y[i] == 1.0) {
                 if (j == (m - 1)) {
-                    (*z)[i][j] = 1.0;
+                    z[i][j] = 1.0;
                 } else {
-                    (*z)[i][j] = 0.0;
+                    (z[i][j] = 0.0;
                 }
                 continue;
             }
             fac = y[i] / (1.0 - y[i]);
-            (*z)[i][j] = rat * fac * (*z)[i][j - 1];
+            z[i][j] = rat * fac * z[i][j - 1];
         }
     }
     if (ordinal) {

@@ -1,11 +1,11 @@
 #include "../Include/smacof.h"
 
 void smacofFromAnyCtoR(const unsigned nrow, const unsigned ncol,
-                       const double (*cmatrix)[nrow][ncol], double *rmatrix) {
+                       const double **cmatrix, double *rmatrix) {
     unsigned k = 0;
     for (unsigned j = 0; j < ncol; j++) {
         for (unsigned i = 0; i < nrow; i++) {
-            *(rmatrix + k) = (*cmatrix)[i][j];
+            rmatrix[k] = cmatrix[i][j];
             k++;
         }
     }
@@ -13,37 +13,37 @@ void smacofFromAnyCtoR(const unsigned nrow, const unsigned ncol,
 }
 
 void smacofFromAnyRtoC(const unsigned nrow, const unsigned ncol,
-                       const double *rmatrix, double (*cmatrix)[nrow][ncol]) {
+                       const double *rmatrix, double **cmatrix) {
     for (unsigned i = 0; i < nrow; i++) {
         for (unsigned j = 0; j < ncol; j++) {
-            (*cmatrix)[i][j] = *(rmatrix + (j * nrow + i));
+            cmatrix[i][j] = *(rmatrix + (j * nrow + i));
         }
     }
     return;
 }
 
 void smacofFromSymmetricHollowRtoC(const unsigned n, const double *rmatrix,
-                                   double (*cmatrix)[n][n]) {
+                                   double **cmatrix) {
     for (unsigned j = 0; j < (n - 1); j++) {
         for (unsigned i = (j + 1); i < n; i++) {
             double cell = rmatrix[(j * n) - (j * (j + 1) / 2) + (i - j) - 1];
-            (*cmatrix)[i][j] = cell;
-            (*cmatrix)[j][i] = cell;
+            cmatrix[i][j] = cell;
+            cmatrix[j][i] = cell;
         }
     }
     for (unsigned i = 0; i < n; i++) {
-        (*cmatrix)[i][i] = 0.0;
+        cmatrix[i][i] = 0.0;
     }
     return;
 }
 
 void smacofFromSymmetricRtoC(const unsigned n, const double *rmatrix,
-                             double (*cmatrix)[n][n]) {
+                             double **cmatrix) {
     for (unsigned j = 0; j < n; j++) {
         for (unsigned i = j; i < n; i++) {
             double cell = rmatrix[(j * n) - (j * (j - 1) / 2) + (i - j)];
-            (*cmatrix)[i][j] = cell;
-            (*cmatrix)[j][i] = cell;
+            cmatrix[i][j] = cell;
+            cmatrix[j][i] = cell;
         }
     }
     return;

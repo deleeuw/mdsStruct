@@ -1,0 +1,10 @@
+n = 9
+p = 2
+itmax = 1000
+init = 1
+feps = 15
+ceps = 10
+width = 15
+precision = 10
+verbose = 1
+relax = 1

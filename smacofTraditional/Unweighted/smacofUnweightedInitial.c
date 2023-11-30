@@ -1,16 +1,16 @@
-#include "../Include/smacof.h"
+#include "smacofUnweighted.h"
 
 void smacofUnweightedInitial(const unsigned n, const unsigned p,
-                             const unsigned init, const double (*delta)[n][n],
-                             double (*xini)[n][p]) {
+                             const unsigned init, const double **delta,
+                             double **xini) {
     double(*dini)[n][p] = malloc(sizeof *dini);
     assert(!(dini == NULL));
     switch (init) {
         case 1:
-            //(void)smacofUnweightedInitTorgerson(n, p, delta, xini);
+            (void)smacofUnweightedInitTorgerson(n, p, delta, xini);
             break;
         case 2:
-            //(void)smacofUnweightedInitMaximumSum(n, p, delta, xini);
+            (void)smacofUnweightedInitMaximumSum(n, p, delta, xini);
             break;
         case 3:
             (void)smacofInitRandom(n, p, xini);
@@ -23,11 +23,8 @@ void smacofUnweightedInitial(const unsigned n, const unsigned p,
     return;
 }
 
-/*
-
 void smacofUnweightedInitTorgerson(const int n, const int p,
-                                   const double delta[n][n],
-                                   double xold[n][p]) {
+                                   const double **delta, double **xold) {
     unsigned m = n * (n - 1) / 2, nn = SQUARE(n), unsigned itmax = 100,
              eps = 10;
     bool verbose = false;
@@ -52,8 +49,7 @@ void smacofUnweightedInitTorgerson(const int n, const int p,
     (void)smacofJacobi(n, p, cross, *evec, *eval, itmax, eps, verbose);
     for (unsigned i = 0; i < n; i++) {
         for (unsigned s = 0; s < p; s++) {
-            xold[i][s] =
-                evec[i][s] * sqrt(fabs(eval[s]));
+            xold[i][s] = evec[i][s] * sqrt(fabs(eval[s]));
         }
     }
     free(cross);
@@ -69,10 +65,11 @@ void smacofUnweightedInitMaximumSum(const unsigned n, const unsigned p,
     unsigned nn = n * (n + 1) / 2, itmax = 100, eps = 10;
     bool verbose = false;
     double *b = (double *)calloc((unsigned)nn, (unsigned)sizeof(double));
-    double *evec = (double *)calloc((unsigned)SQUARE(n),
-(unsigned)sizeof(double)); double *eval = (double *)calloc((unsigned)n,
-(unsigned)sizeof(double)); for (unsigned k = 1; k <= nn; k++) { b[VINDEX(k)] =
-0.0;
+    double *evec =
+        (double *)calloc((unsigned)SQUARE(n), (unsigned)sizeof(double));
+    double *eval = (double *)calloc((unsigned)n, (unsigned)sizeof(double));
+    for (unsigned k = 1; k <= nn; k++) {
+        b[VINDEX(k)] = 0.0;
     }
     // double index
     for (unsigned j = 1; j <= (n - 1); j++) {
@@ -95,4 +92,4 @@ void smacofUnweightedInitMaximumSum(const unsigned n, const unsigned p,
     free(eval);
     return;
 }
-*/
+* /

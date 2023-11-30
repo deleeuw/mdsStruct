@@ -18,7 +18,8 @@ objects = smacofSSMUEngine.o \
 	smacofUnweightedInitial.o \
 	smacofUnweightedCore.o 
 
-includes = ../Include/smacof.h
+includes = ../Unweighted/smacofUnweighted.h \
+	../Common/smacofCommon.h
 
 all: smacof
 
@@ -27,7 +28,7 @@ ofiles: $(includes) $(sources)
 
 debug: clean $(includes) $(sources)
 	$(CC) -c -g3 -Wall -Wextra -pedantic -std=c99 $(sources)
-	$(CC) -o smacofSSMUd -g3  -Wall -Wextra -pedantic -std=c99 $(objects)
+	$(CC) -o smacofSSMU -g3  -Wall -Wextra -pedantic -std=c99 $(objects)
 
 smacof: ofiles
 	$(CC) -o smacofSSMU -O2  -Wall -Wextra -pedantic -std=c99 $(objects)

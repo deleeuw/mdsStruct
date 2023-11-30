@@ -46,9 +46,7 @@ void smacofPrintSymmetricMatrix(const unsigned n, const double *x, const unsigne
 
 // smacofCommonAccelerate.c
 
-double smacofRelax(const double *xold, double *xnew, const double echange,
-                 const double pchange, const unsigned np, const unsigned itel,
-                 const bool relax);
+void smacofRelax(const unsigned n, const unsigned p, const double *xold, double *xnew, double rate);
 
 // smacofCommonLinearAlgebra.c
 
