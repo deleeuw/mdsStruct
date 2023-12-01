@@ -1,9 +1,8 @@
 #include "smacofUnweighted.h"
 
-void smacofUnweightedInitial(const unsigned n, const unsigned p,
-                             const unsigned init, const double **delta,
-                             double **xini) {
-    double(*dini)[n][p] = malloc(sizeof *dini);
+void smacofUnweightedInitial(const int n, const int p, const int init,
+                             double **delta, double **xini) {
+    double **dini = smacofMakeAnyMatrix(n, n);
     assert(!(dini == NULL));
     switch (init) {
         case 1:
@@ -19,77 +18,59 @@ void smacofUnweightedInitial(const unsigned n, const unsigned p,
     (void)smacofCenter(n, p, xini);
     (void)smacofDistance(n, p, xini, dini);
     (void)smacofUnweightedScale(n, p, delta, dini, xini);
-    free(dini);
+    (void)smacofFreeAnyMatrix(n, dini);
     return;
 }
 
-void smacofUnweightedInitTorgerson(const int n, const int p,
-                                   const double **delta, double **xold) {
-    unsigned m = n * (n - 1) / 2, nn = SQUARE(n), unsigned itmax = 100,
-             eps = 10;
+void smacofUnweightedInitTorgerson(const int n, const int p, double **delta,
+                                   double **xold) {
+    int itmax = 100, eps = 10;
     bool verbose = false;
-    double(*dimp)[n][n] = calloc((unsigned)nn, (unsigned)sizeof(*dinp));
-    double(*cross)[n][n] = calloc((unsigned)nn, (unsigned)sizeof(*cbold));
-    double(*evec)[n][n] = calloc((unsigned)nn, (unsigned)sizeof(*cdini));
-    double *eval = (double *)calloc((unsigned)n, (unsigned)sizeof(double));
-    double sum = 0.0;
-    for (unsigned k = 1; k <= m; k++) {
-        sum += delta[VINDEX(k)];
-    }
-    for (unsigned k = 1; k <= nn; k++) {
-        dimp[VINDEX(k)] = sum;
-    }
-    for (unsigned j = 1; j <= (n - 1); j++) {
-        for (unsigned i = (j + 1); i <= n; i++) {
-            unsigned ij = SINDEX(i, j, n);
-            dimp[ij] = delta[ij];
-        }
-    }
-    (void)smacofDoubleCenter(dimp, cross, pn);
-    (void)smacofJacobi(n, p, cross, *evec, *eval, itmax, eps, verbose);
-    for (unsigned i = 0; i < n; i++) {
-        for (unsigned s = 0; s < p; s++) {
+    double **cross = smacofMakeAnyMatrix(n, n);
+    double **evec = smacofMakeAnyMatrix(n, n);
+    double *eval = smacofMakeAnyVector(n);
+    (void)smacofDoubleCenter(n, delta, cross);
+    (void)smacofJacobi(n, p, cross, evec, eval, itmax, eps, verbose);
+    for (int i = 0; i < n; i++) {
+        for (int s = 0; s < p; s++) {
             xold[i][s] = evec[i][s] * sqrt(fabs(eval[s]));
         }
     }
-    free(cross);
-    free(evec);
-    free(eval);
-    free(dimp);
+    (void)smacofFreeAnyMatrix(n, cross);
+    (void)smacofFreeAnyMatrix(n, evec);
+    (void)smacofFreeAnyVector(eval);
     return;
 }
 
-void smacofUnweightedInitMaximumSum(const unsigned n, const unsigned p,
-                                    const double delta[n][n],
-                                    double xold[n][p]) {
-    unsigned nn = n * (n + 1) / 2, itmax = 100, eps = 10;
+void smacofUnweightedInitMaximumSum(const int n, const int p, double **delta,
+                                    double **xini) {
+    int itmax = 100, eps = 10;
     bool verbose = false;
-    double *b = (double *)calloc((unsigned)nn, (unsigned)sizeof(double));
-    double *evec =
-        (double *)calloc((unsigned)SQUARE(n), (unsigned)sizeof(double));
-    double *eval = (double *)calloc((unsigned)n, (unsigned)sizeof(double));
-    for (unsigned k = 1; k <= nn; k++) {
-        b[VINDEX(k)] = 0.0;
-    }
-    // double index
-    for (unsigned j = 1; j <= (n - 1); j++) {
-        for (unsigned i = (j + 1); i <= n; i++) {
-            double cell = SQUARE(delta[SINDEX(i, j, n)]);
-            b[TINDEX(i, j, n)] -= cell;
-            b[TINDEX(i, i, n)] += cell;
-            b[TINDEX(j, j, n)] += cell;
+    double **b = smacofMakeAnyMatrix(n, n);
+    double **evec = smacofMakeAnyMatrix(n, n);
+    double *eval = smacofMakeAnyVector(n);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            b[i][j] = 0.0;
         }
     }
-    (void)smacofJacobi(b, evec, eval, pn, pp, &itmax, &eps, &verbose);
-    for (unsigned i = 1; i <= n; i++) {
-        for (unsigned s = 1; s <= p; s++) {
-            xini[MINDEX(i, s, n)] =
-                evec[MINDEX(i, s, n)] * sqrt(eval[VINDEX(s)]);
+    for (int j = 1; j <= (n - 1); j++) {
+        for (int i = (j + 1); i <= n; i++) {
+            double cell = SQUARE(delta[i][j]);
+            b[i][j] -= cell;
+            b[j][i] -= cell;
+            b[i][i] += cell;
+            b[j][j] += cell;
         }
     }
-    free(b);
-    free(evec);
-    free(eval);
+    (void)smacofJacobi(n, p, b, evec, eval, itmax, eps, verbose);
+    for (int i = 0; i < n; i++) {
+        for (int s = 0; s < n; s++) {
+            xini[i][s] = evec[i][s] * sqrt(eval[s]);
+        }
+    }
+    (void)smacofFreeAnyMatrix(n, b);
+    (void)smacofFreeAnyMatrix(n, evec);
+    (void)smacofFreeAnyVector(eval);
     return;
 }
-* /

@@ -1,4 +1,4 @@
-#include "../Include/smacof.h"
+#include "../Common/smacofCommon.h"
 
 void smacofUnweightedCCD(const unsigned n, const unsigned m, const double *y,
                          double *b, double *dhat, const double **x,
@@ -55,6 +55,7 @@ void smacofUnweightedCCD(const unsigned n, const unsigned m, const double *y,
     return;
 }
 
+/*
 int main(void) {
     unsigned n = 10, m = 3, itmax = 1000, eps = 10, width = 15, precision = 10;
     double d[10] = {0.0, 1.0, 2.0, 3.0, 1.0, 2.0, 3.0, 1.0, 2.0, 3.0};
@@ -88,3 +89,4 @@ int main(void) {
     free(x);
     return EXIT_SUCCESS;
 }
+*/

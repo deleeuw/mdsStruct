@@ -1,20 +1,23 @@
 #include "../Unweighted/smacofUnweighted.h"
 
-void smacofSSMUEngine(const unsigned n, const unsigned p, double **delta,
-                      double **xini, double **xnew, double **dnew, double **bnew,
-                      const unsigned init, const unsigned itmax,
-                      const unsigned ieps1, const unsigned ieps2,
-                      const bool verbose, const bool relax, unsigned *pitel,
-                      double *psnew) {
-    unsigned itel = *pitel;
+void smacofSSMUEngine(const int n, const int p, double **delta, double **xini,
+                      double **xnew, double **dnew, double **bnew,
+                      const int init, const int itmax, const int ieps1,
+                      const int ieps2, const bool verbose, const bool relax,
+                      int *pitel, double *psnew) {
+    int itel = *pitel;
     double sold = 0.0, snew = *psnew, ddiff = 0.0;
     double eps1 = pow(10.0, -(double)ieps1), eps2 = pow(10.0, -(double)ieps2);
-    double chnew = 1.0, chold = INFINITY, rate = 1.0;
+    double chnew = 0.0, chold = INFINITY, rate = 0.0;
+    double **dini = smacofMakeAnyMatrix(n, n);
+    double **dold = smacofMakeAnyMatrix(n, n);
+    double **xold = smacofMakeAnyMatrix(n, p);
+    double **bold = smacofMakeAnyMatrix(n, n);
     (void)smacofUnweightedNormDelta(n, delta);
     (void)smacofUnweightedInitial(n, p, init, delta, xini);
     (void)smacofDistance(n, p, xini, dini);
-    (void)memcpy(xold, xini, sizeof *xold);
-    (void)memcpy(dold, dini, sizeof *dold);
+    (void)smacofCopyAnyMatrix(n, p, xini, xold);
+    (void)smacofCopyAnyMatrix(n, n, dini, dold);
     (void)smacofUnweightedMakeBMatrix(n, delta, dold, bold);
     sold = smacofUnweightedMakeStress(n, delta, dold);
     while (true) {
@@ -22,7 +25,7 @@ void smacofSSMUEngine(const unsigned n, const unsigned p, double **delta,
         chnew = smacofRMSDifference(n, p, xold, xnew);
         rate = chnew / chold;
         if (relax) {
-            (void)smacofRelax(n, p, xold, xnew, rate);
+            (void)smacofRelax(n, p, rate, xold, xnew);
         }
         (void)smacofDistance(n, p, xnew, dnew);
         ddiff = smacofMaxDistanceDifference(n, dold, dnew);
@@ -40,9 +43,9 @@ void smacofSSMUEngine(const unsigned n, const unsigned p, double **delta,
         itel++;
         sold = snew;
         chold = chnew;
-        (void)memcpy(xold, xnew, sizeof *xold);
-        (void)memcpy(dold, dnew, sizeof *dold);
-        (void)memcpy(bold, bnew, sizeof *bold);
+        (void)smacofCopyAnyMatrix(n, p, xnew, xold);
+        (void)smacofCopyAnyMatrix(n, p, dnew, dold);
+        (void)smacofCopyAnyMatrix(n, p, bnew, bold);
     }
     return;
 }

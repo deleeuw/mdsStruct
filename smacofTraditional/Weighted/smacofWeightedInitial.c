@@ -64,10 +64,10 @@ void smacofWeightedInitTorgerson(const double *delta, const double *weights,
     return;
 }
 
-void smacofWeightedInitMaximumSum(const double *delta, const double *weights,
+void smacofWeightedInitMaximumSum(const int n, const int p,
+                                  const int m, const double *delta, const double *weights,
                                   const int *irow, const int *icol,
-                                  double *xini, const int *pn, const int *pp,
-                                  const int *pm) {
+                                  double *xini, ) {
     int n = *pn, p = *pp, m = *pm, nn = n * (n - 1) / 2, itmax = 100, eps = 10;
     bool verbose = false;
     double *a = (double *)calloc((size_t)m, (size_t)sizeof(double));

@@ -1,28 +1,28 @@
-#include "../Include/smacof.h"
+#include "smacofCommon.h"
 
-void smacofJacobi(const unsigned n, const unsigned ndim, double (*a)[n][n],
-                  double (*evec)[n][n], double *eval, const unsigned itmax,
-                  const unsigned ieps, const bool verbose) {
-    unsigned itel = 1;
+void smacofJacobi(const int n, const int ndim, double **a, double **evec,
+                  double *eval, const int itmax, const int ieps,
+                  const bool verbose) {
+    int itel = 1;
     double d = 0.0, s = 0.0, t = 0.0, u = 0.0, v = 0.0, p = 0.0, q = 0.0,
            r = 0.0;
     double fold = 0.0, fnew = 0.0, eps = pow(10.0, -(double)ieps);
-    double(*oldi)[n] = malloc(sizeof *oldi);
-    double(*oldj)[n] = malloc(sizeof *oldj);
-    for (unsigned i = 0; i < n; i++) {
-        for (unsigned j = 0; j < n; j++) {
-            (*evec)[i][j] = (i == j) ? 1.0 : 0.0;
+    double *oldi = smacofMakeAnyVector(n);
+    double *oldj = smacofMakeAnyVector(n);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            evec[i][j] = (i == j) ? 1.0 : 0.0;
         }
     }
-    for (unsigned i = 0; i < ndim; i++) {
-        fold += SQUARE((*a)[i][i]);
+    for (int i = 0; i < ndim; i++) {
+        fold += SQUARE(a[i][i]);
     }
     while (true) {
-        for (unsigned j = 0; j < ndim; j++) {
-            for (unsigned i = j + 1; i < n; i++) {
-                p = (*a)[i][j];
-                q = (*a)[i][i];
-                r = (*a)[j][j];
+        for (int j = 0; j < ndim; j++) {
+            for (int i = j + 1; i < n; i++) {
+                p = a[i][j];
+                q = a[i][i];
+                r = a[j][j];
                 if (fabs(p) < 1e-10) {
                     continue;
                 }
@@ -31,37 +31,37 @@ void smacofJacobi(const unsigned n, const unsigned ndim, double (*a)[n][n],
                 t = -d / sqrt(SQUARE(d) + SQUARE(p));
                 u = sqrt((1 + t) / 2);
                 v = s * sqrt((1 - t) / 2);
-                for (unsigned k = 0; k < n; k++) {
-                    unsigned ik = MIN(i, k);
-                    unsigned ki = MAX(i, k);
-                    unsigned jk = MIN(j, k);
-                    unsigned kj = MAX(j, k);
-                    (*oldi)[k] = (*a)[ki][ik];
-                    (*oldj)[k] = (*a)[kj][jk];
+                for (int k = 0; k < n; k++) {
+                    int ik = MIN(i, k);
+                    int ki = MAX(i, k);
+                    int jk = MIN(j, k);
+                    int kj = MAX(j, k);
+                    oldi[k] = a[ki][ik];
+                    oldj[k] = a[kj][jk];
                 }
-                for (unsigned k = 0; k < n; k++) {
-                    unsigned ik = MIN(i, k);
-                    unsigned ki = MAX(i, k);
-                    unsigned jk = MIN(j, k);
-                    unsigned kj = MAX(j, k);
-                    (*a)[ki][ik] = u * (*oldi)[k] - v * (*oldj)[k];
-                    (*a)[kj][jk] = v * (*oldi)[k] + u * (*oldj)[k];
+                for (int k = 0; k < n; k++) {
+                    int ik = MIN(i, k);
+                    int ki = MAX(i, k);
+                    int jk = MIN(j, k);
+                    int kj = MAX(j, k);
+                    a[ki][ik] = u * oldi[k] - v * oldj[k];
+                    a[kj][jk] = v * oldi[k] + u * oldj[k];
                 }
-                for (unsigned k = 0; k < n; k++) {
-                    (*oldi)[k] = (*evec)[k][i];
-                    (*oldj)[k] = (*evec)[k][j];
-                    (*evec)[k][i] = u * (*oldi)[k] - v * (*oldj)[k];
-                    (*evec)[k][j] = v * (*oldi)[k] + u * (*oldj)[k];
+                for (int k = 0; k < n; k++) {
+                    oldi[k] = evec[k][i];
+                    oldj[k] = evec[k][j];
+                    evec[k][i] = u * oldi[k] - v * oldj[k];
+                    evec[k][j] = v * oldi[k] + u * oldj[k];
                 }
-                (*a)[i][i] = SQUARE(u) * q + SQUARE(v) * r - 2 * u * v * p;
-                (*a)[j][j] = SQUARE(v) * q + SQUARE(u) * r + 2 * u * v * p;
-                (*a)[i][j] = u * v * (q - r) + (SQUARE(u) - SQUARE(v)) * p;
-                (*a)[j][i] = u * v * (q - r) + (SQUARE(u) - SQUARE(v)) * p;
+                a[i][i] = SQUARE(u) * q + SQUARE(v) * r - 2 * u * v * p;
+                a[j][j] = SQUARE(v) * q + SQUARE(u) * r + 2 * u * v * p;
+                a[i][j] = u * v * (q - r) + (SQUARE(u) - SQUARE(v)) * p;
+                a[j][i] = u * v * (q - r) + (SQUARE(u) - SQUARE(v)) * p;
             }
         }
         fnew = 0.0;
-        for (unsigned i = 0; i < ndim; i++) {
-            fnew += SQUARE((*a)[i][i]);
+        for (int i = 0; i < ndim; i++) {
+            fnew += SQUARE(a[i][i]);
         }
         if (verbose) {
             printf("itel %3d fold %15.10f fnew %15.10f\n", itel, fold, fnew);
@@ -72,71 +72,70 @@ void smacofJacobi(const unsigned n, const unsigned ndim, double (*a)[n][n],
         fold = fnew;
         itel++;
     }
-    for (unsigned i = 0; i < n; i++) {
-        eval[i] = (*a)[i][i];
+    for (int i = 0; i < n; i++) {
+        eval[i] = a[i][i];
     }
-    free(oldi);
-    free(oldj);
+    (void)smacofFreeAnyVector(oldi);
+    (void)smacofFreeAnyVector(oldj);
     return;
 }
 
 // for now without pivoting
 
-void smacofGramSchmidt(const unsigned n, const unsigned p, double (*x)[n][p],
-                       double (*q)[p][p]) {
-    for (unsigned s = 0; s < p; s++) {
+void smacofGramSchmidt(const int n, const int p, double **x, double **q) {
+    for (int s = 0; s < p; s++) {
         if (s > 0) {
-            for (unsigned t = 0; t < s; t++) {
+            for (int t = 0; t < s; t++) {
                 double sum = 0.0;
-                for (unsigned i = 0; i < n; i++) {
-                    sum += (*x)[i][s] * (*x)[i][t];
+                for (int i = 0; i < n; i++) {
+                    sum += x[i][s] * x[i][t];
                 }
-                (*q)[t][s] = sum;
-                for (unsigned i = 0; i < n; i++) {
-                    (*x)[i][s] -= sum * (*x)[i][t];
+                q[t][s] = sum;
+                for (int i = 0; i < n; i++) {
+                    x[i][s] -= sum * x[i][t];
                 }
             }
         }
         double sum = 0.0;
-        for (unsigned i = 0; i < n; i++) {
-            sum += SQUARE((*x)[i][s]);
+        for (int i = 0; i < n; i++) {
+            sum += SQUARE(x[i][s]);
         }
         sum = sqrt(sum);
-        (*q)[s][s] = sum;
-        for (unsigned i = 0; i < n; i++) {
-            (*x)[i][s] /= sum;
+        q[s][s] = sum;
+        for (int i = 0; i < n; i++) {
+            x[i][s] /= sum;
         }
     }
 }
 
-void smacofCenter(const unsigned n, const unsigned p, double (*x)[n][p]) {
-    for (unsigned s = 0; s < p; s++) {
+void smacofCenter(const int n, const int p, double **x) {
+    for (int s = 0; s < p; s++) {
         double sum = 0.0;
-        for (unsigned i = 0; i < n; i++) {
-            sum += (*x)[i][s];
+        for (int i = 0; i < n; i++) {
+            sum += x[i][s];
         }
         sum /= (double)n;
-        for (unsigned i = 0; i < n; i++) {
-            (*x)[i][s] -= sum;
+        for (int i = 0; i < n; i++) {
+            x[i][s] -= sum;
         }
     }
     return;
 }
 
 /*
-void smacofInvertPDMatrix(const double *x, double *xinv, const unsigned *pn) {
-    unsigned n = *pn, m = n * (n + 1) / 2, ik = 0, jk = 0, ij = 0;
-    for (unsigned k = 1; k <= m; k++) {
+void smacofInvertPDMatrix(const double *x, double *xinv, const int *pn) {
+    int n = *pn, m = n * (n + 1) / 2, ik = 0, jk = 0, ij = 0;
+    for (int k = 1; k <= m; k++) {
         xinv[VINDEX(k)] = x[VINDEX(k)];
     }
-    for (unsigned k = 1; k <= n; k++) {
+    for (int k = 1; k <= n; k++) {
         double piv = xinv[TINDEX(k, k, n)];
-        for (unsigned j = 1; j <= n; j++) {
+        for (int j = 1; j <= n; j++) {
             if (j == k) {
                 continue;
             }
             jk = UINDEX(j, k, n);
-            for (unsigned i = j; i <= n; i++) {
+            for (int i = j; i <= n; i++) {
                 if (i == k) {
                     continue;
                 }
@@ -145,7 +144,7 @@ void smacofInvertPDMatrix(const double *x, double *xinv, const unsigned *pn) {
                 xinv[ij] = xinv[ij] - xinv[ik] * xinv[jk] / piv;
             }
         }
-        for (unsigned i = 1; i <= n; i++) {
+        for (int i = 1; i <= n; i++) {
             if (i == k) {
                 continue;
             }
@@ -154,24 +153,24 @@ void smacofInvertPDMatrix(const double *x, double *xinv, const unsigned *pn) {
         }
         xinv[TINDEX(k, k, n)] = -1 / piv;
     }
-    for (unsigned k = 1; k <= m; k++) {
+    for (int k = 1; k <= m; k++) {
         xinv[VINDEX(k)] = -xinv[VINDEX(k)];
     }
     return;
 }
 
 void smacofMPInverseSDCLMatrix(const double *vmat, double *vinv,
-                               const unsigned *pn) {
-    unsigned n = *pn, nn = n * (n + 1) / 2;
+                               const int *pn) {
+    int n = *pn, nn = n * (n + 1) / 2;
     double add = 1.0 / ((double)n);
     double *vadd = malloc((sizeof *vadd) * nn);
-    for (unsigned j = 1; j <= n; j++) {
-        for (unsigned i = j; i <= n; i++) {
+    for (int j = 1; j <= n; j++) {
+        for (int i = j; i <= n; i++) {
             vadd[TINDEX(i, j, n)] = vmat[TINDEX(i, j, n)] + add;
         }
     }
     (void)smacofInvertPDMatrix(vadd, vinv, pn);
-    for (unsigned k = 1; k <= nn; k++) {
+    for (int k = 1; k <= nn; k++) {
         vinv[VINDEX(k)] -= add;
     }
     free(vadd);
@@ -179,30 +178,28 @@ void smacofMPInverseSDCLMatrix(const double *vmat, double *vinv,
 }
 */
 
-void smacofMultiplyAnyAnyMatrix(const unsigned n, const unsigned p,
-                                const unsigned m, const double (*a)[n][p],
-                                const double (*x)[p][m], double (*y)[n][m]) {
-    for (unsigned j = 0; j < m; j++) {
-        for (unsigned i = 0; i < n; i++) {
+void smacofMultiplyAnyAnyMatrix(const int n, const int p, const int m,
+                                double **a, double **x, double **y) {
+    for (int j = 0; j < m; j++) {
+        for (int i = 0; i < n; i++) {
             double sum = 0.0;
-            for (unsigned s = 0; s < p; s++) {
-                sum += (*a)[i][s] * (*x)[s][j];
+            for (int s = 0; s < p; s++) {
+                sum += a[i][s] * x[s][j];
             }
-            (*y)[i][j] = sum;
+            y[i][j] = sum;
         }
     }
     return;
 }
 
-void smacofDistance(const unsigned n, const unsigned p, const double (*x)[n][p],
-                    double (*d)[n][n]) {
-    for (unsigned j = 0; j < n; j++) {
-        for (unsigned i = 0; i < n; i++) {
+void smacofDistance(const int n, const int p, double **x, double **d) {
+    for (int j = 0; j < n; j++) {
+        for (int i = 0; i < n; i++) {
             double sum = 0.0;
-            for (unsigned s = 0; s < p; s++) {
-                sum += SQUARE((*x)[i][s] - (*x)[j][s]);
+            for (int s = 0; s < p; s++) {
+                sum += SQUARE(x[i][s] - x[j][s]);
             }
-            (*d)[i][j] = sqrt(fabs(sum));
+            d[i][j] = sqrt(fabs(sum));
         }
     }
     return;
@@ -210,10 +207,10 @@ void smacofDistance(const unsigned n, const unsigned p, const double (*x)[n][p],
 
 /*
 int main(void) {
-    unsigned n = 5;
-    unsigned p = 2;
-    unsigned width = 15;
-    unsigned precision = 10;
+    int n = 5;
+    int p = 2;
+    int width = 15;
+    int precision = 10;
     double rr[15] = {4, -1, -1, -1, -1, 5, -1, -1, -1, 6, -1, -1, 7, -1, 8};
     double rx[10] = {1.0, 2.0, 3.0, 4.0, 5.0, 5.0, 1.0, 2.0, 4.0, 3.0};
     double(*cr)[n][n] = malloc(sizeof(*cr));
@@ -240,7 +237,7 @@ int main(void) {
     (void)smacofPrintAnyMatrix(n, p, width, precision, cy);
     (void)smacofJacobi(n, p, cr, evec, eval, 100, 10, true);
     (void)smacofPrintAnyMatrix(n, n, width, precision, evec);
-    for (unsigned i = 0; i < p; i++) {
+    for (int i = 0; i < p; i++) {
         printf("%10.6f ", eval[i]);
     }
     printf("\n");

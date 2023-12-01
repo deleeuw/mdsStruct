@@ -18,50 +18,64 @@
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #define KDELTA(i, j) (((i) == (j)) ? 1 : 0)
 
-// smacofCommonRCTranslation.c  
+// smacofCommonRCTranslation.c
 
-void smacofFromAnyRtoC(const int nrow, const int ncol, const double *rmatrix, double **cmatrix);
-void smacofFromSymmetricHollowRtoC(const int n, const double *rmatrix, double **cmatrix);
-void smacofFromSymmetricRtoC(const int n, const double *rmatrix, double **cmatrix);
-void smacofFromAnyCtoR(const int nrow, const int ncol,const double double **cmatrix, double *rmatrix);
-
+void smacofFromAnyRtoC(const int nrow, const int ncol, const double *rmatrix,
+                       double **cmatrix);
+void smacofFromSymmetricHollowRtoC(const int n, const double *rmatrix,
+                                   double **cmatrix);
+void smacofFromSymmetricRtoC(const int n, const double *rmatrix,
+                             double **cmatrix);
+void smacofFromAnyCtoR(const int nrow, const int ncol, const double **cmatrix,
+                       double *rmatrix);
 
 // smacofCommonUtils.c
 
 void smacofInitRandom(const int n, const int p, double **xini);
-void smacofDoubleCenter(const int n, const double **delta, double **cross);
-double smacofMaxConfigurationDifference(const int n, const int p, const double **x, const double **y);
-double smacofMaxDistanceDifference(const int n, const double **dold, const double **dnew);
-double smacofRMSDifference(const int n, const int p, const double **x, const double **y);
+void smacofDoubleCenter(const int n, double **delta, double **cross);
+double smacofMaxConfigurationDifference(const int n, const int p, double **x,
+                                        double **y);
+double smacofMaxDistanceDifference(const int n, double **dold, double **dnew);
+double smacofRMSDifference(const int n, const int p, double **x, double **y);
 void smacofZeroAnyMatrix(const int n, const int p, double **x);
+
+// smacofCommonMatrixUtils.c
+
+double **smacofMakeAnyMatrix(const int n, const int p);
+double *smacofMakeAnyVector(const int n);
+double **smacofMakeLowerDiagonalMatrix(const int n);
+void smacofCopyAnyMatrix(const int n, const int p, double **x, double **y);
+void smacofFreeAnyMatrix(const int n, double **x);
+void smacofFreeAnyVector(double *x);
 
 // smacofCommonLinearAlgebra.c
 
-void smacofJacobi(const int n, const int p, double **a,
-                  double **evec, double *eval, const int itmax,
-                  const int eps, const bool verbose);
+void smacofJacobi(const int n, const int p, double **a, double **evec,
+                  double *eval, const int itmax, const int eps,
+                  const bool verbose);
 void smacofInvertPDMatrix(const double *x, double *xinv, const int *pn);
 void smacofGramSchmidt(const int n, const int p, double **x, double **q);
-void smacofMultiplyAnyAnyMatrix(const int n, const int p, const int m, const double **a, const double **x, double **y);
+void smacofMultiplyAnyAnyMatrix(const int n, const int p, const int m,
+                                double **a, double **x, double **y);
 void smacofMPInverseSDCLMatrix(const double *w, double *vinv, const int *ndim);
-void smacofDistance(const int n, const int p, const double **x, double **d);
+void smacofDistance(const int n, const int p, double **x, double **d);
 void smacofCenter(const int n, const int p, double **x);
 
 // smacofCommonPrintRead.c
 
-void smacofPrintAnyMatrix(const int n, const int p, const int width, const int precision, const double **x);
-void smacofUnweightedReadInputFile(const char *fname, double *delta);
-void smacofReadParameterFile(char *name, int *n, int *p, int *itmax, int *init, int *feps,
-                          int *ceps, int *width, int *precision, int *verbose,
-                          int *relax);
+void smacofPrintAnyMatrix(const int n, const int p, const int width,
+                          const int precision, double **x);
+void smacofReadInputFile(const char *fname, double *delta);
+void smacofReadParameterFile(const char *fname, int *n, int *p, int *itmax,
+                             int *init, int *feps, int *ceps, int *width,
+                             int *precision, int *verbose, int *relax);
 void smacofUnweightedInterval(const int n, const double **delta,
                               const double **dmat, double **dhat);
 
 // smacofCommonAccelerate.c
 
-void smacofRelax(const int n, const int p,
-                 const double **xold, double **xnew,
-                 double rate);
+void smacofRelax(const int n, const int p, const double rate, double **xold,
+                 double **xnew);
 
 // smacofCommonBases.c
 
@@ -79,6 +93,5 @@ void smacofBsplines(const double *, const double *, const int *, const int *,
                     int *, double *);
 void smacofBsplineBasis(const double *, const double *, const int *,
                         const int *, const int *, double *);
-
 
 #endif /* SMACOF_COMMON_H */

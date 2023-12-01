@@ -1,10 +1,9 @@
 #include "smacofCommon.h"
 
-void smacofPrintAnyMatrix(const unsigned n, const unsigned p,
-                          const unsigned width, const unsigned precision,
-                          const double (**x) {
-    for (unsigned i = 0; i < n; i++) {
-        for (unsigned s = 0; s < p; s++) {
+void smacofPrintAnyMatrix(const int n, const int p, const int width,
+                          const int precision, double **x) {
+    for (int i = 0; i < n; i++) {
+        for (int s = 0; s < p; s++) {
             printf("%+*.*f", width, precision, x[i][s]);
         }
         printf("\n");
@@ -15,7 +14,7 @@ void smacofPrintAnyMatrix(const unsigned n, const unsigned p,
 
 // read data from a file into a one-dimensional array
 
-void smacofUnweightedReadInputFile(const char *fname, double *delta) {
+void smacofReadInputFile(const char *fname, double *delta) {
     FILE *stream = fopen(fname, "r");
     if (stream == NULL) {
         printf("Error: cannot open %s\n", fname);
@@ -31,18 +30,17 @@ void smacofUnweightedReadInputFile(const char *fname, double *delta) {
     return;
 }
 
-void smacofReadParameterFile(char *name, unsigned *n, unsigned *p, unsigned *itmax, unsigned *init, unsigned *feps,
-                          unsigned *ceps, unsigned *width, unsigned *precision, unsigned *verbose,
-                          unsigned *relax) {
+void smacofReadParameterFile(const char *fname, int *n, int *p, int *itmax,
+                             int *init, int *feps, int *ceps, int *width,
+                             int *precision, int *verbose, int *relax) {
     FILE *fp;
     char *line = (char *)malloc(80 * sizeof(char));
     assert(line != NULL);
-    char aux1[20], aux2[10];
-    unsigned par = 0;
-    strcat(name, ".par");
+    char aux1[20], aux2[20];
+    int par = 0;
     size_t len = 0;
     ssize_t read;
-    fp = fopen(name, "r");
+    fp = fopen(fname, "r");
     assert(fp != NULL);
     while ((read = getline(&line, &len, fp)) != -1) {
         sscanf(line, "%s %s %d", aux1, aux2, &par);
@@ -81,4 +79,3 @@ void smacofReadParameterFile(char *name, unsigned *n, unsigned *p, unsigned *itm
     free(line);
     return;
 }
-

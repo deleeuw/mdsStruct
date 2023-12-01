@@ -1,4 +1,4 @@
-#include "../Include/smacof.h"
+#include "../Unweighted/smacofUnweighted.h"
 
 // to be called from R
 
@@ -29,13 +29,6 @@ void smacofSSIUEngine(const unsigned n, const unsigned p, double *delta,
                       const unsigned ieps1, const unsigned ieps2,
                       const bool verbose, const bool relax, unsigned *pitel,
                       double *psnew, const bool interval) {
-    /*
-     * Suppress some warnings
-     */
-    (void)sizeof(xnew);
-    (void)sizeof(dnew);
-    (void)sizeof(dhat);
-    (void)sizeof(bnew);
     unsigned itel = *pitel;
     double sold = 0.0, smid = 0.0, snew = *psnew, ddiff = 0.0;
     double eps1 = pow(10.0, -(double)ieps1), eps2 = pow(10.0, -(double)ieps2);
@@ -53,25 +46,6 @@ void smacofSSIUEngine(const unsigned n, const unsigned p, double *delta,
     double(*cxini)[n][p] = malloc(sizeof *cxini);
     assert(!(cxini == NULL));
     (void)smacofFromAnyRtoC(n, p, xini, cxini);
-    /*
-     * Make space for the work horse VLA's
-     */
-    double(*cxnew)[n][p] = malloc(sizeof *cxnew);
-    assert(!(cxnew == NULL));
-    double(*cdnew)[n][n] = malloc(sizeof *cdnew);
-    assert(!(cdnew == NULL));
-    double(*cdhat)[n][n] = malloc(sizeof *cdhat);
-    assert(!(cdhat == NULL));
-    double(*cbnew)[n][n] = malloc(sizeof *cbnew);
-    assert(!(cbnew == NULL));
-    double(*cxold)[n][p] = malloc(sizeof *cxold);
-    assert(!(cxold == NULL));
-    double(*cdold)[n][n] = malloc(sizeof *cdold);
-    assert(!(cdold == NULL));
-    double(*cdini)[n][n] = malloc(sizeof *cdini);
-    assert(!(cdini == NULL));
-    double(*cbold)[n][n] = malloc(sizeof *cbold);
-    assert(!(cbold == NULL));
     (void)smacofUnweightedNormDelta(n, cdelta);
     (void)memcpy(cdhat, cdelta, sizeof *cdhat);
     (void)smacofUnweightedInitial(n, p, init, cdhat, cxini);

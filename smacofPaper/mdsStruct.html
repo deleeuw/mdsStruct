@@ -249,6 +249,29 @@ width: 90%;
 </style>
 
 
+<style type="text/css">
+
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+margin-bottom: 0em;
+}
+.hanging div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}
+</style>
 
 <style type="text/css">.greybox {
 padding: 1em;
@@ -358,7 +381,7 @@ display: none;
 
 <h1 class="title toc-ignore">Notes on the C Version of Smacof</h1>
 <h4 class="author">Jan de Leeuw - University of California Los Angeles</h4>
-<h4 class="date">Started October 10 2023, Version of October 30, 2023</h4>
+<h4 class="date">Started October 10 2023, Version of December 01, 2023</h4>
 <div class="abstract">
 <p class="abstract">Abstract</p>
 TBD
@@ -370,17 +393,30 @@ TBD
 <ul>
 <li><a href="#introduction" id="toc-introduction"><span class="toc-section-number">1</span> Introduction</a></li>
 <li><a href="#example" id="toc-example"><span class="toc-section-number">2</span> Example</a></li>
-<li><a href="#smacofstructure" id="toc-smacofstructure"><span class="toc-section-number">3</span> smacofStructure</a></li>
-<li><a href="#appendix-code" id="toc-appendix-code"><span class="toc-section-number">4</span> Appendix: Code</a></li>
-<li><a href="#smacofhildreth" id="toc-smacofhildreth"><span class="toc-section-number">5</span> smacofHildreth</a></li>
-<li><a href="#smacofjacobi" id="toc-smacofjacobi"><span class="toc-section-number">6</span> smacofJacobi</a></li>
-<li><a href="#smacofsort" id="toc-smacofsort"><span class="toc-section-number">7</span> smacofSort</a></li>
-<li><a href="#code" id="toc-code"><span class="toc-section-number">8</span> Code</a>
+<li><a href="#unweighted-full-matrix" id="toc-unweighted-full-matrix"><span class="toc-section-number">3</span> Unweighted, full matrix</a></li>
+<li><a href="#unweighting" id="toc-unweighting"><span class="toc-section-number">4</span> Unweighting</a></li>
+<li><a href="#thoughts-on-als" id="toc-thoughts-on-als"><span class="toc-section-number">5</span> Thoughts on ALS</a>
 <ul>
-<li><a href="#smacofsort.r" id="toc-smacofsort.r"><span class="toc-section-number">8.1</span> smacofSort.R</a></li>
-<li><a href="#smacofsort.c" id="toc-smacofsort.c"><span class="toc-section-number">8.2</span> smacofSort.c</a></li>
+<li><a href="#the-single-step-approach" id="toc-the-single-step-approach"><span class="toc-section-number">5.1</span> The Single-Step approach</a></li>
+<li><a href="#the-two-step-approach" id="toc-the-two-step-approach"><span class="toc-section-number">5.2</span> The Two-step Approach</a></li>
 </ul></li>
-<li><a href="#references" id="toc-references"><span class="toc-section-number">9</span> References</a></li>
+<li><a href="#smacofstructure" id="toc-smacofstructure"><span class="toc-section-number">6</span> smacofStructure</a></li>
+<li><a href="#appendix-code" id="toc-appendix-code"><span class="toc-section-number">7</span> Appendix: Code</a></li>
+<li><a href="#smacofmaximumsum" id="toc-smacofmaximumsum"><span class="toc-section-number">8</span> smacofMaximumSum</a></li>
+<li><a href="#smacofelegant" id="toc-smacofelegant"><span class="toc-section-number">9</span> smacofElegant</a></li>
+<li><a href="#smacofadjustdiagonal" id="toc-smacofadjustdiagonal"><span class="toc-section-number">10</span> smacofAdjustDiagonal</a></li>
+<li><a href="#smacofimpute" id="toc-smacofimpute"><span class="toc-section-number">11</span> smacofImpute</a></li>
+<li><a href="#smacofhildreth" id="toc-smacofhildreth"><span class="toc-section-number">12</span> smacofHildreth</a></li>
+<li><a href="#smacofdykstra" id="toc-smacofdykstra"><span class="toc-section-number">13</span> smacofDykstra</a></li>
+<li><a href="#smacofjacobi" id="toc-smacofjacobi"><span class="toc-section-number">14</span> smacofJacobi</a></li>
+<li><a href="#smacofindividualdifferencemodels.c" id="toc-smacofindividualdifferencemodels.c"><span class="toc-section-number">15</span> smacofIndividualDifferenceModels.c</a></li>
+<li><a href="#smacofsort" id="toc-smacofsort"><span class="toc-section-number">16</span> smacofSort</a></li>
+<li><a href="#code" id="toc-code"><span class="toc-section-number">17</span> Code</a>
+<ul>
+<li><a href="#smacofsort.r" id="toc-smacofsort.r"><span class="toc-section-number">17.1</span> smacofSort.R</a></li>
+<li><a href="#smacofsort.c" id="toc-smacofsort.c"><span class="toc-section-number">17.2</span> smacofSort.c</a></li>
+</ul></li>
+<li><a href="#references" id="toc-references">References</a></li>
 </ul>
 </div>
 
@@ -401,8 +437,101 @@ For missing data we set <span class="math inline">\(w_{ij}=0\)</span>.</p>
 <h1><span class="header-section-number">2</span> Example</h1>
 <p>Here is a small input example.</p>
 </div>
-<div id="smacofstructure" class="section level1" number="3">
-<h1><span class="header-section-number">3</span> smacofStructure</h1>
+<div id="unweighted-full-matrix" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Unweighted, full matrix</h1>
+<p><span class="math inline">\(W=E-I\)</span> <span class="math inline">\(V=(I-E)+(n-1)I=nI-E=nJ\)</span>. Thus <span class="math inline">\(V^+=n^{-1}J\)</span> and <span class="math inline">\(V^+B=n^{-1}B\)</span>.</p>
+</div>
+<div id="unweighting" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Unweighting</h1>
+<p>(d)&amp;=_{k=1}<sup>Kw_k(<em>k-d_k)^2\
+&amp;=</em>{k=1}</sup>Kw_k(_k-<em>k)^2-2</em>{k=1}^Kw_k(_k-_k)(d_k-<em>k)+</em>{k=1}^Kw_k(d_k-_k)^2.
+\end{align*}
+Now suppose <span class="math inline">\(w_k\leq w_\star\)</span> and define
+<span class="math display">\[
+r_k=\frac{w_k}{w_\star}(\delta_k-\overline{d}_k)
+\]</span>
+<span class="math display">\[\begin{align*}
+\sigma(d)&amp;\leq\sigma(\overline{d})+w_\star\left\{\sum_{k=1}^K(d_k-\overline{d}_k)^2-\sum_{k=1}^Kr_k(d_k-\overline{d}_k)\right\}\\&amp;=\sigma(\overline{d})+w_\star\left\{\sum_{k=1}^K(d_k-(\overline{d}_k+r_k))^2-\sum_{k=1}^Kr_k^2\right\}.
+\end{align*}\]</span>
+Note
+<span class="math display">\[
+\delta_k(X):=\frac{w_k}{w_\star}\delta_k+(1-\frac{w_k}{w_\star})d_k(X)
+\]</span>
+So given <span class="math inline">\(X\)</span> computed the adjusted dissimilarities <span class="math inline">\(\Delta(X)\)</span> and perform one or more unweighted smacof
+steps to compute the update <span class="math inline">\(X^+\)</span>. Of course if all <span class="math inline">\(w_k\)</span> are the same then <span class="math inline">\(\Delta(X)=\Delta\)</span> and we
+compute a regular unweighted smacof. It is of some interest to study how many smacof steps to make
+before computing a new <span class="math inline">\(\Delta(X)\)</span>.</p>
+</div>
+<div id="thoughts-on-als" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Thoughts on ALS</h1>
+<p>In nonmetric MDS we minimize
+<span class="math display">\[
+\sigma(\Delta,X)=\sum_{k=1}^K w_k(\delta_k-d_k(X))^2
+\]</span>
+over the configurations <span class="math inline">\(X\)</span> and the transformed dissimilarities <span class="math inline">\(\Delta\)</span>,
+where we assume <span class="math inline">\(\Delta\in\mathfrak{D}\)</span>, with <span class="math inline">\(\mathfrak{D}\)</span> the intersection of
+a convex cone and a sphere.</p>
+<div id="the-single-step-approach" class="section level2" number="5.1">
+<h2><span class="header-section-number">5.1</span> The Single-Step approach</h2>
+<p><span class="citation">Kruskal (1964a)</span>, <span class="citation">Kruskal (1964b)</span> defines
+<span class="math display">\[
+\sigma_\star(X):=\min_{\Delta\in\mathfrak{D}}\sigma(\Delta,X)
+\]</span>
+and
+<span class="math display">\[
+\Delta(X)=\mathop{\text{argmin}}_{\Delta\in\mathfrak{D}}\sigma(\Delta,X)
+\]</span>
+Thus
+<span class="math display">\[
+\sigma_\star(X)=\sigma(\Delta(X),X)
+\]</span>
+which is now a function of <span class="math inline">\(X\)</span> only. Under some conditions, which are usually true in MDS,
+<span class="math display">\[
+\mathcal{D}\sigma_\star(X)=\mathcal{D}_2\sigma(\Delta(X),X)
+\]</span>
+where <span class="math inline">\(\mathcal{D}_2\sigma(\Delta(X),X)\)</span> are the partials of <span class="math inline">\(\sigma\)</span> with respect to <span class="math inline">\(X\)</span>.
+Thus the partials of <span class="math inline">\(\sigma_\star\)</span> can be computed by evaluating the partials of <span class="math inline">\(\sigma\)</span>
+with repesct to <span class="math inline">\(X\)</span> at <span class="math inline">\((X,\Delta(X))\)</span>. This has created much confusion in the past. We can now solve the problem of minimizing <span class="math inline">\(\sigma_\star\)</span>, which is a function of <span class="math inline">\(X\)</span> alone.</p>
+<p>I think Guttman calls this the <em>single step approach</em>. A variation of Kruskal’s single-step approach defines
+<span class="math display">\[
+\sigma_G(X)=\sum_{k=1}^Kw_k(\delta_k^\#(X)-d_k(X))^2
+\]</span>
+where the <span class="math inline">\(\delta_k^\#(X)\)</span> are <em>Guttman’s rank images</em>, i.e. the permutation of the
+<span class="math inline">\(d_k(X)\)</span> that makes it monotone with the <span class="math inline">\(\delta_k\)</span> (<span class="citation">Guttman (1968)</span>). Or, alternatively, we define
+<span class="math display">\[
+\sigma_S(X):=\sum_{k=1}^Kw_k(\delta_k^\%(X)-d_k(X))^2
+\]</span>
+where the <span class="math inline">\(\delta_k^\%(X)\)</span> are <em>Shepard’s rank images</em>, i.e. the permutation of
+the <span class="math inline">\(\delta_k\)</span> that makes it monotone with the <span class="math inline">\(d_k(X)\)</span> (<span class="citation">Shepard (1962a)</span>, <span class="citation">Shepard (1962b)</span>).</p>
+<p>The Shepard and Guttman alternatives are computationally more intricate and more complicated
+than the Kruskal <em>monotone regression</em> approach, mostly because of problems with uniqueness and differentiation, but they are obviously both single step approaches.</p>
+</div>
+<div id="the-two-step-approach" class="section level2" number="5.2">
+<h2><span class="header-section-number">5.2</span> The Two-step Approach</h2>
+<p>The <em>two-step approach</em> or <em>alternating least squares</em> approach alternates minimization
+of <span class="math inline">\(\sigma(\Delta,X)\)</span> over <span class="math inline">\(X\)</span> for our current best estimate of <span class="math inline">\(\Delta\)</span> with
+minimization of <span class="math inline">\(\sigma(\Delta,X)\)</span> over <span class="math inline">\(\Delta\in\mathfrak{D}\)</span> for our current best
+value of <span class="math inline">\(X\)</span>. Thus an update looks like
+<span class="math display" id="eq:step2" id="eq:step1">\[\begin{align}
+\Delta^{(k)}&amp;=\mathop{\text{argmin}}_\Delta\sigma(\Delta,X^{(k)})\tag{5.1},\\
+X^{(k+1)}&amp;=\mathop{\text{argmin}}_X\sigma(\Delta^{(k)},X)\tag{5.2}.
+\end{align}\]</span>
+This approach to MDS was in the air since the early (unsuccessful) attempts around 1968 of Young and De Leeuw to combine Torgerson’s classic metric MDS method with Kruskal’s monotone regression transformation.</p>
+<p>As formulated, however, there are some problems with the ALS algorithm.
+Step <a href="#eq:step1">(5.1)</a> is easy to carry out, using monotone regression. Step <a href="#eq:step2">(5.2)</a> means solving a metric scaling problem,
+which is an iterative proces that requires an infinite number of iterations. Thus, what is usually
+implemented, is to combine step <a href="#eq:step1">(5.1)</a> with one of more iterations of a convergent iterative procedure
+for metric MDS, such as smacof. If we take only one of these <em>inner iterations</em> the algorithm
+becomes indistinguishable from Kruskal’s single step method. This has also created much confusion in the
+past.</p>
+<p>It is somewhat worrisome that in the ALS approach we solve the first subproblem <a href="#eq:step1">(5.1)</a> exactly, while we take only a single step towards the solution for given <span class="math inline">\(\Delta\)</span> in the second subproblem <a href="#eq:step2">(5.2)</a>. If we have an
+infinite iterative procedure to compute the optial <span class="math inline">\(\Delta\in\mathfrak{D}\)</span> for given <span class="math inline">\(X\)</span>, then
+a more balanced approach is to take several inner iterations in the first step and several
+innewr iterations in the second step. How many of each, nobody knows.</p>
+</div>
+</div>
+<div id="smacofstructure" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> smacofStructure</h1>
 <p>We use this example as input for the R version of <em>smacofSort()</em>, which results in the
 <em>smacofStructure</em></p>
 <p>The <em>dist</em> element in the data frame is zero, because we have not computed distances yet.
@@ -416,8 +545,8 @@ polynomials and monotone splines. In the metric (ratio) case there is no need fo
 <p>It is obvious how this <em>smacofStructure</em> can be adapted if there are multiway data.If we have row-conditional or matrix-conditional data, then we use one of these smacofStructures for each
 row or each matrix.</p>
 </div>
-<div id="appendix-code" class="section level1" number="4">
-<h1><span class="header-section-number">4</span> Appendix: Code</h1>
+<div id="appendix-code" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> Appendix: Code</h1>
 <p>We use <em>qsort</em> to sort the rows of the input data frame by increasing delta. The sorting
 is done in C, the R version is a wrapper around the compiled C code. The C code also
 contains a main which analyzes the same small example as we have used in the text.
@@ -425,16 +554,60 @@ Compile with “clang -o runner -O2 smacofSort.c” and then start “runner” 
 The C code uses the .C() interface in R, which can be improved using .Call(),
 but probably in this case with little gain.</p>
 </div>
-<div id="smacofhildreth" class="section level1" number="5">
-<h1><span class="header-section-number">5</span> smacofHildreth</h1>
-<p>Consider the QP problem of minimizing <span class="math inline">\(f(x)=\frac12(x-y)&#39;W(x-y)\)</span>
-over all <span class="math inline">\(x\in\mathbb{R}^n\)</span> satisfying <span class="math inline">\(Ax\geq 0\)</span>, where <span class="math inline">\(A\)</span> is <span class="math inline">\(m\times n\)</span>. The Lagrangian is
+<div id="smacofmaximumsum" class="section level1" number="8">
+<h1><span class="header-section-number">8</span> smacofMaximumSum</h1>
+<p>Maximize
 <span class="math display">\[
-\mathcal{L}(x,\lambda)=\frac12(x-y)&#39;W(x-y)-\lambda&#39;Ax
+\jis w_{ij}\delta_{ij}^2d_{ij}^2(X)
 \]</span>
-amd we want
+over <span class="math inline">\(X\)</span> with <span class="math inline">\(\text{tr}\ (X&#39;X)^2=1\)</span>. This gives <span class="math inline">\(BX=X\Lambda\)</span>, with
 <span class="math display">\[
-\min_x\max_{\lambda\geq 0}\mathcal{L}(x,\lambda)=\max_{\lambda\geq 0}\min_x\mathcal{L}(x,\lambda)
+B=\jis w_{ij}\delta_{ij}^2A_{ij}
+\]</span>
+There is also a non-metric version. Maximize over <span class="math inline">\(\text{tr}\ (X&#39;X)^2\)</span>
+<span class="math display">\[
+\jis\mathop{\sum\sum}_{1\leq k&lt;l\leq n} w_{ij,kl}\text{sign}(\delta_{ij}-\delta_{kl})(d_{ij}^2(X)-d_{kl}^2(X))
+\]</span>
+which simplifies to
+<span class="math display">\[
+2\ \jis d_{ij}^2(X)\mathop{\sum\sum}_{1\leq k&lt;l\leq n}w_{ij,kl}\text{sign}(\delta_{ij}-\delta_{kl})
+\]</span>
+Simplifies more <span class="math inline">\(w_{ij,kl}=w_{ij}\)</span> or <span class="math inline">\(_{ij,kl}=w_{ij}w_{kl}\)</span></p>
+<p>Also note
+<span class="math display">\[
+\rho(X)=\jis w_{ij}\delta_{ij}d_{ij}(X)=
+\jis \frac{w_{ij}}{\delta_{ij}d_{ij}(X)}\delta_{ij}^2d_{ij}^2(X)\approx\jis
+\frac{w_{ij}}{\delta_{ij}^2}\delta_{ij}^2d_{ij}^2(X)=\eta^2(X)
+\]</span></p>
+</div>
+<div id="smacofelegant" class="section level1" number="9">
+<h1><span class="header-section-number">9</span> smacofElegant</h1>
+</div>
+<div id="smacofadjustdiagonal" class="section level1" number="10">
+<h1><span class="header-section-number">10</span> smacofAdjustDiagonal</h1>
+</div>
+<div id="smacofimpute" class="section level1" number="11">
+<h1><span class="header-section-number">11</span> smacofImpute</h1>
+</div>
+<div id="smacofhildreth" class="section level1" number="12">
+<h1><span class="header-section-number">12</span> smacofHildreth</h1>
+<p><span class="citation">Hildreth (1957)</span></p>
+<p>Consider the QP problem of minimizing <span class="math inline">\(f(x)=\frac12(x-y)&#39;W(x-y)\)</span>
+over all <span class="math inline">\(x\in\mathbb{R}^n\)</span> satisfying <span class="math inline">\(Ax\geq 0\)</span>, where <span class="math inline">\(A\)</span> is <span class="math inline">\(m\times n\)</span>. Wlg we can assume <span class="math inline">\(a_j&#39;Wa_j=1\)</span>. The Lagrangian is
+<span class="math display">\[
+\mathcal{L}(x,\lambda)=\frac12(x-y)&#39;W(x-y)-\lambda&#39;Ax.
+\]</span>
+<span class="math display">\[
+\max_{\lambda\geq 0}\mathcal{L}(x,\lambda)=\begin{cases}\frac12(x-y)&#39;W(x-y)&amp;\text{ if }Ax\geq 0,\\
++\infty&amp;\text{ otherwise}.\end{cases}
+\]</span>
+and thus
+<span class="math display">\[
+\min_{x\in\mathbb{R}^n}\max_{\lambda\geq 0}\mathcal{L}(x,\lambda)=\min_{Ax\geq 0}\frac12(x-y)&#39;W(x-y).
+\]</span>
+By duality
+<span class="math display">\[
+\min_{x\in\mathbb{R}^n}\max_{\lambda\geq 0}\mathcal{L}(x,\lambda)=\max_{\lambda\geq 0}\min_{x\in\mathbb{R}^n}\mathcal{L}(x,\lambda).
 \]</span>
 The inner minimum over <span class="math inline">\(x\)</span> is attained for
 <span class="math display">\[
@@ -442,86 +615,82 @@ x=y+W^{-1}A&#39;\lambda,
 \]</span>
 and is equal to
 <span class="math display">\[
-\min_x\mathcal{L}(x,\lambda)=-\frac12\lambda&#39;AW^{-1}A&#39;\lambda-\lambda&#39;Ay
+\min_{x\in\mathbb{R}^n}\mathcal{L}(x,\lambda)=-\frac12\lambda&#39;AW^{-1}A&#39;\lambda-\lambda&#39;Ay.
 \]</span>
 Thus
 <span class="math display">\[
-\max_{\lambda\geq 0}\min_x\mathcal{L}(x,\lambda)=
+\max_{\lambda\geq 0}\min_{x\in\mathbb{R}^n}\mathcal{L}(x,\lambda)=
 -\frac12\min_{\lambda\geq 0}\left\{(Wy+A&#39;\lambda)&#39;W^{-1}(Wy+A&#39;\lambda)-y&#39;Wy\right\}
 \]</span>
-Same treatment for the more general problem of minimizing <span class="math inline">\(g(x)=\frac12(Bx-y)&#39;W(Bx-y)\)</span> over
-<span class="math inline">\(Ax\geq 0\)</span>. Now <span class="math inline">\(x=(B&#39;WB)^{-1}(B&#39;Wy+A&#39;\lambda)\)</span> and
+We minimize <span class="math inline">\(h(\lambda)=(Wy+A&#39;\lambda)&#39;W^{-1}(Wy+A&#39;\lambda)\)</span> with coordinate descent. Let <span class="math inline">\(\lambda_j(\eps)=\lambda+\eps e_j\)</span>. Then
 <span class="math display">\[
-\min_x\mathcal{L}(x,\lambda)=\frac12((B(B&#39;WB)^{-1}B&#39;W-I)y+B(B&#39;WB)^{-1}A&#39;\lambda)&#39;W(B(B&#39;WB)^{-1}(B&#39;Wy+A&#39;\lambda)-y)-\lambda&#39;A(B&#39;WB)^{-1}(B&#39;Wy+A&#39;\lambda)=
+h(\lambda_j(\eps))=(Wy+A&#39;\lambda+\eps a_j)&#39;W^{-1}()=\eps^2a_j&#39;W^{-1}a_j+2\eps a_j&#39;W^{-1}(y+W^{-1}A&#39;\lambda)+
 \]</span>
+which must be minimized over <span class="math inline">\(\eps\geq-\lambda_j\)</span>. So the minimum is attained at
 <span class="math display">\[
-=\frac12y&#39;WB(B&#39;WB)^{-1}B&#39;Wy-2
+\eps=-\frac{a_j&#39;W^{-1}x}{a_j&#39;W^{-1}a_j}
 \]</span>
-# smacofDykstra</p>
+with <span class="math inline">\(x=y+W^{-1}A&#39;\lambda\)</span> (cf …), provided … satisfies .. Otherwise <span class="math inline">\(\eps=-\lambda_j\)</span>. Now update both <span class="math inline">\(\lambda\)</span> and <span class="math inline">\(x\)</span>,
+and go to the next <span class="math inline">\(j\)</span>.</p>
 </div>
-<div id="smacofjacobi" class="section level1" number="6">
-<h1><span class="header-section-number">6</span> smacofJacobi</h1>
+<div id="smacofdykstra" class="section level1" number="13">
+<h1><span class="header-section-number">13</span> smacofDykstra</h1>
 </div>
-<div id="smacofsort" class="section level1" number="7">
-<h1><span class="header-section-number">7</span> smacofSort</h1>
+<div id="smacofjacobi" class="section level1" number="14">
+<h1><span class="header-section-number">14</span> smacofJacobi</h1>
+<p>taken from <span class="citation">De Leeuw (2017)</span></p>
+<p>partial jacobi</p>
 </div>
-<div id="code" class="section level1" number="8">
-<h1><span class="header-section-number">8</span> Code</h1>
-<div id="smacofsort.r" class="section level2" number="8.1">
-<h2><span class="header-section-number">8.1</span> smacofSort.R</h2>
+<div id="smacofindividualdifferencemodels.c" class="section level1" number="15">
+<h1><span class="header-section-number">15</span> smacofIndividualDifferenceModels.c</h1>
+<p><span class="math display">\[\begin{align}
+X_k&amp;=X,\\
+X_k&amp;=X\Lambda_k \text{ with }\Lambda_k\text{ diagonal},\\
+X_k&amp;=XC_k,\\
+X_k&amp;=X\Lambda_k Y&#39; \text{ with }\Lambda_k\text{ diagonal},\\
+X_k&amp;=XC_kY&#39;,\\
+X_k&amp;=X\Lambda_k Y_k&#39;\text{ with }\Lambda_k\text{ diagonal}\\
+X_k&amp;=XC_k Y&#39;\text{ with } C_k=\sum_{s=1}^r z_{ks}H_s.
+\end{align}\]</span></p>
 </div>
-<div id="smacofsort.c" class="section level2" number="8.2">
-<h2><span class="header-section-number">8.2</span> smacofSort.c</h2>
-<pre class="c"><code>#include &quot;smacof.h&quot;
-
-int smacofComparison(const void *px, const void *py) {
-    double x = ((struct fiveTuple *)px)-&gt;delta;
-    double y = ((struct fiveTuple *)py)-&gt;delta;
-    return (int)copysign(1.0, x - y);
-}
-
-void smacofSort(double *delta, double *weight, int *row, int *col, int *index,
-                const int *ndata) {
-    int n = *ndata;
-    struct fiveTuple *xi =
-        (struct fiveTuple *)calloc((size_t)n, (size_t)sizeof(struct fiveTuple));
-    for (int i = 0; i &lt; n; i++) {
-        xi[i].index = i;
-        xi[i].row = row[i];
-        xi[i].col = col[i];
-        xi[i].delta = delta[i];
-        xi[i].weight = weight[i];
-    }
-    (void)qsort(xi, (size_t)n, (size_t)sizeof(struct fiveTuple),
-                smacofComparison);
-    for (int i = 0; i &lt; n; i++) {
-        index[i] = xi[i].index;
-        row[i] = xi[i].row;
-        col[i] = xi[i].col;
-        delta[i] = xi[i].delta;
-        weight[i] = xi[i].weight;
-    }
-    free(xi);
-    return;
-}
-
-void smacofTieBlocks(const double *delta, int *block, double *eps,
-                     const int *ndata) {
-    int n = *ndata;
-    block[0] = 1;
-    for (int i = 1; i &lt; n; i++) {
-        if (fabs(delta[i] - delta[i - 1]) &lt; *eps) {
-            block[i] = block[i - 1];
-        } else {
-            block[i] = block[i - 1] + 1;
-        }
-    }
-    return;
-}</code></pre>
+<div id="smacofsort" class="section level1" number="16">
+<h1><span class="header-section-number">16</span> smacofSort</h1>
+</div>
+<div id="code" class="section level1" number="17">
+<h1><span class="header-section-number">17</span> Code</h1>
+<div id="smacofsort.r" class="section level2" number="17.1">
+<h2><span class="header-section-number">17.1</span> smacofSort.R</h2>
+</div>
+<div id="smacofsort.c" class="section level2" number="17.2">
+<h2><span class="header-section-number">17.2</span> smacofSort.c</h2>
+<pre class="c"><code></code></pre>
 </div>
 </div>
-<div id="references" class="section level1" number="9">
-<h1><span class="header-section-number">9</span> References</h1>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-deleeuw_E_17o" class="csl-entry">
+De Leeuw, J. 2017. <span>“<span class="nocase">Jacobi Eigen in R/C with Lower Triangular Column-wise Compact Storage</span>.”</span> 2017. <a href="https://jansweb.netlify.app/publication/deleeuw-e-17-o/deleeuw-e-17-o.pdf">https://jansweb.netlify.app/publication/deleeuw-e-17-o/deleeuw-e-17-o.pdf</a>.
+</div>
+<div id="ref-guttman_68" class="csl-entry">
+Guttman, L. 1968. <span>“<span class="nocase">A General Nonmetric Technique for Fitting the Smallest Coordinate Space for a Configuration of Points</span>.”</span> <em>Psychometrika</em> 33: 469–506.
+</div>
+<div id="ref-hildreth_57" class="csl-entry">
+Hildreth, C. 1957. <span>“<span>A Quadratic Programming Procedure</span>.”</span> <em>Naval Research Logistic Quarterly</em> 14 (79–85).
+</div>
+<div id="ref-kruskal_64a" class="csl-entry">
+Kruskal, J. B. 1964a. <span>“<span class="nocase">Multidimensional Scaling by Optimizing Goodness of Fit to a Nonmetric Hypothesis</span>.”</span> <em>Psychometrika</em> 29: 1–27.
+</div>
+<div id="ref-kruskal_64b" class="csl-entry">
+———. 1964b. <span>“<span class="nocase">Nonmetric Multidimensional Scaling: a Numerical Method</span>.”</span> <em>Psychometrika</em> 29: 115–29.
+</div>
+<div id="ref-shepard_62a" class="csl-entry">
+Shepard, R. N. 1962a. <span>“<span class="nocase">The Analysis of Proximities: Multidimensional Scaling with an Unknown Distance Function. I</span>.”</span> <em>Psychometrika</em> 27: 125–40.
+</div>
+<div id="ref-shepard_62b" class="csl-entry">
+———. 1962b. <span>“<span class="nocase">The Analysis of Proximities: Multidimensional Scaling with an Unknown Distance Function. II</span>.”</span> <em>Psychometrika</em> 27: 219–46.
+</div>
+</div>
 </div>
 
 

@@ -2,6 +2,7 @@ sources = smacofSSMUEngine.c \
 	../Common/smacofCommonPrintRead.c \
 	../Common/smacofCommonRCTranslation.c \
 	../Common/smacofCommonUtils.c \
+	../Common/smacofCommonMatrixUtils.c \
 	../Common/smacofCommonLinearAlgebra.c \
 	../Common/smacofCommonAccelerate.c \
 	../Unweighted/smacofUnweightedNorm.c \
@@ -12,6 +13,7 @@ objects = smacofSSMUEngine.o \
 	smacofCommonPrintRead.o \
 	smacofCommonRCTranslation.o \
 	smacofCommonUtils.o \
+	smacofCommonMatrixUtils.o \
 	smacofCommonLinearAlgebra.o \
 	smacofCommonAccelerate.o \
 	smacofUnweightedNorm.o \
@@ -28,7 +30,7 @@ ofiles: $(includes) $(sources)
 
 debug: clean $(includes) $(sources)
 	$(CC) -c -g3 -Wall -Wextra -pedantic -std=c99 $(sources)
-	$(CC) -o smacofSSMU -g3  -Wall -Wextra -pedantic -std=c99 $(objects)
+	$(CC) -o smacofSSMUDebug -g3  -Wall -Wextra -pedantic -std=c99 $(objects)
 
 smacof: ofiles
 	$(CC) -o smacofSSMU -O2  -Wall -Wextra -pedantic -std=c99 $(objects)
@@ -53,8 +55,8 @@ test: smacof
 	./smacof > smacofSSMU.txt
 	
 clean:
-	rm -f $(objects) ../../*.c
+	rm -f $(objects) ../*/*.o
 
 pristine: clean
-	rm -f smacofSSMU smacofSSMUd smacofSSMU.txt \
+	rm -f smacofSSMU smacofSSMUDebug smacofSSMU.txt \
 		libsmacofSSMU.a libsmacofSSMU.so libsmacofSSMU.0.dylib libsmacofSSMU.dylib

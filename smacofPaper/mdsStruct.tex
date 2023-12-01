@@ -190,7 +190,7 @@
 
 \title{Notes on the C Version of Smacof}
 \author{Jan de Leeuw - University of California Los Angeles}
-\date{Started October 10 2023, Version of November 07, 2023}
+\date{Started October 10 2023, Version of December 01, 2023}
 
 \begin{document}
 \maketitle
@@ -220,6 +220,105 @@ For missing data we set \(w_{ij}=0\).
 \section{Example}\label{example}
 
 Here is a small input example.
+
+\section{Unweighted, full matrix}\label{unweighted-full-matrix}
+
+\(W=E-I\) \(V=(I-E)+(n-1)I=nI-E=nJ\). Thus \(V^+=n^{-1}J\) and \(V^+B=n^{-1}B\).
+
+\section{Unweighting}\label{unweighting}
+
+\define{align*}
+
+\sigma(d)\&=\sum\_\{k=1\}\textsuperscript{Kw\_k(\delta\emph{k-d\_k)\^{}2\textbackslash{}
+\&=\sum}\{k=1\}}Kw\_k(\delta\_k-\overline{d}\emph{k)\^{}2-2\sum}\{k=1\}\^{}Kw\_k(\delta\_k-\overline{d}\_k)(d\_k-\overline{d}\emph{k)+\sum}\{k=1\}\^{}Kw\_k(d\_k-\overline{d}\_k)\^{}2.
+\textbackslash end\{align*\}
+Now suppose \(w_k\leq w_\star\) and define
+\[
+r_k=\frac{w_k}{w_\star}(\delta_k-\overline{d}_k)
+\]
+\begin{align*}
+\sigma(d)&\leq\sigma(\overline{d})+w_\star\left\{\sum_{k=1}^K(d_k-\overline{d}_k)^2-\sum_{k=1}^Kr_k(d_k-\overline{d}_k)\right\}\\&=\sigma(\overline{d})+w_\star\left\{\sum_{k=1}^K(d_k-(\overline{d}_k+r_k))^2-\sum_{k=1}^Kr_k^2\right\}.
+\end{align*}
+Note
+\[
+\delta_k(X):=\frac{w_k}{w_\star}\delta_k+(1-\frac{w_k}{w_\star})d_k(X)
+\]
+So given \(X\) computed the adjusted dissimilarities \(\Delta(X)\) and perform one or more unweighted smacof
+steps to compute the update \(X^+\). Of course if all \(w_k\) are the same then \(\Delta(X)=\Delta\) and we
+compute a regular unweighted smacof. It is of some interest to study how many smacof steps to make
+before computing a new \(\Delta(X)\).
+
+\section{Thoughts on ALS}\label{thoughts-on-als}
+
+In nonmetric MDS we minimize
+\[
+\sigma(\Delta,X)=\sum_{k=1}^K w_k(\delta_k-d_k(X))^2
+\]
+over the configurations \(X\) and the transformed dissimilarities \(\Delta\),
+where we assume \(\Delta\in\mathfrak{D}\), with \(\mathfrak{D}\) the intersection of
+a convex cone and a sphere.
+
+\subsection{The Single-Step approach}\label{the-single-step-approach}
+
+Kruskal (1964a), Kruskal (1964b) defines
+\[
+\sigma_\star(X):=\min_{\Delta\in\mathfrak{D}}\sigma(\Delta,X)
+\]
+and
+\[
+\Delta(X)=\mathop{\text{argmin}}_{\Delta\in\mathfrak{D}}\sigma(\Delta,X)
+\]
+Thus
+\[
+\sigma_\star(X)=\sigma(\Delta(X),X)
+\]
+which is now a function of \(X\) only. Under some conditions, which are usually true in MDS,
+\[
+\mathcal{D}\sigma_\star(X)=\mathcal{D}_2\sigma(\Delta(X),X)
+\]
+where \(\mathcal{D}_2\sigma(\Delta(X),X)\) are the partials of \(\sigma\) with respect to \(X\).
+Thus the partials of \(\sigma_\star\) can be computed by evaluating the partials of \(\sigma\)
+with repesct to \(X\) at \((X,\Delta(X))\). This has created much confusion in the past. We can now solve the problem of minimizing \(\sigma_\star\), which is a function of \(X\) alone.
+
+I think Guttman calls this the \emph{single step approach}. A variation of Kruskal's single-step approach defines
+\[
+\sigma_G(X)=\sum_{k=1}^Kw_k(\delta_k^\#(X)-d_k(X))^2
+\]
+where the \(\delta_k^\#(X)\) are \emph{Guttman's rank images}, i.e.~the permutation of the
+\(d_k(X)\) that makes it monotone with the \(\delta_k\) (Guttman (1968)). Or, alternatively, we define
+\[
+\sigma_S(X):=\sum_{k=1}^Kw_k(\delta_k^\%(X)-d_k(X))^2
+\]
+where the \(\delta_k^\%(X)\) are \emph{Shepard's rank images}, i.e.~the permutation of
+the \(\delta_k\) that makes it monotone with the \(d_k(X)\) (Shepard (1962a), Shepard (1962b)).
+
+The Shepard and Guttman alternatives are computationally more intricate and more complicated
+than the Kruskal \emph{monotone regression} approach, mostly because of problems with uniqueness and differentiation, but they are obviously both single step approaches.
+
+\subsection{The Two-step Approach}\label{the-two-step-approach}
+
+The \emph{two-step approach} or \emph{alternating least squares} approach alternates minimization
+of \(\sigma(\Delta,X)\) over \(X\) for our current best estimate of \(\Delta\) with
+minimization of \(\sigma(\Delta,X)\) over \(\Delta\in\mathfrak{D}\) for our current best
+value of \(X\). Thus an update looks like
+\begin{align}
+\Delta^{(k)}&=\mathop{\text{argmin}}_\Delta\sigma(\Delta,X^{(k)})\label{eq:step1},\\
+X^{(k+1)}&=\mathop{\text{argmin}}_X\sigma(\Delta^{(k)},X)\label{eq:step2}.
+\end{align}
+This approach to MDS was in the air since the early (unsuccessful) attempts around 1968 of Young and De Leeuw to combine Torgerson's classic metric MDS method with Kruskal's monotone regression transformation.
+
+As formulated, however, there are some problems with the ALS algorithm.
+Step \eqref{eq:step1} is easy to carry out, using monotone regression. Step \eqref{eq:step2} means solving a metric scaling problem,
+which is an iterative proces that requires an infinite number of iterations. Thus, what is usually
+implemented, is to combine step \eqref{eq:step1} with one of more iterations of a convergent iterative procedure
+for metric MDS, such as smacof. If we take only one of these \emph{inner iterations} the algorithm
+becomes indistinguishable from Kruskal's single step method. This has also created much confusion in the
+past.
+
+It is somewhat worrisome that in the ALS approach we solve the first subproblem \eqref{eq:step1} exactly, while we take only a single step towards the solution for given \(\Delta\) in the second subproblem \eqref{eq:step2}. If we have an
+infinite iterative procedure to compute the optial \(\Delta\in\mathfrak{D}\) for given \(X\), then
+a more balanced approach is to take several inner iterations in the first step and several
+innewr iterations in the second step. How many of each, nobody knows.
 
 \section{smacofStructure}\label{smacofstructure}
 
@@ -365,10 +464,25 @@ X_k&=XC_k Y'\text{ with } C_k=\sum_{s=1}^r z_{ks}H_s.
 \phantomsection\label{refs}
 \begin{CSLReferences}{1}{0}
 \bibitem[\citeproctext]{ref-deleeuw_E_17o}
-De Leeuw, J. 2017. {``{Jacobi Eigen in R/C with Lower Triangular Column-wise Compact Storage}.''} 2017.
+De Leeuw, J. 2017. {``{Jacobi Eigen in R/C with Lower Triangular Column-wise Compact Storage}.''} 2017. \url{https://jansweb.netlify.app/publication/deleeuw-e-17-o/deleeuw-e-17-o.pdf}.
+
+\bibitem[\citeproctext]{ref-guttman_68}
+Guttman, L. 1968. {``{A General Nonmetric Technique for Fitting the Smallest Coordinate Space for a Configuration of Points}.''} \emph{Psychometrika} 33: 469--506.
 
 \bibitem[\citeproctext]{ref-hildreth_57}
 Hildreth, C. 1957. {``{A Quadratic Programming Procedure}.''} \emph{Naval Research Logistic Quarterly} 14 (79--85).
+
+\bibitem[\citeproctext]{ref-kruskal_64a}
+Kruskal, J. B. 1964a. {``{Multidimensional Scaling by Optimizing Goodness of Fit to a Nonmetric Hypothesis}.''} \emph{Psychometrika} 29: 1--27.
+
+\bibitem[\citeproctext]{ref-kruskal_64b}
+---------. 1964b. {``{Nonmetric Multidimensional Scaling: a Numerical Method}.''} \emph{Psychometrika} 29: 115--29.
+
+\bibitem[\citeproctext]{ref-shepard_62a}
+Shepard, R. N. 1962a. {``{The Analysis of Proximities: Multidimensional Scaling with an Unknown Distance Function. I}.''} \emph{Psychometrika} 27: 125--40.
+
+\bibitem[\citeproctext]{ref-shepard_62b}
+---------. 1962b. {``{The Analysis of Proximities: Multidimensional Scaling with an Unknown Distance Function. II}.''} \emph{Psychometrika} 27: 219--46.
 
 \end{CSLReferences}
 

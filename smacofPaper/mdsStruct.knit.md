@@ -4,17 +4,17 @@ author:
 - Jan de Leeuw - University of California Los Angeles
 date: 'Started October 10 2023, Version of December 01, 2023'
 output:
-  bookdown::html_document2:
-    keep_md: yes
-    css: preamble.css
-    toc: true
-    toc_depth: 4
-    number_sections: yes
   bookdown::pdf_document2:
-    latex_engine: xetex
+    latex_engine: xelatex
     includes:
       in_header: preamble.tex
     keep_tex: yes
+    toc: true
+    toc_depth: 4
+    number_sections: yes
+  bookdown::html_document2:
+    keep_md: yes
+    css: preamble.css
     toc: true
     toc_depth: 4
     number_sections: yes
