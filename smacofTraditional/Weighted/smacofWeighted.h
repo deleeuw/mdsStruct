@@ -22,12 +22,10 @@ void smacofWeightedMakeStress(const double *delta, const double *weights,
 
 // smacofWeightedNorm.c
 
-void smacofWeightedScale(const double *delta, const double *weights,
-                         double *dold, double *xold, const unsigned *pn,
-                         const unsigned *pp, const unsigned *pm);
-void smacofWeightedNormDelta(double *delta, const double *weights,
-                             const unsigned *pm);
-void smacofWeightedNormWeights(double *weights, const unsigned *pm);
+void smacofWeightedScale(const int n, const int p, const double **delta,
+                         const double **weights, double **dmat, double **xold);
+void smacofWeightedNormDelta(const int n, double **delta, const double **weights);
+void smacofWeightedNormWeights(const int n, double **weights);
 
 // smacofWeightedInitial.c
 

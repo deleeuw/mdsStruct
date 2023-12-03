@@ -165,23 +165,83 @@ infinite iterative procedure to compute the optial $\Delta\in\mathfrak{D}$ for g
 a more balanced approach is to take several inner iterations in the first step and several
 innewr iterations in the second step. How many of each, nobody knows.
 
-# smacofStructure
+# Memory
 
-We use this example as input for the R version of *smacofSort()*, which results in the
-*smacofStructure*
+This is mostly for my own education.
+
+```{c memory, eval = FALSE}
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+  int n = 10, p = 4;
+  char *a = NULL;
+  double **x = (double **)calloc((size_t)n, sizeof(double *));
+  double y[10][4] = {{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0},
+                     {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0},
+                     {0, 0, 0, 0}, {0, 0, 0, 0}};
+  for (int i = 0; i < n; i++) {
+    x[i] = (double *)calloc((size_t)p, sizeof(double));
+  }
+  printf("x[i][j] (dynamic allocation on heap)\n");
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < p; j++) {
+      printf("%ld ", (uintptr_t)&x[i][j]);
+    }
+    printf("\n");
+  }
+  printf("\n\n");
+  printf("x[i] and &x[i] and sizeof x[i]\n");
+  for (int i = 0; i < n; i++) {
+    printf("%ld %ld %ld\n", (uintptr_t)x[i], (uintptr_t)&x[i], sizeof x[i]);
+  }
+  printf("\n\n");
+  printf("x\n");
+  printf("%ld\n", (uintptr_t)x);
+  printf("\n\n");
+  printf("*******************************************\n");
+  printf("\n\n");
+  printf("y[i][j] (static allocation on stack)\n");
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < p; j++) {
+      printf("%ld ", (uintptr_t)&y[i][j]);
+    }
+    printf("\n");
+  }
+  printf("\n\n");
+  printf("y[i] and &y[i] and sizeof y[i]\n");
+  for (int i = 0; i < n; i++) {
+    printf("%ld %ld %ld\n", (uintptr_t)y[i], (uintptr_t)&y[i], sizeof y[i]);
+  }
+  printf("\n\n");
+  printf("y\n");
+  printf("%ld\n", (uintptr_t)y);
+  printf("\n\n");
+  for (int i = 0; i < n; i++) {
+    free(x[i]);
+  }
+  free(x);
+  return EXIT_SUCCESS;
+}
+```
+
+# Hessian
+
+There are several ways to think of the Hessian. The simplest one (perhaps) is
+as an $np\times np$ symmetric matrix (corresponding to column-major R vector
+of length $\frac12 np(np+1)$). This is what we would use for a straightforward
+version of Newton-Raphson.
 
 
-The *dist* element in the data frame is zero, because we have not computed distances yet.
-Given a configuration $X$ the *row* and *col* elements in the data frame allow from
-straightforward computation of distances. In the case of nonmetric MDS, or more generally
-in MDS with transformed dissimilarities, the *dhat* column will be filled as well.
-The fact that preprocessing with *smacofSort()* gives the ordered dissimilarities, as
-well as the tie blocks, is especially useful in the ordinal case, both with monotone
-polynomials and monotone splines. In the metric (ratio) case there is no need for the
-*dhat* column.
-
-It is obvious how this *smacofStructure* can be adapted if there are multiway data.If we have row-conditional or matrix-conditional data, then we use one of these smacofStructures for each
-row or each matrix.
+It is more elegant, however, to think of
+$H$ as a symmetric super-matrix of order $p$, with as elements $n\times n$
+matrices. And, for some purposes, such as the pseudo-confidence ellipsoids in @deleeuw_E_17q, as 
+a super-matrix of order $n$ with as elements $p\times p$ matrices. Both the
+super-matrix interpretations lead to four-dimensional arrays, the first
+a $p\times p\times n\times n$ array, the second an $n\times n\times p\times p$
+array. The different interpretations lead to different ways to store the
+Hessian in memory, and to different ways to retrieve its elements. Of course
+we can write routines to transform from one interpretation to another.
 
 # Appendix: Code
 

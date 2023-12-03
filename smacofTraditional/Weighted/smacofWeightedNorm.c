@@ -1,47 +1,56 @@
-#include "../../smacofInclude/smacof.h"
+#include "smacofWeighted.h"
 
-void smacofWeightedNormWeights(double *weights, const int *pm) {
-    int m = *pm;
+void smacofWeightedNormWeights(const int n, double **weights) {
     double sum = 0.0;
-    for (int i = 1; i <= m; i++) {
-        sum += weights[VINDEX(i)];
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            sum += weights[i][j];
+        }
     }
-    for (int i = 1; i <= m; i++) {
-        weights[VINDEX(i)] /= sum;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            weights[i][j] /= sum;
+        }
     }
     return;
 }
 
-void smacofWeightedNormDelta(double *delta, const double *weights,
-                             const int *pm) {
-    int m = *pm;
+void smacofWeightedNormDelta(const int n, double **delta,
+                             double **weights) {
     double sum = 0.0;
-    for (int i = 1; i <= m; i++) {
-        sum += weights[VINDEX(i)] * SQUARE(delta[VINDEX(i)]);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            sum += weights[i][j] * SQUARE(delta[i][j]);
+        }
     }
     sum = 1 / sqrt(sum);
-    for (int i = 1; i <= m; i++) {
-        delta[VINDEX(i)] *= sum;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            delta[i][j] *= sum;
+        }
     }
     return;
 }
 
-void smacofWeightedScale(const double *delta, const double *weights,
-                         double *dold, double *xold, const int *pn,
-                         const int *pp, const int *pm) {
-    int n = *pn, p = *pp, m = *pm;
+void smacofWeightedScale(const int n, const int p, double **delta,
+                         double **weights, double **dmat, double **xold) {
     double swde = 0.0, swdd = 0.0, lbd = 0.0;
-    for (int k = 1; k <= m; k++) {
-        int kv = VINDEX(k);
-        swde += weights[kv] * dold[kv] * delta[kv];
-        swdd += weights[kv] * SQUARE(dold[kv]);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            swde += weights[i][j] * dmat[i][j] * delta[i][j];
+            swdd += weights[i][j] * SQUARE(dmat[i][j]);
+        }
     }
     lbd = swde / swdd;
-    for (int k = 1; k <= m; k++) {
-        dold[VINDEX(k)] *= lbd;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            dmat[i][j] *= lbd;
+        }
     }
-    for (int i = 1; i <= (n * p); i++) {
-        xold[VINDEX(i)] *= lbd;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < p; j++) {
+            xold[i][j] *= lbd;
+        }
     }
     return;
 }

@@ -2,23 +2,24 @@
 \contentsline {section}{\numberline {2}Example}{2}{section.2}%
 \contentsline {section}{\numberline {3}Unweighted, full matrix}{2}{section.3}%
 \contentsline {subsection}{\numberline {3.1}Unnormalized}{2}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Normalized}{2}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.2}Normalized}{3}{subsection.3.2}%
 \contentsline {section}{\numberline {4}Unweighting}{3}{section.4}%
 \contentsline {section}{\numberline {5}Thoughts on ALS}{3}{section.5}%
 \contentsline {subsection}{\numberline {5.1}The Single-Step approach}{4}{subsection.5.1}%
 \contentsline {subsection}{\numberline {5.2}The Two-step Approach}{4}{subsection.5.2}%
-\contentsline {section}{\numberline {6}smacofStructure}{5}{section.6}%
-\contentsline {section}{\numberline {7}Appendix: Code}{5}{section.7}%
-\contentsline {section}{\numberline {8}smacofMaximumSum}{6}{section.8}%
-\contentsline {section}{\numberline {9}smacofElegant}{6}{section.9}%
-\contentsline {section}{\numberline {10}smacofAdjustDiagonal}{6}{section.10}%
-\contentsline {section}{\numberline {11}smacofImpute}{6}{section.11}%
-\contentsline {section}{\numberline {12}smacofHildreth}{6}{section.12}%
-\contentsline {section}{\numberline {13}smacofDykstra}{7}{section.13}%
-\contentsline {section}{\numberline {14}smacofJacobi}{7}{section.14}%
-\contentsline {section}{\numberline {15}smacofIndividualDifferenceModels.c}{7}{section.15}%
-\contentsline {section}{\numberline {16}smacofSort}{8}{section.16}%
-\contentsline {section}{\numberline {17}Code}{8}{section.17}%
-\contentsline {subsection}{\numberline {17.1}smacofSort.R}{8}{subsection.17.1}%
-\contentsline {subsection}{\numberline {17.2}smacofSort.c}{8}{subsection.17.2}%
-\contentsline {section}{References}{8}{section*.2}%
+\contentsline {section}{\numberline {6}Memory}{5}{section.6}%
+\contentsline {section}{\numberline {7}Hessian}{6}{section.7}%
+\contentsline {section}{\numberline {8}Appendix: Code}{7}{section.8}%
+\contentsline {section}{\numberline {9}smacofMaximumSum}{7}{section.9}%
+\contentsline {section}{\numberline {10}smacofElegant}{7}{section.10}%
+\contentsline {section}{\numberline {11}smacofAdjustDiagonal}{7}{section.11}%
+\contentsline {section}{\numberline {12}smacofImpute}{7}{section.12}%
+\contentsline {section}{\numberline {13}smacofHildreth}{7}{section.13}%
+\contentsline {section}{\numberline {14}smacofDykstra}{8}{section.14}%
+\contentsline {section}{\numberline {15}smacofJacobi}{8}{section.15}%
+\contentsline {section}{\numberline {16}smacofIndividualDifferenceModels.c}{9}{section.16}%
+\contentsline {section}{\numberline {17}smacofSort}{9}{section.17}%
+\contentsline {section}{\numberline {18}Code}{9}{section.18}%
+\contentsline {subsection}{\numberline {18.1}smacofSort.R}{9}{subsection.18.1}%
+\contentsline {subsection}{\numberline {18.2}smacofSort.c}{9}{subsection.18.2}%
+\contentsline {section}{References}{9}{section*.2}%

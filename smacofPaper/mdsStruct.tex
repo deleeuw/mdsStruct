@@ -190,7 +190,7 @@
 
 \title{Notes on the C Version of Smacof}
 \author{Jan de Leeuw - University of California Los Angeles}
-\date{Started October 10 2023, Version of December 02, 2023}
+\date{Started October 10 2023, Version of December 03, 2023}
 
 \begin{document}
 \maketitle
@@ -333,22 +333,83 @@ infinite iterative procedure to compute the optial \(\Delta\in\mathfrak{D}\) for
 a more balanced approach is to take several inner iterations in the first step and several
 innewr iterations in the second step. How many of each, nobody knows.
 
-\section{smacofStructure}\label{smacofstructure}
+\section{Memory}\label{memory}
 
-We use this example as input for the R version of \emph{smacofSort()}, which results in the
-\emph{smacofStructure}
+This is mostly for my own education.
 
-The \emph{dist} element in the data frame is zero, because we have not computed distances yet.
-Given a configuration \(X\) the \emph{row} and \emph{col} elements in the data frame allow from
-straightforward computation of distances. In the case of nonmetric MDS, or more generally
-in MDS with transformed dissimilarities, the \emph{dhat} column will be filled as well.
-The fact that preprocessing with \emph{smacofSort()} gives the ordered dissimilarities, as
-well as the tie blocks, is especially useful in the ordinal case, both with monotone
-polynomials and monotone splines. In the metric (ratio) case there is no need for the
-\emph{dhat} column.
+\begin{Shaded}
+\begin{Highlighting}[]
+\PreprocessorTok{\#include }\ImportTok{\textless{}stdio.h\textgreater{}}
+\PreprocessorTok{\#include }\ImportTok{\textless{}stdlib.h\textgreater{}}
 
-It is obvious how this \emph{smacofStructure} can be adapted if there are multiway data.If we have row-conditional or matrix-conditional data, then we use one of these smacofStructures for each
-row or each matrix.
+\DataTypeTok{int}\NormalTok{ main}\OperatorTok{(}\DataTypeTok{void}\OperatorTok{)} \OperatorTok{\{}
+  \DataTypeTok{int}\NormalTok{ n }\OperatorTok{=} \DecValTok{10}\OperatorTok{,}\NormalTok{ p }\OperatorTok{=} \DecValTok{4}\OperatorTok{;}
+  \DataTypeTok{char} \OperatorTok{*}\NormalTok{a }\OperatorTok{=}\NormalTok{ NULL}\OperatorTok{;}
+  \DataTypeTok{double} \OperatorTok{**}\NormalTok{x }\OperatorTok{=} \OperatorTok{(}\DataTypeTok{double} \OperatorTok{**)}\NormalTok{calloc}\OperatorTok{((}\DataTypeTok{size\_t}\OperatorTok{)}\NormalTok{n}\OperatorTok{,} \KeywordTok{sizeof}\OperatorTok{(}\DataTypeTok{double} \OperatorTok{*));}
+  \DataTypeTok{double}\NormalTok{ y}\OperatorTok{[}\DecValTok{10}\OperatorTok{][}\DecValTok{4}\OperatorTok{]} \OperatorTok{=} \OperatorTok{\{\{}\DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{\},} \OperatorTok{\{}\DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{\},} \OperatorTok{\{}\DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{\},} \OperatorTok{\{}\DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{\},}
+                     \OperatorTok{\{}\DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{\},} \OperatorTok{\{}\DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{\},} \OperatorTok{\{}\DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{\},} \OperatorTok{\{}\DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{\},}
+                     \OperatorTok{\{}\DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{\},} \OperatorTok{\{}\DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{,} \DecValTok{0}\OperatorTok{\}\};}
+  \ControlFlowTok{for} \OperatorTok{(}\DataTypeTok{int}\NormalTok{ i }\OperatorTok{=} \DecValTok{0}\OperatorTok{;}\NormalTok{ i }\OperatorTok{\textless{}}\NormalTok{ n}\OperatorTok{;}\NormalTok{ i}\OperatorTok{++)} \OperatorTok{\{}
+\NormalTok{    x}\OperatorTok{[}\NormalTok{i}\OperatorTok{]} \OperatorTok{=} \OperatorTok{(}\DataTypeTok{double} \OperatorTok{*)}\NormalTok{calloc}\OperatorTok{((}\DataTypeTok{size\_t}\OperatorTok{)}\NormalTok{p}\OperatorTok{,} \KeywordTok{sizeof}\OperatorTok{(}\DataTypeTok{double}\OperatorTok{));}
+  \OperatorTok{\}}
+\NormalTok{  printf}\OperatorTok{(}\StringTok{"x[i][j] (dynamic allocation on heap)}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\OperatorTok{);}
+  \ControlFlowTok{for} \OperatorTok{(}\DataTypeTok{int}\NormalTok{ i }\OperatorTok{=} \DecValTok{0}\OperatorTok{;}\NormalTok{ i }\OperatorTok{\textless{}}\NormalTok{ n}\OperatorTok{;}\NormalTok{ i}\OperatorTok{++)} \OperatorTok{\{}
+    \ControlFlowTok{for} \OperatorTok{(}\DataTypeTok{int}\NormalTok{ j }\OperatorTok{=} \DecValTok{0}\OperatorTok{;}\NormalTok{ j }\OperatorTok{\textless{}}\NormalTok{ p}\OperatorTok{;}\NormalTok{ j}\OperatorTok{++)} \OperatorTok{\{}
+\NormalTok{      printf}\OperatorTok{(}\StringTok{"}\SpecialCharTok{\%ld}\StringTok{ "}\OperatorTok{,} \OperatorTok{(}\DataTypeTok{uintptr\_t}\OperatorTok{)\&}\NormalTok{x}\OperatorTok{[}\NormalTok{i}\OperatorTok{][}\NormalTok{j}\OperatorTok{]);}
+    \OperatorTok{\}}
+\NormalTok{    printf}\OperatorTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\OperatorTok{);}
+  \OperatorTok{\}}
+\NormalTok{  printf}\OperatorTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n\textbackslash{}n}\StringTok{"}\OperatorTok{);}
+\NormalTok{  printf}\OperatorTok{(}\StringTok{"x[i] and \&x[i] and sizeof x[i]}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\OperatorTok{);}
+  \ControlFlowTok{for} \OperatorTok{(}\DataTypeTok{int}\NormalTok{ i }\OperatorTok{=} \DecValTok{0}\OperatorTok{;}\NormalTok{ i }\OperatorTok{\textless{}}\NormalTok{ n}\OperatorTok{;}\NormalTok{ i}\OperatorTok{++)} \OperatorTok{\{}
+\NormalTok{    printf}\OperatorTok{(}\StringTok{"}\SpecialCharTok{\%ld}\StringTok{ }\SpecialCharTok{\%ld}\StringTok{ }\SpecialCharTok{\%ld\textbackslash{}n}\StringTok{"}\OperatorTok{,} \OperatorTok{(}\DataTypeTok{uintptr\_t}\OperatorTok{)}\NormalTok{x}\OperatorTok{[}\NormalTok{i}\OperatorTok{],} \OperatorTok{(}\DataTypeTok{uintptr\_t}\OperatorTok{)\&}\NormalTok{x}\OperatorTok{[}\NormalTok{i}\OperatorTok{],} \KeywordTok{sizeof}\NormalTok{ x}\OperatorTok{[}\NormalTok{i}\OperatorTok{]);}
+  \OperatorTok{\}}
+\NormalTok{  printf}\OperatorTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n\textbackslash{}n}\StringTok{"}\OperatorTok{);}
+\NormalTok{  printf}\OperatorTok{(}\StringTok{"x}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\OperatorTok{);}
+\NormalTok{  printf}\OperatorTok{(}\StringTok{"}\SpecialCharTok{\%ld\textbackslash{}n}\StringTok{"}\OperatorTok{,} \OperatorTok{(}\DataTypeTok{uintptr\_t}\OperatorTok{)}\NormalTok{x}\OperatorTok{);}
+\NormalTok{  printf}\OperatorTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n\textbackslash{}n}\StringTok{"}\OperatorTok{);}
+\NormalTok{  printf}\OperatorTok{(}\StringTok{"*******************************************}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\OperatorTok{);}
+\NormalTok{  printf}\OperatorTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n\textbackslash{}n}\StringTok{"}\OperatorTok{);}
+\NormalTok{  printf}\OperatorTok{(}\StringTok{"y[i][j] (static allocation on stack)}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\OperatorTok{);}
+  \ControlFlowTok{for} \OperatorTok{(}\DataTypeTok{int}\NormalTok{ i }\OperatorTok{=} \DecValTok{0}\OperatorTok{;}\NormalTok{ i }\OperatorTok{\textless{}}\NormalTok{ n}\OperatorTok{;}\NormalTok{ i}\OperatorTok{++)} \OperatorTok{\{}
+    \ControlFlowTok{for} \OperatorTok{(}\DataTypeTok{int}\NormalTok{ j }\OperatorTok{=} \DecValTok{0}\OperatorTok{;}\NormalTok{ j }\OperatorTok{\textless{}}\NormalTok{ p}\OperatorTok{;}\NormalTok{ j}\OperatorTok{++)} \OperatorTok{\{}
+\NormalTok{      printf}\OperatorTok{(}\StringTok{"}\SpecialCharTok{\%ld}\StringTok{ "}\OperatorTok{,} \OperatorTok{(}\DataTypeTok{uintptr\_t}\OperatorTok{)\&}\NormalTok{y}\OperatorTok{[}\NormalTok{i}\OperatorTok{][}\NormalTok{j}\OperatorTok{]);}
+    \OperatorTok{\}}
+\NormalTok{    printf}\OperatorTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\OperatorTok{);}
+  \OperatorTok{\}}
+\NormalTok{  printf}\OperatorTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n\textbackslash{}n}\StringTok{"}\OperatorTok{);}
+\NormalTok{  printf}\OperatorTok{(}\StringTok{"y[i] and \&y[i] and sizeof y[i]}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\OperatorTok{);}
+  \ControlFlowTok{for} \OperatorTok{(}\DataTypeTok{int}\NormalTok{ i }\OperatorTok{=} \DecValTok{0}\OperatorTok{;}\NormalTok{ i }\OperatorTok{\textless{}}\NormalTok{ n}\OperatorTok{;}\NormalTok{ i}\OperatorTok{++)} \OperatorTok{\{}
+\NormalTok{    printf}\OperatorTok{(}\StringTok{"}\SpecialCharTok{\%ld}\StringTok{ }\SpecialCharTok{\%ld}\StringTok{ }\SpecialCharTok{\%ld\textbackslash{}n}\StringTok{"}\OperatorTok{,} \OperatorTok{(}\DataTypeTok{uintptr\_t}\OperatorTok{)}\NormalTok{y}\OperatorTok{[}\NormalTok{i}\OperatorTok{],} \OperatorTok{(}\DataTypeTok{uintptr\_t}\OperatorTok{)\&}\NormalTok{y}\OperatorTok{[}\NormalTok{i}\OperatorTok{],} \KeywordTok{sizeof}\NormalTok{ y}\OperatorTok{[}\NormalTok{i}\OperatorTok{]);}
+  \OperatorTok{\}}
+\NormalTok{  printf}\OperatorTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n\textbackslash{}n}\StringTok{"}\OperatorTok{);}
+\NormalTok{  printf}\OperatorTok{(}\StringTok{"y}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\OperatorTok{);}
+\NormalTok{  printf}\OperatorTok{(}\StringTok{"}\SpecialCharTok{\%ld\textbackslash{}n}\StringTok{"}\OperatorTok{,} \OperatorTok{(}\DataTypeTok{uintptr\_t}\OperatorTok{)}\NormalTok{y}\OperatorTok{);}
+\NormalTok{  printf}\OperatorTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n\textbackslash{}n}\StringTok{"}\OperatorTok{);}
+  \ControlFlowTok{for} \OperatorTok{(}\DataTypeTok{int}\NormalTok{ i }\OperatorTok{=} \DecValTok{0}\OperatorTok{;}\NormalTok{ i }\OperatorTok{\textless{}}\NormalTok{ n}\OperatorTok{;}\NormalTok{ i}\OperatorTok{++)} \OperatorTok{\{}
+\NormalTok{    free}\OperatorTok{(}\NormalTok{x}\OperatorTok{[}\NormalTok{i}\OperatorTok{]);}
+  \OperatorTok{\}}
+\NormalTok{  free}\OperatorTok{(}\NormalTok{x}\OperatorTok{);}
+  \ControlFlowTok{return}\NormalTok{ EXIT\_SUCCESS}\OperatorTok{;}
+\OperatorTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\section{Hessian}\label{hessian}
+
+There are several ways to think of the Hessian. The simplest one (perhaps) is
+as an \(np\times np\) symmetric matrix (corresponding to column-major R vector
+of length \(\frac12 np(np+1)\)). This is what we would use for a straightforward
+version of Newton-Raphson.
+
+It is more elegant, however, to think of
+\(H\) as a symmetric super-matrix of order \(p\), with as elements \(n\times n\)
+matrices. And, for some purposes, such as the pseudo-confidence ellipsoids in De Leeuw (2017b), as
+a super-matrix of order \(n\) with as elements \(p\times p\) matrices. Both the
+super-matrix interpretations lead to four-dimensional arrays, the first
+a \(p\times p\times n\times n\) array, the second an \(n\times n\times p\times p\)
+array. The different interpretations lead to different ways to store the
+Hessian in memory, and to different ways to retrieve its elements.
 
 \section{Appendix: Code}\label{appendix-code}
 
@@ -441,7 +502,7 @@ and go to the next \(j\).
 
 \section{smacofJacobi}\label{smacofjacobi}
 
-taken from De Leeuw (2017)
+taken from De Leeuw (2017a)
 
 partial jacobi
 
@@ -477,7 +538,10 @@ X_k&=XC_k Y'\text{ with } C_k=\sum_{s=1}^r z_{ks}H_s.
 \phantomsection\label{refs}
 \begin{CSLReferences}{1}{0}
 \bibitem[\citeproctext]{ref-deleeuw_E_17o}
-De Leeuw, J. 2017. {``{Jacobi Eigen in R/C with Lower Triangular Column-wise Compact Storage}.''} 2017. \url{https://jansweb.netlify.app/publication/deleeuw-e-17-o/deleeuw-e-17-o.pdf}.
+De Leeuw, J. 2017a. {``{Jacobi Eigen in R/C with Lower Triangular Column-wise Compact Storage}.''} 2017. \url{https://jansweb.netlify.app/publication/deleeuw-e-17-o/deleeuw-e-17-o.pdf}.
+
+\bibitem[\citeproctext]{ref-deleeuw_E_17q}
+---------. 2017b. {``{Pseudo Confidence Regions for MDS}.''} 2017.
 
 \bibitem[\citeproctext]{ref-guttman_68}
 Guttman, L. 1968. {``{A General Nonmetric Technique for Fitting the Smallest Coordinate Space for a Configuration of Points}.''} \emph{Psychometrika} 33: 469--506.

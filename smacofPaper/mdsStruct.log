@@ -1,4 +1,4 @@
-This is LuaHBTeX, Version 1.16.0 (TeX Live 2023/Homebrew)  (format=lualatex 2023.3.11)  2 DEC 2023 21:24
+This is LuaHBTeX, Version 1.16.0 (TeX Live 2023/Homebrew)  (format=lualatex 2023.3.11)  3 DEC 2023 11:51
  restricted system commands enabled.
 **mdsStruct.tex
 (./mdsStruct.tex
@@ -1586,11 +1586,11 @@ LaTeX Font Info:    Font shape `TU/TimesNewRoman(1)/m/n' will be
 (Font)              scaled to size 8.4pt on input line 278.
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(1)/m/n' will be
 (Font)              scaled to size 6.0pt on input line 278.
+[3]
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/n' will be
 (Font)              scaled to size 8.4pt on input line 282.
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/n' will be
 (Font)              scaled to size 6.0pt on input line 282.
-[3]
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/it' will be
 (Font)              scaled to size 12.0pt on input line 296.
 
@@ -1609,41 +1609,46 @@ LaTeX Warning: Reference `eq:step1' on page 5 undefined on input line 331.
 
 LaTeX Warning: Reference `eq:step2' on page 5 undefined on input line 331.
 
-[5]
-Overfull \hbox (16.8036pt too wide) detected at line 387
+LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <12> not available
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 345.
+[5] [6]
+Overfull \hbox (16.8036pt too wide) detected at line 448
 \TU/latinmodern-math.otf(1)/m/n/12 𝜌(𝑋) = [] 𝑤[]𝛿[]𝑑[](𝑋) = [
 ] []𝛿[]𝑑[](𝑋) ≈ [] []𝛿[]𝑑[](𝑋) = 𝜂[](𝑋)
  []
 
-[6] [7] [8] (./mdsStruct.aux)
+[7] [8] [9] (./mdsStruct.aux)
 
 LaTeX Warning: There were undefined references.
 
 )
 
 Here is how much of LuaTeX's memory you used:
- 31189 strings out of 478285
+ 31200 strings out of 478285
  125086,1977958 words of node,token memory allocated
  750 words of node memory still in use:
    8 hlist, 2 vlist, 2 rule, 1 local_par, 4 glue, 4 kern, 1 penalty, 1 margin_ke
 rn, 3 glyph, 37 attribute, 66 glue_spec, 37 attribute_list, 2 write, 1 user_defi
 ned, 1 pdf_action nodes
-   avail lists: 1:2,2:626,3:323,4:75,5:281,6:87,7:6036,8:94,9:710,10:12,11:435
- 50223 multiletter control sequences out of 65536+600000
- 109 fonts using 37607223 bytes
+   avail lists: 1:2,2:3243,3:370,4:1328,5:663,6:87,7:5455,8:94,9:751,10:8,11:266
+ 50231 multiletter control sequences out of 65536+600000
+ 111 fonts using 37859859 bytes
  86i,11n,122p,1005b,396s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </opt/homebrew/Cellar/texlive/20230313_2/share/texmf-dist/fonts/opentype/public/
-lm-math/latinmodern-math.otf></System/Library/Fonts/Supplemental/Times New Roman
- Italic.ttf></System/Library/Fonts/Supplemental/Times New Roman.ttf></opt/homebr
-ew/Cellar/texlive/20230313_2/share/texmf-dist/fonts/opentype/public/lm-math/lati
-nmodern-math.otf></opt/homebrew/Cellar/texlive/20230313_2/share/texmf-dist/fonts
-/opentype/public/lm-math/latinmodern-math.otf></System/Library/Fonts/Supplementa
-l/Times New Roman Bold.ttf></System/Library/Fonts/Supplemental/Times New Roman.t
-tf>
-Output written on mdsStruct.pdf (8 pages, 148910 bytes).
+lm-math/latinmodern-math.otf></opt/homebrew/Cellar/texlive/20230313_2/share/texm
+f-dist/fonts/opentype/public/lm/lmmonolt10-bold.otf></opt/homebrew/Cellar/texliv
+e/20230313_2/share/texmf-dist/fonts/opentype/public/lm/lmmono12-regular.otf></op
+t/homebrew/Cellar/texlive/20230313_2/share/texmf-dist/fonts/opentype/public/lm/l
+mmono10-italic.otf></System/Library/Fonts/Supplemental/Times New Roman Italic.tt
+f></System/Library/Fonts/Supplemental/Times New Roman.ttf></opt/homebrew/Cellar/
+texlive/20230313_2/share/texmf-dist/fonts/opentype/public/lm-math/latinmodern-ma
+th.otf></opt/homebrew/Cellar/texlive/20230313_2/share/texmf-dist/fonts/opentype/
+public/lm-math/latinmodern-math.otf></System/Library/Fonts/Supplemental/Times Ne
+w Roman Bold.ttf></System/Library/Fonts/Supplemental/Times New Roman.ttf>
+Output written on mdsStruct.pdf (9 pages, 164792 bytes).
 
-PDF statistics: 244 PDF objects out of 1000 (max. 8388607)
- 210 compressed objects within 3 object streams
- 53 named destinations out of 1000 (max. 131072)
- 208 words of extra memory for PDF output out of 10000 (max. 100000000)
+PDF statistics: 275 PDF objects out of 1000 (max. 8388607)
+ 231 compressed objects within 3 object streams
+ 56 named destinations out of 1000 (max. 131072)
+ 216 words of extra memory for PDF output out of 10000 (max. 100000000)
 

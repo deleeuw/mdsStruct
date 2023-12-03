@@ -54,8 +54,8 @@ void smacofUnweightedInitMaximumSum(const int n, const int p, double **delta,
             b[i][j] = 0.0;
         }
     }
-    for (int j = 1; j <= (n - 1); j++) {
-        for (int i = (j + 1); i <= n; i++) {
+    for (int j = 0; j < (n - 1); j++) {
+        for (int i = (j + 1); i < n; i++) {
             double cell = SQUARE(delta[i][j]);
             b[i][j] -= cell;
             b[j][i] -= cell;
@@ -63,6 +63,7 @@ void smacofUnweightedInitMaximumSum(const int n, const int p, double **delta,
             b[j][j] += cell;
         }
     }
+    (void)smacofPrintAnyMatrix(n, n, 15, 10, b);
     (void)smacofJacobi(n, p, b, evec, eval, itmax, eps, verbose);
     for (int i = 0; i < n; i++) {
         for (int s = 0; s < n; s++) {

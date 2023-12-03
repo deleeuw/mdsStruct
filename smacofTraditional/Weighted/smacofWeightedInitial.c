@@ -1,11 +1,7 @@
-#include "../../smacofInclude/smacof.h"
+#include "smacofWeighted.h"
 
-void smacofWeightedInitial(const double *delta, const double *weights,
-                           const int *irow, const int *icol, double *xini,
-                           const int *pinit, const int *pn, const int *pp,
-                           const int *pm) {
-    int init = *pinit, n = *pn, p = *pp, np = n * p, nn = n * (n - 1) / 2,
-        m = *pm;
+void smacofWeightedInitial(const int n, const int p, const int init, double **delta, double **weights,
+                           double **xini) {
     double *dini = (double *)calloc((size_t)m, (size_t)sizeof(double));
     switch (init) {
         case 1:
@@ -29,10 +25,7 @@ void smacofWeightedInitial(const double *delta, const double *weights,
     return;
 }
 
-void smacofWeightedInitTorgerson(const double *delta, const double *weights,
-                                 const int *irow, const int *icol, double *xold,
-                                 const int *pn, const int *pp, const int *pm) {
-    int n = *pn, p = *pp, m = *pm, nn = n * (n - 1) / 2, itmax = 100, eps = 15;
+void smacofWeightedInitTorgerson(const int n, const int p, double **delta, double **weights, double **xold) {
     bool verbose = false;
     double *dimp = (double *)calloc((size_t)nn, (size_t)sizeof(double));
     double *cross = (double *)calloc((size_t)nn, (size_t)sizeof(double));
@@ -65,10 +58,8 @@ void smacofWeightedInitTorgerson(const double *delta, const double *weights,
 }
 
 void smacofWeightedInitMaximumSum(const int n, const int p,
-                                  const int m, const double *delta, const double *weights,
-                                  const int *irow, const int *icol,
-                                  double *xini, ) {
-    int n = *pn, p = *pp, m = *pm, nn = n * (n - 1) / 2, itmax = 100, eps = 10;
+                                  double **delta, double **weights,
+                                  double **xini) {
     bool verbose = false;
     double *a = (double *)calloc((size_t)m, (size_t)sizeof(double));
     double *b = (double *)calloc((size_t)(m + n), (size_t)sizeof(double));
