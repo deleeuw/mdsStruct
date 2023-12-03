@@ -1,14 +1,14 @@
 library(MASS)
-source("../../smacofCommon/rcode/smacofUtils.R")
+source("smacofUtils.R")
 
-DEBUG <- FALSE
+DEBUG <- TRUE
 
 smacofSSMW <-
   function(delta,
            weights = 1 - diag(nrow(delta)),
            p = 2,
            xold = NULL,
-           itmax = 1000,
+           itmax = 5,
            eps1 = 15,
            eps2 = 10,
            verbose = TRUE) {

@@ -23,7 +23,7 @@ objects = smacofSSMUEngine.o \
 includes = ../Unweighted/smacofUnweighted.h \
 	../Common/smacofCommon.h
 
-all: smacof
+all: smacofSSMU
 
 ofiles: $(includes) $(sources)
 	$(CC) -c -O2 -Wall -Wextra -pedantic -std=c99 $(sources)
@@ -32,11 +32,11 @@ debug: clean $(includes) $(sources)
 	$(CC) -c -g3 -Wall -Wextra -pedantic -std=c99 $(sources)
 	$(CC) -o smacofSSMUDebug -g3  -Wall -Wextra -pedantic -std=c99 $(objects)
 
-smacof: ofiles
-	$(CC) -o smacofSSMU -O2  -Wall -Wextra -pedantic -std=c99 $(objects)
-
 clib: ofiles 
 	ar rcs libsmacofSSMU.a $(objects)
+
+smacofSSMU: ofiles clib
+	$(CC) -o smacofSSMU -O2  -Wall -Wextra -pedantic -std=c99 smacofSSMU.c libsmacofSSMU.a
 
 rlib: ofiles
 	R CMD SHLIB -o libsmacofSSMU.so $(objects)

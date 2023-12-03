@@ -17,23 +17,23 @@ void smacofUnweightedInitial(const int n, const int p, const int init,
     }
     (void)smacofCenter(n, p, xini);
     (void)smacofDistance(n, p, xini, dini);
-    (void)smacofUnweightedScale(n, p, delta, dini, xini);
     (void)smacofFreeAnyMatrix(n, dini);
     return;
 }
 
 void smacofUnweightedInitTorgerson(const int n, const int p, double **delta,
                                    double **xold) {
-    int itmax = 100, eps = 10;
+    int itmax = 100, eps = 15;
     bool verbose = false;
     double **cross = smacofMakeAnyMatrix(n, n);
     double **evec = smacofMakeAnyMatrix(n, n);
     double *eval = smacofMakeAnyVector(n);
     (void)smacofDoubleCenter(n, delta, cross);
     (void)smacofJacobi(n, p, cross, evec, eval, itmax, eps, verbose);
-    for (int i = 0; i < n; i++) {
-        for (int s = 0; s < p; s++) {
-            xold[i][s] = evec[i][s] * sqrt(fabs(eval[s]));
+    for (int s = 0; s < p; s++) {
+        double fac = sqrt(fabs(eval[s]));
+        for (int i = 0; i < n; i++) {
+            xold[i][s] = fac * evec[i][s];
         }
     }
     (void)smacofFreeAnyMatrix(n, cross);

@@ -32,7 +32,7 @@ void smacofWeightedInitial(const double *delta, const double *weights,
 void smacofWeightedInitTorgerson(const double *delta, const double *weights,
                                  const int *irow, const int *icol, double *xold,
                                  const int *pn, const int *pp, const int *pm) {
-    int n = *pn, p = *pp, m = *pm, nn = n * (n - 1) / 2, itmax = 100, eps = 10;
+    int n = *pn, p = *pp, m = *pm, nn = n * (n - 1) / 2, itmax = 100, eps = 15;
     bool verbose = false;
     double *dimp = (double *)calloc((size_t)nn, (size_t)sizeof(double));
     double *cross = (double *)calloc((size_t)nn, (size_t)sizeof(double));

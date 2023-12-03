@@ -190,7 +190,7 @@
 
 \title{Notes on the C Version of Smacof}
 \author{Jan de Leeuw - University of California Los Angeles}
-\date{Started October 10 2023, Version of December 01, 2023}
+\date{Started October 10 2023, Version of December 02, 2023}
 
 \begin{document}
 \maketitle
@@ -223,15 +223,28 @@ Here is a small input example.
 
 \section{Unweighted, full matrix}\label{unweighted-full-matrix}
 
-\(W=E-I\) \(V=(I-E)+(n-1)I=nI-E=nJ\). Thus \(V^+=n^{-1}J\) and \(V^+B=n^{-1}B\).
+\subsection{Unnormalized}\label{unnormalized}
+
+\(W=E-I\) and \(V=(I-E)+(n-1)I=nI-E=nJ\). Thus \(V^+=n^{-1}J\) and \(V^+B=n^{-1}B\).
+
+\subsection{Normalized}\label{normalized}
+
+After normalization \(W=\frac{1}{n(n-1)}(E-I)\) and \(\sum\sum w_{ij}\delta_{ij}{^2}=1\)
+or \(\sum\sum\delta_{ij}{^2}=n(n-1)\). Also \(V=\frac{1}{n(n-1)}(nI-E)=\frac{1}{(n-1)}J\), which means \(V^+=(n-1)J\). For
+\[
+B(X)=\sum_{i<j}w_{ij}\frac{\delta_{ij}}{d_{ij}(X)}A_{ij}=\frac{1}{n(n-1)}\sum_{i<j}\frac{\delta_{ij}}{d_{ij}(X)}A_{ij}
+\]
+and thus
+\[
+V^+B(X)=\frac{1}{n}\sum_{i<j}\frac{\delta_{ij}}{d_{ij}(X)}A_{ij}
+\]
 
 \section{Unweighting}\label{unweighting}
 
-\define{align*}
-
-\sigma(d)\&=\sum\_\{k=1\}\textsuperscript{Kw\_k(\delta\emph{k-d\_k)\^{}2\textbackslash{}
-\&=\sum}\{k=1\}}Kw\_k(\delta\_k-\overline{d}\emph{k)\^{}2-2\sum}\{k=1\}\^{}Kw\_k(\delta\_k-\overline{d}\_k)(d\_k-\overline{d}\emph{k)+\sum}\{k=1\}\^{}Kw\_k(d\_k-\overline{d}\_k)\^{}2.
-\textbackslash end\{align*\}
+\begin{align}
+\sigma(d)&=\sum_{k=1}^Kw_k(\delta_k-d_k)^2\\
+&=\sum_{k=1}^Kw_k(\delta_k-\overline{d}_k)^2-2\sum_{k=1}^Kw_k(\delta_k-\overline{d}_k)(d_k-\overline{d}_k)+\sum_{k=1}^Kw_k(d_k-\overline{d}_k)^2.
+\end{align}
 Now suppose \(w_k\leq w_\star\) and define
 \[
 r_k=\frac{w_k}{w_\star}(\delta_k-\overline{d}_k)
@@ -302,8 +315,8 @@ of \(\sigma(\Delta,X)\) over \(X\) for our current best estimate of \(\Delta\) w
 minimization of \(\sigma(\Delta,X)\) over \(\Delta\in\mathfrak{D}\) for our current best
 value of \(X\). Thus an update looks like
 \begin{align}
-\Delta^{(k)}&=\mathop{\text{argmin}}_\Delta\sigma(\Delta,X^{(k)})\label{eq:step1},\\
-X^{(k+1)}&=\mathop{\text{argmin}}_X\sigma(\Delta^{(k)},X)\label{eq:step2}.
+\Delta^{(k)}&=\mathop{\text{argmin}}_\Delta\sigma(\Delta,X^{(k)}),\\
+X^{(k+1)}&=\mathop{\text{argmin}}_X\sigma(\Delta^{(k)},X).
 \end{align}
 This approach to MDS was in the air since the early (unsuccessful) attempts around 1968 of Young and De Leeuw to combine Torgerson's classic metric MDS method with Kruskal's monotone regression transformation.
 

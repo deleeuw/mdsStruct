@@ -32,20 +32,15 @@ void smacofJacobi(const int n, const int ndim, double **a, double **evec,
                 u = sqrt((1 + t) / 2);
                 v = s * sqrt((1 - t) / 2);
                 for (int k = 0; k < n; k++) {
-                    int ik = MIN(i, k);
-                    int ki = MAX(i, k);
-                    int jk = MIN(j, k);
-                    int kj = MAX(j, k);
-                    oldi[k] = a[ki][ik];
-                    oldj[k] = a[kj][jk];
+                    oldi[k] = a[i][k];
+                    oldj[k] = a[j][k];
                 }
+                // this does rows, who does columns ?
                 for (int k = 0; k < n; k++) {
-                    int ik = MIN(i, k);
-                    int ki = MAX(i, k);
-                    int jk = MIN(j, k);
-                    int kj = MAX(j, k);
-                    a[ki][ik] = u * oldi[k] - v * oldj[k];
-                    a[kj][jk] = v * oldi[k] + u * oldj[k];
+                    a[i][k] = u * oldi[k] - v * oldj[k];
+                    a[j][k] = v * oldi[k] + u * oldj[k];
+                    a[k][i] = a[i][k];
+                    a[k][j] = a[j][k];
                 }
                 for (int k = 0; k < n; k++) {
                     oldi[k] = evec[k][i];
@@ -56,7 +51,7 @@ void smacofJacobi(const int n, const int ndim, double **a, double **evec,
                 a[i][i] = SQUARE(u) * q + SQUARE(v) * r - 2 * u * v * p;
                 a[j][j] = SQUARE(v) * q + SQUARE(u) * r + 2 * u * v * p;
                 a[i][j] = u * v * (q - r) + (SQUARE(u) - SQUARE(v)) * p;
-                a[j][i] = u * v * (q - r) + (SQUARE(u) - SQUARE(v)) * p;
+                a[j][i] = a[i][j];
             }
         }
         fnew = 0.0;
@@ -72,7 +67,7 @@ void smacofJacobi(const int n, const int ndim, double **a, double **evec,
         fold = fnew;
         itel++;
     }
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < ndim; i++) {
         eval[i] = a[i][i];
     }
     (void)smacofFreeAnyVector(oldi);
@@ -213,15 +208,15 @@ int main(void) {
     int precision = 10;
     double rr[15] = {4, -1, -1, -1, -1, 5, -1, -1, -1, 6, -1, -1, 7, -1, 8};
     double rx[10] = {1.0, 2.0, 3.0, 4.0, 5.0, 5.0, 1.0, 2.0, 4.0, 3.0};
-    double(*cr)[n][n] = malloc(sizeof(*cr));
+    double **cr = smacofMakeAnyMatrix(n, n);
     assert(!(cr == NULL));
-    double(*cx)[n][p] = malloc(sizeof(*cx));
+    double **cx = smacofMakeAnyMatrix(n, p);
     assert(!(cx == NULL));
-    double(*cy)[n][p] = malloc(sizeof(*cy));
+    double **cy = smacofMakeAnyMatrix(n, p);
     assert(!(cy == NULL));
-    double(*evec)[n][n] = malloc(sizeof(*evec));
+    double **evec = smacofMakeAnyMatrix(n, n);
     assert(!(evec == NULL));
-    double(*cd)[p][p] = malloc(sizeof(*cd));
+    double **cd = smacofMakeAnyMatrix(p, p);
     assert(!(cd == NULL));
     double eval[] = {0.0, 0.0, 0.0, 0.0, 0.0};
     (void)smacofFromSymmetricRtoC(n, rr, cr);
@@ -233,7 +228,7 @@ int main(void) {
     (void)smacofGramSchmidt(n, p, cx, cd);
     (void)smacofPrintAnyMatrix(n, p, width, precision, cx);
     (void)smacofPrintAnyMatrix(p, p, width, precision, cd);
-    (void)smacofMultiplyAnyAnyMatrix(n, p, cr, cx, cy);
+    (void)smacofMultiplyAnyAnyMatrix(n, n, p, cr, cx, cy);
     (void)smacofPrintAnyMatrix(n, p, width, precision, cy);
     (void)smacofJacobi(n, p, cr, evec, eval, 100, 10, true);
     (void)smacofPrintAnyMatrix(n, n, width, precision, evec);

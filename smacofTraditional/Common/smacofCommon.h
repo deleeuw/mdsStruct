@@ -65,6 +65,8 @@ void smacofCenter(const int n, const int p, double **x);
 
 void smacofPrintAnyMatrix(const int n, const int p, const int width,
                           const int precision, double **x);
+void smacofPrintAnyVector(const int n, const int width, const int precision,
+                          double *x);
 void smacofReadInputFile(const char *fname, double *delta);
 void smacofReadParameterFile(const char *fname, int *n, int *p, int *itmax,
                              int *init, int *feps, int *ceps, int *width,

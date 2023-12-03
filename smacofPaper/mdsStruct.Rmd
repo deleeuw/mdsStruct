@@ -5,7 +5,7 @@ author:
 date: '`r paste("Started October 10 2023, Version of",format(Sys.Date(),"%B %d, %Y"))`'
 output:
   bookdown::pdf_document2:
-    latex_engine: xelatex
+    latex_engine: lualatex
     includes:
       in_header: preamble.tex
     keep_tex: yes
@@ -55,14 +55,28 @@ Here is a small input example.
 
 # Unweighted, full matrix
 
-$W=E-I$ $V=(I-E)+(n-1)I=nI-E=nJ$. Thus $V^+=n^{-1}J$ and $V^+B=n^{-1}B$.
+## Unnormalized 
+
+$W=E-I$ and $V=(I-E)+(n-1)I=nI-E=nJ$. Thus $V^+=n^{-1}J$ and $V^+B=n^{-1}B$.
+
+## Normalized 
+
+After normalization $W=\frac{1}{n(n-1)}(E-I)$ and $\sum\sum w_{ij}\delta_{ij}{^2}=1$
+or $\sum\sum\delta_{ij}{^2}=n(n-1)$. Also $V=\frac{1}{n(n-1)}(nI-E)=\frac{1}{(n-1)}J$, which means $V^+=(n-1)J$. For
+$$
+B(X)=\sum_{i<j}w_{ij}\frac{\delta_{ij}}{d_{ij}(X)}A_{ij}=\frac{1}{n(n-1)}\sum_{i<j}\frac{\delta_{ij}}{d_{ij}(X)}A_{ij}
+$$
+and thus 
+$$
+V^+B(X)=\frac{1}{n}\sum_{i<j}\frac{\delta_{ij}}{d_{ij}(X)}A_{ij}
+$$
 
 # Unweighting
 
-\define{align*}
+\begin{align}
 \sigma(d)&=\sum_{k=1}^Kw_k(\delta_k-d_k)^2\\
 &=\sum_{k=1}^Kw_k(\delta_k-\overline{d}_k)^2-2\sum_{k=1}^Kw_k(\delta_k-\overline{d}_k)(d_k-\overline{d}_k)+\sum_{k=1}^Kw_k(d_k-\overline{d}_k)^2.
-\end{align*}
+\end{align}
 Now suppose $w_k\leq w_\star$ and define
 $$
 r_k=\frac{w_k}{w_\star}(\delta_k-\overline{d}_k)
@@ -133,8 +147,8 @@ of $\sigma(\Delta,X)$ over $X$ for our current best estimate of $\Delta$ with
 minimization of $\sigma(\Delta,X)$ over $\Delta\in\mathfrak{D}$ for our current best
 value of $X$. Thus an update looks like
 \begin{align}
-\Delta^{(k)}&=\mathop{\text{argmin}}_\Delta\sigma(\Delta,X^{(k)})(\#eq:step1),\\
-X^{(k+1)}&=\mathop{\text{argmin}}_X\sigma(\Delta^{(k)},X)(\#eq:step2).
+\Delta^{(k)}&=\mathop{\text{argmin}}_\Delta\sigma(\Delta,X^{(k)}),\\
+X^{(k+1)}&=\mathop{\text{argmin}}_X\sigma(\Delta^{(k)},X).
 \end{align}
 This approach to MDS was in the air since the early (unsuccessful) attempts around 1968 of Young and De Leeuw to combine Torgerson's classic metric MDS method with Kruskal's monotone regression transformation.
 

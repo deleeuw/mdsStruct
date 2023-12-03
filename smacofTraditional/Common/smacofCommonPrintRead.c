@@ -12,6 +12,15 @@ void smacofPrintAnyMatrix(const int n, const int p, const int width,
     return;
 }
 
+void smacofPrintAnyVector(const int n, const int width, const int precision,
+                          double *x) {
+    for (int i = 0; i < n; i++) {
+        printf("%+*.*f", width, precision, x[i]);
+    }
+    printf("\n\n");
+    return;
+}
+
 // read data from a file into a one-dimensional array
 
 void smacofReadInputFile(const char *fname, double *delta) {

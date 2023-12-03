@@ -1,0 +1,269 @@
+---
+title: "A Verbose smacof"
+author: 
+- Jan de Leeuw - University of California Los Angeles
+date: '`r paste("Started December 02 2023, Version of",format(Sys.Date(),"%B %d, %Y"))`'
+output:
+  bookdown::pdf_document2:
+    latex_engine: xelatex 
+    toc: false
+    number_sections: yes
+  bookdown::html_document2:
+    toc: false
+    number_sections: yes
+mainfont: Times New Roman
+fontsize: 12pt
+---
+```{r load code, echo = FALSE}
+library(MASS)
+options(digits = 10)
+mPrint <- function(x,
+                   digits = 10,
+                   width = 15,
+                   format = "f",
+                   flag = "+") {
+  print(noquote(
+    formatC(
+      x,
+      digits = digits,
+      width = width,
+      format = format,
+      flag = flag
+    )
+  ))
+}
+```
+
+# Input
+
+## delta
+```{r delta, echo = FALSE}
+delta <- matrix(c(0, 3, 2, 3, 
+                  3, 0, 1, 2, 
+                  2, 1, 0, 3, 
+                  3, 2, 3, 0), 4, 4)
+mPrint(delta)
+```
+
+## weights
+```{r weights, echo = FALSE}
+weights <- 1 - diag(4)
+mPrint(weights)
+```
+
+# Normalize
+
+## nweights
+```{r nweights, echo = FALSE}
+weights <- weights / sum(weights)
+mPrint(weights)
+```
+
+## ndelta
+```{r ndelta, echo = FALSE}
+delta <- delta / sqrt(sum(weights * (delta ^ 2)))
+mPrint(delta)
+```
+
+# Vmatrix
+
+## vmat
+```{r vmat, echo = FALSE}
+vmat <- -weights
+vsum <- rowSums(vmat)
+diag(vmat) <- -vsum
+mPrint(vmat)
+```
+
+## vinv
+```{r vinv, echo = FALSE}
+vinv <- ginv(vmat)
+mPrint(vinv)
+```
+
+# Initialize
+
+## xini
+```{r xini, echo = FALSE}
+d2 <- delta ^ 2
+s2 <- rowSums(d2) / 4
+su <- sum(d2) / 16
+cr <- -(d2 - outer(s2, s2, "+") + su) / 2
+ev <- eigen(cr)
+xini <- ev$vectors[,1:2] %*% diag(sqrt(ev$values[1:2]))
+rm(d2, s2, su, cr, ev)
+mPrint(xini)
+```
+
+## dini
+```{r dini, echo = FALSE}
+dini <- as.matrix(dist(xini))
+mPrint(dini)
+```
+
+## xold
+```{r sxini, echo = FALSE}
+lbd <- sum(weights * dini * delta) / sum(weights * (dini ^ 2))
+xold <- lbd * xini
+mPrint(xold)
+```
+
+## dold
+```{r sdini, echo = FALSE}
+dold <- lbd * dini
+mPrint(dold)
+```
+
+## bold
+```{r bold, echo = FALSE}
+bold <- -weights * delta / (dold + diag(4))
+bsum <- rowSums(bold)
+diag(bold) <- -bsum
+mPrint(bold)
+```
+
+## sold
+```{r sold, echo = FALSE}
+sold <- sum(weights * (delta - dold) ^ 2)
+mPrint(sold)
+```
+
+# First Iteration
+
+## xnew1
+```{r xnew1, echo = FALSE}
+xnew1 <- vinv %*% bold %*% xold
+mPrint(xnew1)
+```
+
+## dnew1
+```{r dnew1, echo = FALSE}
+dnew1 <- as.matrix(dist(xnew1))
+mPrint(dnew1)
+```
+
+## bnew1
+```{r bnew1, echo = FALSE}
+bnew1 <- -weights * delta / (dnew1 + diag(4))
+bsum <- rowSums(bnew1)
+diag(bnew1) <- -bsum
+mPrint(bnew1)
+```
+
+## snew1
+```{r snew1, echo = FALSE}
+snew1 <- sum(weights * (delta - dnew1) ^ 2)
+mPrint(snew1)
+```
+
+# Second Iteration
+
+## xnew2
+```{r xnew2, echo = FALSE}
+xnew2 <- vinv %*% bnew1 %*% xnew1
+mPrint(xnew2)
+```
+
+## dnew2
+```{r dnew2, echo = FALSE}
+dnew2 <- as.matrix(dist(xnew2))
+mPrint(dnew2)
+```
+
+## bnew2
+```{r bnew2, echo = FALSE}
+bnew2 <- -weights * delta / (dnew2 + diag(4))
+bsum <- rowSums(bnew2)
+diag(bnew2) <- -bsum
+mPrint(bnew2)
+```
+
+## snew2
+```{r snew2, echo = FALSE}
+snew <- sum(weights * (delta - dnew2) ^ 2)
+mPrint(snew)
+```
+
+# Third Iteration
+
+## xnew3
+```{r xnew3, echo = FALSE}
+xnew3 <- vinv %*% bnew2 %*% xnew2
+mPrint(xnew3)
+```
+
+## dnew3
+```{r dnew3, echo = FALSE}
+dnew3 <- as.matrix(dist(xnew3))
+mPrint(dnew3)
+```
+
+## bnew3
+```{r bnew3, echo = FALSE}
+bnew3 <- -weights * delta / (dnew3 + diag(4))
+bsum <- rowSums(bnew3)
+diag(bnew3) <- -bsum
+mPrint(bnew3)
+```
+
+## snew3
+```{r snew3, echo = FALSE}
+snew3 <- sum(weights * (delta - dnew3) ^ 2)
+mPrint(snew3)
+```
+
+# Fourth Iteration
+
+## xnew4
+```{r xnew4, echo = FALSE}
+xnew4 <- vinv %*% bnew3 %*% xnew3
+mPrint(xnew4)
+```
+
+## dnew4
+```{r dnew4, echo = FALSE}
+dnew4 <- as.matrix(dist(xnew4))
+mPrint(dnew4)
+```
+
+## bnew4
+```{r bnew4, echo = FALSE}
+bnew4 <- -weights * delta / (dnew4 + diag(4))
+bsum <- rowSums(bnew4)
+diag(bnew4) <- -bsum
+mPrint(bnew4)
+```
+
+## snew4
+```{r snew4, echo = FALSE}
+snew4 <- sum(weights * (delta - dnew4) ^ 2)
+mPrint(snew4)
+```
+
+# Fifth Iteration
+
+## xnew5
+```{r xnew5, echo = FALSE}
+xnew5 <- vinv %*% bnew4 %*% xnew4
+mPrint(xnew5)
+```
+
+## dnew5
+```{r dnew5, echo = FALSE}
+dnew5 <- as.matrix(dist(xnew5))
+mPrint(dnew5)
+```
+
+## bnew5
+```{r bnew5, echo = FALSE}
+bnew5 <- -weights * delta / (dnew5 + diag(4))
+bsum <- rowSums(bnew5)
+diag(bnew5) <- -bsum
+mPrint(bnew5)
+```
+
+## snew5
+```{r snew5, echo = FALSE}
+snew5 <- sum(weights * (delta - dnew5) ^ 2)
+mPrint(snew5)
+```
