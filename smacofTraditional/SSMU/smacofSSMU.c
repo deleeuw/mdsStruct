@@ -8,12 +8,11 @@ int main(int argc, char **argv) {
   char *name = argv[1];
   char parname[80], deltaname[80], xoldname[80], outname[80];
   int n = 0, p = 0, init = 0, itmax = 0, feps = 0, ceps = 0, verbose = 0,
-      width = 0, precision = 0, relax = 0, evalbmat = 0, hessian = 0;
+      width = 0, precision = 0, relax = 0;
   char *iterstring = (char *)malloc((size_t)256 * sizeof(char));
   strcat(strcpy(parname, name), "Parameters.txt");
   (void)smacofReadParameterFile(parname, &n, &p, &itmax, &init, &feps, &ceps,
-                                &width, &precision, &verbose, &relax, &evalbmat,
-                                &hessian);
+                                &width, &precision, &verbose, &relax);
   strcat(strcpy(deltaname, name), "Delta.txt");
   double *deltavec = smacofMakeAnyVector(n * n);
   (void)smacofReadInputFile(deltaname, deltavec);
@@ -38,12 +37,6 @@ int main(int argc, char **argv) {
   assert(stream != NULL);
   (void)smacofUnweightedWriteOutputFile(stream, n, p, width, precision, delta,
                                         xnew, dmat, bmat, iterstring);
-  if (evalbmat) {
-    (void)smacofUnweightedWriteEvalBmat(stream, n, width, precision, bmat);
-  }
-  if (hessian) {
-    
-  }
   (void)smacofFreeAnyMatrix(n, delta);
   (void)smacofFreeAnyMatrix(n, dmat);
   (void)smacofFreeAnyMatrix(n, bmat);

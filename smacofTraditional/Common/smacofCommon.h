@@ -87,8 +87,7 @@ void smacofFPrintAnyVector(FILE *stream, const int n, const int width,
 void smacofReadInputFile(const char *fname, double *delta);
 void smacofReadParameterFile(const char *fname, int *n, int *p, int *itmax,
                              int *init, int *feps, int *ceps, int *width,
-                             int *precision, int *verbose, int *relax,
-                             int *evalbmat, int *hessian);
+                             int *precision, int *verbose, int *relax);
 void smacofUnweightedInterval(const int n, const double **delta,
                               const double **dmat, double **dhat);
 

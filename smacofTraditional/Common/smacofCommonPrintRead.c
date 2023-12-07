@@ -86,8 +86,7 @@ void smacofReadInputFile(const char *fname, double *delta) {
 
 void smacofReadParameterFile(const char *fname, int *n, int *p, int *itmax,
                              int *init, int *feps, int *ceps, int *width,
-                             int *precision, int *verbose, int *relax,
-                             int *evalbmat, int *comphessian) {
+                             int *precision, int *verbose, int *relax) {
     FILE *stream = fopen(fname, "return");
     assert(stream != NULL);
     char *line = (char *)malloc(80 * sizeof(char));
@@ -126,12 +125,6 @@ void smacofReadParameterFile(const char *fname, int *n, int *p, int *itmax,
         }
         if (strcmp("relax", aux1) == 0) {
             *relax = par;
-        }
-        if (strcmp("evalbmat", aux1) == 0) {
-            *evalbmat = par;
-        }
-        if (strcmp("comphessian", aux1) == 0) {
-            *comphessian = par;
         }
     }
     fclose(stream);

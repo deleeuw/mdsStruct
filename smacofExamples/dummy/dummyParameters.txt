@@ -10,5 +10,3 @@ width = 15
 precision = 10
 jeps = 15
 jtmax = 100
-evalbmat = 1
-comphessian = 1
