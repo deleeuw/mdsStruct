@@ -1,19 +1,13 @@
-#include "../../smacofInclude/smacof.h"
+#include "../Common/smacofCommon.h"
 
-void smacofWeightedGradient(const double *delta, const double *weights,
-                            const double *vinv, const double *dold,
-                            const double *xold, double *xnew, double *gradient,
-                            const int *pn, const int *pp) {
-    int n = *pn, p = *pp, np = n * p, m = n * (n - 1) / 2;
-    double *bmat = (double *)calloc((size_t)m, (size_t)sizeof(double));
-    double *ymat = (double *)calloc((size_t)np, (size_t)sizeof(double));
-    for (int i = 1; i <= m; i++) {
-        double dfix = dold[VINDEX(i)];
-        int iv = VINDEX(i);
-        if (dfix < 1e-15) {
-            bmat[iv] = 0.0;
-        } else {
-            bmat[iv] = weights[iv] * delta[iv] / dfix;
+/*
+void smacofWeightedGradient(const int *nconst double *delta, const double
+*weights, const double *vinv, const double *dold, const double *xold, double
+*xnew, double *gradient, ) { int n = *pn, p = *pp, np = n * p, m = n * (n - 1) /
+2; double *bmat = (double *)calloc((size_t)m, (size_t)sizeof(double)); double
+*ymat = (double *)calloc((size_t)np, (size_t)sizeof(double)); for (int i = 1; i
+<= m; i++) { double dfix = dold[VINDEX(i)]; int iv = VINDEX(i); if (dfix <
+1e-15) { bmat[iv] = 0.0; } else { bmat[iv] = weights[iv] * delta[iv] / dfix;
         }
     }
     (void)smacofMultiplySymmetricMatrix(bmat, xold, ymat, pn, pp);
@@ -28,12 +22,43 @@ void smacofWeightedGradient(const double *delta, const double *weights,
     free(ymat);
     return;
 }
+*/
+
+void smacofWeightedHessian(const int n, const int p, double **delta,
+                           double **weights, double **dmat, double **bmat,
+                           double **vmat, double **x, double ****hessian) {
+    for (int s = 0; s < p; s++) {
+        for (int t = 0; t < p; t++) {
+            hessian[s][t] = smacofMakeAnyMatrix(n, n);
+            for (int i = 0; i < n; i++) {
+                double sum = 0.0;
+                for (int j = 0; j < n; j++) {
+                    double cell =
+                        weights[i][j] * delta[i][j] / THIRD(dmat[i][j]);
+                    cell *= (x[i][s] - x[j][s]);
+                    cell *= (x[i][t] - x[j][t]);
+                    hessian[s][t][i][j] = -cell;
+                    sum += cell;
+                }
+                hessian[s][t][i][i] = sum;
+            }
+        }
+    }
+    for (int s = 0; s < p; s++) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                hessian[s][s][i][j] += (vmat[i][j] - bmat[i][j]);
+            }
+        }
+    }
+}
 
 // The Hessian is np by np, and it is the SDCL matrix kronecker(I_p, V - B) + H
 // First make H. The diagonal blocks are SDCL, the off-diagonal blocks regular
 // matrices. Then add V and B to diagonal blocks
 // It makes sense to use an array of p(p+1)/2 pointers, each pointing to a block
 
+/*
 void smacofWeightedHessian(const double *delta, const double *weights,
                            const double *xconf, const double *dmat,
                            const double *bmat, const double *v, const int *pn,
@@ -95,3 +120,4 @@ void smacofWeightedHessian(const double *delta, const double *weights,
     free(nonDiagH);
     return;
 }
+*/

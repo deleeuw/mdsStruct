@@ -1,15 +1,18 @@
-sources = smacofSSMUEngine.c \
+CFLAGS = -O2 -Wall -Wextra -pedantic -std=c99
+DFLAGS = -g3 -Wall -Wextra -pedantic -std=c99
+
+sources = \
 	../Common/smacofCommonPrintRead.c \
 	../Common/smacofCommonRCTranslation.c \
 	../Common/smacofCommonUtils.c \
-	../Common/smacofCommonMatrixUtils.c \
+    ../Common/smacofCommonMatrixUtils.c \
 	../Common/smacofCommonLinearAlgebra.c \
 	../Common/smacofCommonAccelerate.c \
 	../Unweighted/smacofUnweightedNorm.c \
 	../Unweighted/smacofUnweightedInitial.c \
 	../Unweighted/smacofUnweightedCore.c 
 
-objects = smacofSSMUEngine.o \
+objects = \
 	smacofCommonPrintRead.o \
 	smacofCommonRCTranslation.o \
 	smacofCommonUtils.o \
@@ -20,43 +23,38 @@ objects = smacofSSMUEngine.o \
 	smacofUnweightedInitial.o \
 	smacofUnweightedCore.o 
 
-includes = ../Unweighted/smacofUnweighted.h \
-	../Common/smacofCommon.h
+drivers = smacofSSMU.c \
+	smacofSSMUEngine.c
+
+includes = ../Unweighted/smacofUnweighted.h ../Common/smacofCommon.h
 
 all: smacofSSMU
 
 ofiles: $(includes) $(sources)
-	$(CC) -c -O2 -Wall -Wextra -pedantic -std=c99 $(sources)
-
-debug: clean $(includes) $(sources)
-	$(CC) -c -g3 -Wall -Wextra -pedantic -std=c99 $(sources)
-	$(CC) -o smacofSSMUDebug -g3  -Wall -Wextra -pedantic -std=c99 $(objects)
+	$(CC) -c $(CFLAGS) $(sources)
 
 clib: ofiles 
 	ar rcs libsmacofSSMU.a $(objects)
+	mv -f libsmacofSSMU.a /usr/local/lib
+	rm -f *.o
 
-smacofSSMU: ofiles clib
-	$(CC) -o smacofSSMU -O2  -Wall -Wextra -pedantic -std=c99 smacofSSMU.c libsmacofSSMU.a
+smacofSSMU: clib
+	$(CC) -o smacofSSMU $(CFLAGS) $(drivers) -lsmacofSSMU
+	mv -f smacofSSMU /usr/local/bin
+
+smacofSSMUDebug: $(includes) $(sources) $(drivers)
+	$(CC) -o smacofSSMUDebug $(DFLAGS) $(drivers) $(sources)
 
 rlib: ofiles
-	R CMD SHLIB -o libsmacofSSMU.so $(objects)
-
-dylib: ofiles
-	$(CC) -O2 -Wall -Wall -Winline -pedantic -Wextra -std=c99 -dynamiclib  \
-		-current_version 0.0 -compatibility_version 0.1 \
-		$(objects) -o libsmacofSSMU.0.dylib 
-	ln -s libsmacofSSMU.0.dylib libsmacofSSMU.dylib
+	R CMD SHLIB -o libsmacofSSMU.so smacofSSMUEngine.c libsmacofSSMU.a
 
 format: $(includes) $(sources)
 	clang-format -i -style="{BasedOnStyle: google, IndentWidth: 4}" \
 	$(sources) $(includes)
-
-test: smacof
-	./smacof > smacofSSMU.txt
 	
 clean:
 	rm -f $(objects) ../*/*.o
 
 pristine: clean
-	rm -f smacofSSMU smacofSSMUDebug smacofSSMU.txt \
+	rm -f smacofSSMU smacofSSMUDebug \
 		libsmacofSSMU.a libsmacofSSMU.so libsmacofSSMU.0.dylib libsmacofSSMU.dylib

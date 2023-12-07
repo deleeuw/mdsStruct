@@ -2,8 +2,6 @@
 
 void smacofUnweightedInitial(const int n, const int p, const int init,
                              double **delta, double **xini) {
-    double **dini = smacofMakeAnyMatrix(n, n);
-    assert(!(dini == NULL));
     switch (init) {
         case 1:
             (void)smacofUnweightedInitTorgerson(n, p, delta, xini);
@@ -16,8 +14,6 @@ void smacofUnweightedInitial(const int n, const int p, const int init,
             break;
     }
     (void)smacofCenter(n, p, xini);
-    (void)smacofDistance(n, p, xini, dini);
-    (void)smacofFreeAnyMatrix(n, dini);
     return;
 }
 

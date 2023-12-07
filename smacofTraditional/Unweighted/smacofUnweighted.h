@@ -3,11 +3,21 @@
 
 #include "../Common/smacofCommon.h"
 
-void smacofSSMUEngine(const int n, const int p, double **delta, double **xini,
-                      double **xnew, double **dnew, double **bnew,
+void smacofSSMUEngine(const int n, const int p, double **delta, double **xold,
+                      double **xnew, double **dmat, double **bmat,
                       const int init, const int itmax, const int ieps1,
                       const int ieps2, const bool verbose, const bool relax,
-                      int *pitel, double *psnew);
+                      char *iterstring);
+
+void smacofUnweightedWriteOutputFile(FILE *stream, const int n,
+                                     const int p, const int width,
+                                     const int precision, double **delta,
+                                     double **xnew, double **dmat,
+                                     double **bmat, char *iterstring);
+
+void smacofUnweightedWriteEvalBmat(FILE *stream, const int n, const int width,
+                                     const int precision, double **bmat);
+
 
 // smacofUnweightedNorm.c
 

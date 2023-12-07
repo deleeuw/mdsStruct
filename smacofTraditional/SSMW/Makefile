@@ -1,61 +1,65 @@
-sources = smacofSSMIEngine.c \
+CFLAGS = -O2 -Wall -Wextra -Werror -pedantic -std=c99
+DFLAGS = -g3 -Wall -Wextra -Werror -pedantic -std=c99
+
+sources = \
 	../Common/smacofCommonPrintRead.c \
 	../Common/smacofCommonRCTranslation.c \
 	../Common/smacofCommonUtils.c \
+    ../Common/smacofCommonMatrixUtils.c \
 	../Common/smacofCommonLinearAlgebra.c \
 	../Common/smacofCommonAccelerate.c \
-	../SSMU/smacofUnweightedNorm.c \
-	../SSMU/smacofUnweightedInitial.c \
-	../SSMU/smacofUnweightedCore.c \
-    ../SSMU/smacofUnweightedTransforms.c
+	../Weighted/smacofWeightedNorm.c \
+	../Weighted/smacofWeightedInitial.c \
+	../Weighted/smacofWeightedDerivatives.c \
+	../Weighted/smacofWeightedCore.c 
 
-objects = smacofSSMIEngine.o \
+objects = \
 	smacofCommonPrintRead.o \
 	smacofCommonRCTranslation.o \
 	smacofCommonUtils.o \
+	smacofCommonMatrixUtils.o \
 	smacofCommonLinearAlgebra.o \
 	smacofCommonAccelerate.o \
-	smacofUnweightedNorm.o \
-	smacofUnweightedInitial.o \
-	smacofUnweightedCore.o \
-	smacofUnweightedTransforms.o
+	smacofWeightedNorm.o \
+	smacofWeightedInitial.o \
+	smacofWeightedDerivatives.o \
+	smacofWeightedCore.o 
 
-includes = ../Include/smacof.h
+drivers = smacofSSMW.c \
+	smacofSSMWEngine.c
 
-all: smacof
+drovers = smacofSSMW.c \
+	smacofSSMWEngineDebug.c
+
+includes = ../Weighted/smacofWeighted.h ../Common/smacofCommon.h
+
+all: smacofSSMW
 
 ofiles: $(includes) $(sources)
-	$(CC) -c -O2 -Wall -Wextra -pedantic -std=c99 $(sources)
-
-debug: clean $(includes) $(sources)
-	$(CC) -c -g3 -Wall -Wextra -pedantic -std=c99 $(sources)
-	$(CC) -o smacofd -g3  -Wall -Wextra -pedantic -std=c99 $(objects)
-
-smacof: ofiles
-	$(CC) -o smacof -O2  -Wall -Wextra -pedantic -std=c99 $(objects)
+	$(CC) -c $(CFLAGS) $(sources)
 
 clib: ofiles 
-	ar rcs libsmacof.a $(objects)
+	ar rcs libsmacofSSMW.a $(objects)
+	mv -f libsmacofSSMW.a /usr/local/lib
+	rm -f *.o
+
+smacofSSMW: clib
+	$(CC) -o smacofSSMW $(CFLAGS) $(drivers) -lsmacofSSMW
+	mv -f smacofSSMW /usr/local/bin
+
+smacofSSMWDebug: $(includes) $(sources) $(drivers)
+	$(CC) -o smacofSSMW $(DFLAGS) $(drivers) $(sources)
 
 rlib: ofiles
-	R CMD SHLIB -o libsmacof.so $(objects)
-
-dylib: ofiles
-	$(CC) -O2 -Wall -Wall -Winline -pedantic -Wextra -std=c99 -dynamiclib  \
-		-current_version 0.0 -compatibility_version 0.1 \
-		$(objects) -o libsmacof.0.dylib 
-	ln -s libsmacof.0.dylib libsmacof.dylib
+	R CMD SHLIB -o libsmacofSSMW.so smacofSSMWEngine.c libsmacofSSMW.a
 
 format: $(includes) $(sources)
 	clang-format -i -style="{BasedOnStyle: google, IndentWidth: 4}" \
 	$(sources) $(includes)
-
-test: smacof
-	./smacof > smacof.txt
 	
 clean:
-	rm -f $(objects) ../../*.c
+	rm -f $(objects) ../*/*.o
 
 pristine: clean
-	rm -f smacof smacofd smacof.txt \
-		libsmacof.a libsmacof.so libsmacof.0.dylib libsmacof.dylib
+	rm -f smacofSSMW smacofSSMWDebug smacofSSMW.txt \
+		libsmacofSSMW.a libsmacofSSMW.so libsmacofSSMW.0.dylib libsmacofSSMW.dylib

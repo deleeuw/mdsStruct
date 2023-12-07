@@ -15,8 +15,7 @@ void smacofWeightedNormWeights(const int n, double **weights) {
     return;
 }
 
-void smacofWeightedNormDelta(const int n, double **delta,
-                             double **weights) {
+void smacofWeightedNormDelta(const int n, double **delta, double **weights) {
     double sum = 0.0;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {

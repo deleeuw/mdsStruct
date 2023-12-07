@@ -15,7 +15,7 @@ double *smacofMakeAnyVector(const int n) {
     return x;
 }
 
-// make a lower digonal matrix of order n
+// make a lower diagonal matrix of order n
 // a strict lower diagonal matrix of order n is
 // a lower diagonal matrix of order n - 1
 
@@ -29,12 +29,16 @@ double **smacofMakeLowerDiagonalMatrix(const int n) {
 
 void smacofCopyAnyMatrix(const int n, const int p, double **x, double **y) {
     for (int i = 0; i < n; i++) {
-        memcpy(y[i], x[i], p * sizeof(double));
+        memcpy(y[i], x[i], (size_t)(p * sizeof(double)));
     }
     return;
 }
 
-// free an n x p matrix
+void smacofCopyAnyVector(const int n, double *x, double *y) {
+    memcpy(y, x, (size_t)(n * sizeof(double)));
+}
+
+// free any matrix
 
 void smacofFreeAnyMatrix(const int n, double **x) {
     for (int i = 0; i < n; i++) {

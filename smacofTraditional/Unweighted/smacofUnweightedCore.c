@@ -4,16 +4,13 @@
 void smacofUnweightedMakeBMatrix(const int n, double **delta, double **dmat,
                                  double **bmat) {
     double cell = 0.0, fac = (double)(n * (n - 1));
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            if (i == j) {
-                continue;
-            }
+    for (int j = 0; j < (n - 1); j++) {
+        for (int i = (j + 1); i < n; i++) {
             double dfix = dmat[i][j];
             if (dfix < 1e-15) {
                 cell = -0.0;
             } else {
-                cell = (delta[i][j] / (fac * dfix));
+                cell = delta[i][j] / (fac * dfix);
             }
             bmat[i][j] = -cell;
             bmat[j][i] = -cell;
@@ -22,12 +19,12 @@ void smacofUnweightedMakeBMatrix(const int n, double **delta, double **dmat,
     for (int i = 0; i < n; i++) {
         double sum = 0.0;
         for (int j = 0; j < n; j++) {
-            if (i == j) {
+            if (j == i) {
                 continue;
             }
-            sum -= bmat[i][j];
+            sum += bmat[i][j];
         }
-        bmat[i][i] = sum;
+        bmat[i][i] = -sum;
     }
     return;
 }
@@ -44,12 +41,12 @@ void smacofUnweightedGuttman(const int n, const int p, double **bmat,
 }
 
 double smacofUnweightedMakeStress(const int n, double **delta, double **dist) {
-    double sum = 0.0, stress = 0.0;
+    double sum = 0.0;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             sum += SQUARE(delta[i][j] - dist[i][j]);
         }
     }
-    stress = sum / ((double)(n * (n - 1)));
-    return stress;
+    sum /= (double)(n * (n - 1));
+    return sum;
 }

@@ -7,8 +7,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
-#define DEBUG false
 #define PI (2.0 * asin(1.0))
 
 #define SQUARE(x) ((x) * (x))
@@ -45,6 +45,7 @@ double **smacofMakeAnyMatrix(const int n, const int p);
 double *smacofMakeAnyVector(const int n);
 double **smacofMakeLowerDiagonalMatrix(const int n);
 void smacofCopyAnyMatrix(const int n, const int p, double **x, double **y);
+void smacofCopyAnyVector(const int n, double *x, double *y);
 void smacofFreeAnyMatrix(const int n, double **x);
 void smacofFreeAnyVector(double *x);
 
@@ -53,24 +54,41 @@ void smacofFreeAnyVector(double *x);
 void smacofJacobi(const int n, const int p, double **a, double **evec,
                   double *eval, const int itmax, const int eps,
                   const bool verbose);
-void smacofInvertPDMatrix(const double *x, double *xinv, const int *pn);
+void smacofDoubleJacobi(const int n, double **a, double **b, double **evec,
+                        double *eval, const int itmax, const int ieps,
+                        const bool verbose);
+void smacofInvertPositiveDefiniteMatrix(const int n, double **x, double **xinv);
 void smacofGramSchmidt(const int n, const int p, double **x, double **q);
 void smacofMultiplyAnyAnyMatrix(const int n, const int p, const int m,
                                 double **a, double **x, double **y);
-void smacofMPInverseSDCLMatrix(const double *w, double *vinv, const int *ndim);
+void smacofCrossprodAnyAnyMatrix(const int n, const int p, const int m,
+                                 double **x, double **y, double **z);
 void smacofDistance(const int n, const int p, double **x, double **d);
 void smacofCenter(const int n, const int p, double **x);
+void smacofScaleMatrixColumns(const int n, const int m, const double p,
+                              double **x, double *y, double **v);
+void smacofMultipleAnySymmetricAnyMatrix(const int n, const int m, double **x,
+                                         double **a, double **u);
 
 // smacofCommonPrintRead.c
 
 void smacofPrintAnyMatrix(const int n, const int p, const int width,
                           const int precision, double **x);
+void smacofFPrintAnyMatrix(FILE *stream, const int n, const int p,
+                           const int width, const int precision, double **x);
+void smacofPrintSymmetricMatrix(const int n, const int width,
+                                const int precision, double **x);
+void smacofPrintFSymmetricMatrix(FILE *stream, const int n, const int width,
+                                 const int precision, double **x);
 void smacofPrintAnyVector(const int n, const int width, const int precision,
                           double *x);
+void smacofFPrintAnyVector(FILE *stream, const int n, const int width,
+                           const int precision, double *x);
 void smacofReadInputFile(const char *fname, double *delta);
 void smacofReadParameterFile(const char *fname, int *n, int *p, int *itmax,
                              int *init, int *feps, int *ceps, int *width,
-                             int *precision, int *verbose, int *relax);
+                             int *precision, int *verbose, int *relax,
+                             int *evalbmat, int *hessian);
 void smacofUnweightedInterval(const int n, const double **delta,
                               const double **dmat, double **dhat);
 

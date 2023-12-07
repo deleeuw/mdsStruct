@@ -4,13 +4,17 @@
 int main(void) {
   int n = 10, p = 4;
   double **x = (double **)calloc((size_t)n, sizeof(double *));
+  double **z = (double **)calloc((size_t)p, sizeof(double *));
   double y[10][4] = {{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0},
                      {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0},
                      {0, 0, 0, 0}, {0, 0, 0, 0}};
   for (int i = 0; i < n; i++) {
     x[i] = (double *)calloc((size_t)p, sizeof(double));
   }
-  printf("x[i][j] (dynamic allocation on heap)\n");
+  for (int s = 0; s < p; s++) {
+    z[s] = (double *)calloc((size_t)n, sizeof(double));
+  }
+  printf("x[i][j] (dynamic allocation on heap, row-major)\n");
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < p; j++) {
       printf("%ld ", (uintptr_t)&x[i][j]);
