@@ -1,7 +1,7 @@
 n = 4
 p = 2
 init = 1
-itmax = 100 
+itmax = 2 
 feps = 15
 ceps = 10
 verbose = 1
@@ -10,3 +10,8 @@ width = 15
 precision = 10
 jeps = 15
 jtmax = 100
+interval = 0
+ordinal = 0
+degree = 3
+
+

@@ -15,6 +15,27 @@ void smacofWeightedNormWeights(const int n, double **weights) {
     return;
 }
 
+void smacofUnweighting(const int n, double wmax, double **delta, double **weights, 
+    double **dmat, double **dhat) {
+    for (int i = 0; i < n; i++) {
+        for(int j = 0; j < n; j++) {
+            dhat[i][j] = dmat[i][j] + (weights[i][j] / wmax) * (delta[i][j] - dmat[i][j]);
+        }
+    }
+    return;
+}
+
+
+double smacofWeightedMaxWeights(const int n, double **weights) {
+    double wmax = 0.0;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            wmax = MAX(wmax, weights[i][j]);
+        }
+    }
+    return wmax;
+}
+
 void smacofWeightedNormDelta(const int n, double **delta, double **weights) {
     double sum = 0.0;
     for (int i = 0; i < n; i++) {

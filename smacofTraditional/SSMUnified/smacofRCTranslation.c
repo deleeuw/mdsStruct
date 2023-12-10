@@ -1,7 +1,7 @@
-#include "smacofCommon.h"
+#include "smacof.h"
 
 void smacofAnyCtoR(const int nrow, const int ncol, const double **x,
-                       double *y) {
+                   double *y) {
     int k = 0;
     for (int j = 0; j < ncol; j++) {
         for (int i = 0; i < nrow; i++) {
@@ -45,15 +45,13 @@ void smacofFromLowerTriangularRtoC(const int n, const double *rvector,
     return;
 }
 
-void smacofHSinRtoLTinC(const int n, const double *rvector,
-                                   double **cmatrix) {
+void smacofHSinRtoLTinC(const int n, const double *rvector, double **cmatrix) {
     int k = 0;
     for (int j = 0; j < (n - 1); j++) {
         for (int i = (j + 1); i < n; i++) {
             cmatrix[i][j] = rvector[k];
             k++;
         }
-
     }
     return;
 }

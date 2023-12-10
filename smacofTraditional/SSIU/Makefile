@@ -10,7 +10,8 @@ sources = \
 	../Common/smacofCommonAccelerate.c \
 	../Unweighted/smacofUnweightedNorm.c \
 	../Unweighted/smacofUnweightedInitial.c \
-	../Unweighted/smacofUnweightedCore.c 
+	../Unweighted/smacofUnweightedCore.c \
+	../Unweighted/smacofUnweightedTransforms.c
 
 objects = \
 	smacofCommonPrintRead.o \
@@ -21,32 +22,32 @@ objects = \
 	smacofCommonAccelerate.o \
 	smacofUnweightedNorm.o \
 	smacofUnweightedInitial.o \
-	smacofUnweightedCore.o 
+	smacofUnweightedCore.o \
+	smacofUnweightedTransforms.o
 
-drivers = smacofSSMU.c \
-	smacofSSMUEngine.c
+drivers = smacofSSIU.c smacofSSIUEngine.c
 
 includes = ../Unweighted/smacofUnweighted.h ../Common/smacofCommon.h
 
-all: smacofSSMU
+all: smacofSSIU
 
 ofiles: $(includes) $(sources)
 	$(CC) -c $(CFLAGS) $(sources)
 
 clib: ofiles 
-	ar rcs libsmacofSSMU.a $(objects)
-	mv -f libsmacofSSMU.a /usr/local/lib
+	ar rcs libsmacofSSIU.a $(objects)
+	mv -f libsmacofSSIU.a /usr/local/lib
 	rm -f *.o
 
-smacofSSMU: clib
-	$(CC) -o smacofSSMU $(CFLAGS) $(drivers) -lsmacofSSMU
-	mv -f smacofSSMU /usr/local/bin
+smacofSSIU: clib
+	$(CC) -o smacofSSIU $(CFLAGS) $(drivers) -lsmacofSSIU
+	mv -f smacofSSIU /usr/local/bin
 
-smacofSSMUDebug: $(includes) $(sources) $(drivers)
-	$(CC) -o smacofSSMUDebug $(DFLAGS) $(drivers) $(sources)
+smacofSSIUDebug: $(includes) $(sources) $(drivers)
+	$(CC) -o smacofSSIUDebug $(DFLAGS) $(drivers) $(sources)
 
 rlib: ofiles
-	R CMD SHLIB -o libsmacofSSMU.so smacofSSMUEngine.c libsmacofSSMU.a
+	R CMD SHLIB -o libsmacofSSIU.so smacofSSIUEngine.c libsmacofSSIU.a
 
 format: $(includes) $(sources)
 	clang-format -i -style="{BasedOnStyle: google, IndentWidth: 4}" \
@@ -56,5 +57,4 @@ clean:
 	rm -f $(objects) ../*/*.o
 
 pristine: clean
-	rm -f smacofSSMU smacofSSMUDebug \
-		libsmacofSSMU.a libsmacofSSMU.so libsmacofSSMU.0.dylib libsmacofSSMU.dylib
+	rm -f smacofSSIU smacofSSIUDebug libsmacofSSIU.* 

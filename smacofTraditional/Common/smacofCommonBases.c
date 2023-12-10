@@ -2,7 +2,7 @@
 
 /*
 
-bool smacofCheckIncreasing(const unsigned ninner, const double *innerknots,
+bool smacofCheckIncreasing(const int ninner, const double *innerknots,
 const double lowend, const double highend) { if (lowend >= innerknots[0]) {
         return true;
     }
@@ -107,11 +107,11 @@ void smacofBsplineBasis(const double *x, const double *knots, const int *order,
 // Given a matrix X form the matrix of decreasing sums in the same space
 // y_{ij} = sum_{k=j}^m x_{ik}
 
-void smacofCumsumMatrix(const unsigned n, const unsigned m, double **x) {
-    for (unsigned j = 0; j < m; j++) {
-        for (unsigned i = 0; i < n; i++) {
+void smacofCumsumMatrix(const int n, const int m, double **x) {
+    for (int j = 0; j < m; j++) {
+        for (int i = 0; i < n; i++) {
             double sum = 0.0;
-            for (unsigned k = j; k < m; k++) {
+            for (int k = j; k < m; k++) {
                 sum += x[i][k];
             }
             x[i][j] = sum;
@@ -120,12 +120,12 @@ void smacofCumsumMatrix(const unsigned n, const unsigned m, double **x) {
     return;
 }
 
-void smacofBernsteinBase(const unsigned n, const unsigned m, const double *y,
+void smacofBernsteinBase(const int n, const int m, const double *y,
                          const bool ordinal, double **z) {
     double fac = 0.0, rat = 0.0;
-    for (unsigned i = 0; i < n; i++) {
-        (*z)[i][0] = pow(1.0 - y[i], (double)(m - 1));
-        for (unsigned j = 1; j < m; j++) {
+    for (int i = 0; i < n; i++) {
+        z[i][0] = pow(1.0 - y[i], (double)(m - 1));
+        for (int j = 1; j < m; j++) {
             rat = ((double)(m - j)) / ((double)j);
             if (y[i] == 0.0) {
                 z[i][j] = 0.0;
@@ -135,7 +135,7 @@ void smacofBernsteinBase(const unsigned n, const unsigned m, const double *y,
                 if (j == (m - 1)) {
                     z[i][j] = 1.0;
                 } else {
-                    (z[i][j] = 0.0;
+                    z[i][j] = 0.0;
                 }
                 continue;
             }
@@ -150,31 +150,32 @@ void smacofBernsteinBase(const unsigned n, const unsigned m, const double *y,
 }
 
 /*
- int n = 20;
- int m = 4;
- double x[20] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 3, 1, 1, 4, 5, 3, 2, 1, 2, 3};
- int width = 10;
- int precision = 6;
- bool ordinal = false;
+int n = 20;
+int m = 4;
+double x[20] = {0.0000000000,  3.0000000000,  2.0000000000,  3.0000000000,  
+3.0000000000,  0.0000000000,  1.0000000000,  2.0000000000,  
+2.0000000000,  1.0000000000,  0.0000000000,  3.0000000000,  
+3.0000000000,  2.0000000000,  3.0000000000,  0.0000000000};
+int precision = 6;
+bool ordinal = false;
 
-
- int main() {
- double(*z)[n][m] = malloc(sizeof *z);
- assert(!(z == NULL));
- double *y = malloc(n * sizeof(double));
- assert(!(y == NULL));
- double max = -INFINITY, min = INFINITY;
- for (unsigned i = 0; i < n; i++) {
- max = MAX(max, x[i]);
- min = MIN(min, x[i]);
- }
- for (unsigned i = 0; i < n; i++) {
- y[i] = (x[i] - min) / (max - min);
- }
- (void)smacofBernsteinBase(n, m, y, ordinal, z);
- (void)smacofPrintAnyMatrix(n, m, width, precision, z);
- free(z);
- free(y);
- return EXIT_SUCCESS;
- }
- */
+int main() {
+    double **z = smacofMakeAnyMatrix(n, m);
+    assert(!(z == NULL));
+    double *y = malloc(n * sizeof(double));
+    assert(!(y == NULL));
+    double max = -INFINITY, min = INFINITY;
+    for (int i = 0; i < n; i++) {
+        max = MAX(max, x[i]);
+        min = MIN(min, x[i]);
+    }
+    for (int i = 0; i < n; i++) {
+        y[i] = (x[i] - min) / (max - min);
+    }
+    (void)smacofBernsteinBase(n, m, y, ordinal, z);
+    (void)smacofPrintAnyMatrix(n, m, 15, 10, z);
+    free(z);
+    free(y);
+    return EXIT_SUCCESS;
+}
+*/

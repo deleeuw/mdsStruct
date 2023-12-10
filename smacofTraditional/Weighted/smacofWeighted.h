@@ -20,6 +20,8 @@ void smacofWeightedWriteEvalBmat(FILE *stream, const int n, const int width,
                                  const int precision, double **bmat,
                                  double **vmat);
 
+double smacofWeightedMaxWeights(const int n, double **weights);
+
 // smacofWeightedCore.c
 
 void smacofWeightedMakeBMatrix(const int n, double **delta, double **weights,
@@ -37,6 +39,8 @@ void smacofWeightedScale(const int n, const int p, double **delta,
                          double **weights, double **dmat, double **xold);
 void smacofWeightedNormDelta(const int n, double **delta, double **weights);
 void smacofWeightedNormWeights(const int n, double **weights);
+void smacofUnweighting(const int n, double wmax, double **delta, double **weights, 
+    double **dmat, double **dhat);
 
 // smacofWeightedInitial.c
 

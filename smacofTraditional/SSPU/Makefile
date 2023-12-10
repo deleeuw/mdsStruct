@@ -8,9 +8,12 @@ sources = \
     ../Common/smacofCommonMatrixUtils.c \
 	../Common/smacofCommonLinearAlgebra.c \
 	../Common/smacofCommonAccelerate.c \
+	../Common/smacofCommonBases.c \
 	../Unweighted/smacofUnweightedNorm.c \
 	../Unweighted/smacofUnweightedInitial.c \
-	../Unweighted/smacofUnweightedCore.c 
+	../Unweighted/smacofUnweightedCore.c \
+	../Unweighted/smacofUnweightedCCD.c \
+	../Unweighted/smacofUnweightedTransforms.c
 
 objects = \
 	smacofCommonPrintRead.o \
@@ -19,34 +22,36 @@ objects = \
 	smacofCommonMatrixUtils.o \
 	smacofCommonLinearAlgebra.o \
 	smacofCommonAccelerate.o \
+	smacofCommonBases.o \
 	smacofUnweightedNorm.o \
 	smacofUnweightedInitial.o \
-	smacofUnweightedCore.o 
+	smacofUnweightedCore.o \
+	smacofUnweightedCCD.o \
+	smacofUnweightedTransforms.o
 
-drivers = smacofSSMU.c \
-	smacofSSMUEngine.c
+drivers = smacofSSPU.c smacofSSPUEngine.c
 
 includes = ../Unweighted/smacofUnweighted.h ../Common/smacofCommon.h
 
-all: smacofSSMU
+all: smacofSSPU
 
 ofiles: $(includes) $(sources)
 	$(CC) -c $(CFLAGS) $(sources)
 
 clib: ofiles 
-	ar rcs libsmacofSSMU.a $(objects)
-	mv -f libsmacofSSMU.a /usr/local/lib
+	ar rcs libsmacofSSPU.a $(objects)
+	mv -f libsmacofSSPU.a /usr/local/lib
 	rm -f *.o
 
-smacofSSMU: clib
-	$(CC) -o smacofSSMU $(CFLAGS) $(drivers) -lsmacofSSMU
-	mv -f smacofSSMU /usr/local/bin
+smacofSSPU: clib
+	$(CC) -o smacofSSPU $(CFLAGS) $(drivers) -lsmacofSSPU
+	mv -f smacofSSPU /usr/local/bin
 
-smacofSSMUDebug: $(includes) $(sources) $(drivers)
-	$(CC) -o smacofSSMUDebug $(DFLAGS) $(drivers) $(sources)
+smacofSSPUDebug: $(includes) $(sources) $(drivers)
+	$(CC) -o smacofSSPUDebug $(DFLAGS) $(drivers) $(sources)
 
 rlib: ofiles
-	R CMD SHLIB -o libsmacofSSMU.so smacofSSMUEngine.c libsmacofSSMU.a
+	R CMD SHLIB -o libsmacofSSPU.so smacofSSPUEngine.c libsmacofSSPU.a
 
 format: $(includes) $(sources)
 	clang-format -i -style="{BasedOnStyle: google, IndentWidth: 4}" \
@@ -56,5 +61,4 @@ clean:
 	rm -f $(objects) ../*/*.o
 
 pristine: clean
-	rm -f smacofSSMU smacofSSMUDebug \
-		libsmacofSSMU.a libsmacofSSMU.so libsmacofSSMU.0.dylib libsmacofSSMU.dylib
+	rm -f smacofSSPU smacofSSPUDebug libsmacofSSPU.* 

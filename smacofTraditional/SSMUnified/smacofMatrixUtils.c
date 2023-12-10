@@ -1,4 +1,4 @@
-#include "smacofCommon.h"
+#include "smacof.h"
 
 // make an n x p matrix
 
@@ -19,7 +19,7 @@ double *smacofMakeAnyVector(const int n) {
 // a strict lower diagonal matrix of order n is
 // a lower diagonal matrix of order n - 1
 
-double **smacofMakeLowerTriangularMatrix(const int n) {
+double **smacofMakeSymmetricMatrix(const int n) {
     double **x = (double **)calloc(n, sizeof(double *));
     for (int i = 0; i < n; i++) {
         x[i] = (double *)calloc((i + 1), sizeof(double));
@@ -34,13 +34,20 @@ void smacofCopyAnyMatrix(const int n, const int p, double **x, double **y) {
     return;
 }
 
-void smacofCopyAnyVector(const int n, double *x, double *y) {
+void smacofCopySymmetricMatrix(const int n, double **x, double **y) {
+    for (int i = 0; i < n; i++) {
+        memcpy(y[i], x[i], (size_t)((i + 1) * sizeof(double)));
+    }
+    return;
+}
+
+void smacofCopyVector(const int n, double *x, double *y) {
     memcpy(y, x, (size_t)(n * sizeof(double)));
 }
 
 // free any matrix
 
-void smacofFreeAnyMatrix(const int n, double **x) {
+void smacofFreeMatrix(const int n, double **x) {
     for (int i = 0; i < n; i++) {
         free(x[i]);
     }
@@ -48,7 +55,7 @@ void smacofFreeAnyMatrix(const int n, double **x) {
     return;
 }
 
-void smacofFreeAnyVector(double *x) {
+void smacofFreeVector(double *x) {
     free(x);
     return;
 }

@@ -5,14 +5,15 @@ int main(int argc, char **argv) {
     printf("I need a job name on the command line as argument\n");
     exit(EXIT_FAILURE);
   }
-  char *name = argv[1], *progname = &(argv[0])[6];
+  char *name = argv[1];
+  char *progname = &(argv[0])[6];
   char parname[80], deltaname[80], xoldname[80], outname[80];
   int n = 0, p = 0, init = 0, itmax = 0, feps = 0, ceps = 0, verbose = 0,
-      width = 0, precision = 0, relax = 0, interval = 0, degree = 0, ordinal = 0;
+      width = 0, precision = 0, relax = 0, interval = 0;
   char *iterstring = (char *)malloc((size_t)256 * sizeof(char));
   strcat(strcpy(parname, name), "Parameters.txt");
   (void)smacofReadParameterFile(parname, &n, &p, &itmax, &init, &feps, &ceps,
-                                &width, &precision, &verbose, &relax, &interval, &degree, &ordinal);
+                                &width, &precision, &verbose, &relax, &interval);
   strcat(strcpy(deltaname, name), "Delta.txt");
   double *deltavec = smacofMakeAnyVector(n * n);
   (void)smacofReadInputFile(deltaname, deltavec);
@@ -30,14 +31,14 @@ int main(int argc, char **argv) {
   double **bmat = smacofMakeAnyMatrix(n, n);
   double **xnew = smacofMakeAnyMatrix(n, p);
   // now we are getting serious
-  (void)smacofSSMUEngine(n, p, delta, xold, xnew, dmat, dhat, bmat, init, itmax, feps,
-                         ceps, verbose, relax, iterstring);
+  (void)smacofSSIUEngine(n, p, delta, xold, xnew, dmat, dhat, bmat, init, itmax, feps,
+                         ceps, verbose, relax, interval, iterstring);
   // phew
   strcat(strcat(strcpy(outname, name), progname), "Output.txt");
   FILE *stream = fopen(outname, "w");
   assert(stream != NULL);
-  (void)smacofUnweightedWriteOutputFile(stream, n, p, width, precision, delta, dhat,
-                                        xnew, dmat, bmat, iterstring);
+  (void)smacofUnweightedWriteOutputFile(stream, n, p, width, precision, delta,
+                                        dhat, xnew, dmat, bmat, iterstring);
   (void)smacofFreeAnyMatrix(n, delta);
   (void)smacofFreeAnyMatrix(n, dmat);
   (void)smacofFreeAnyMatrix(n, dhat);
