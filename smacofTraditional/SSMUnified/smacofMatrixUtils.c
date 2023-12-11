@@ -10,7 +10,7 @@ double **smacofMakeAnyMatrix(const int n, const int p) {
     return x;
 }
 
-double *smacofMakeAnyVector(const int n) {
+double *smacofMakeVector(const int n) {
     double *x = (double *)calloc((size_t)n, sizeof(double *));
     return x;
 }

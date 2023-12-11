@@ -8,6 +8,7 @@ verbose = 1
 relax = 1
 width = 10
 precision = 6
+weights = 1
 jitmax = 100
 jeps = 15
 ordinal = 0

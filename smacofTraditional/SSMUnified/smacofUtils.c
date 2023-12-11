@@ -2,7 +2,7 @@
 
 void smacofDoubleCenter(const int n, double **x, double **y) {
     double tsum = 0.0, cell = 0.0;
-    double *rsum = smacofMakeAnyVector(n);
+    double *rsum = smacofMakeVector(n);
     for (int i = 0; i < n; i++) {
         double sum = 0.0;
         for (int j = 0; j < n; j++) {
@@ -55,16 +55,14 @@ double smacofMaxDistanceDifference(const int n, double **x, double **y) {
 
 double smacofRMSDifference(const int n, const int p, double **x, double **y) {
     int np = n * p;
-    double sumxx = 0.0, sumyy = 0.0, sumxy = 0.0;
+    double s1 = 0.0, s2 = 0.0;
     for (int s = 0; s < p; s++) {
         for (int i = 0; i < n; i++) {
-            sumxx += SQUARE(x[i][s]);
-            sumyy += SQUARE(y[i][s]);
-            sumxy += x[i][s] * y[i][s];
+            s1 += SQUARE(x[i][s] - y[i][s]);
+            s2 += SQUARE(x[i][s] + y[i][s]);
         }
     }
-    double rms = sqrt(fabs((sumxx + sumyy - 2.0 * fabs(sumxy))) / ((double)np));
-    return rms;
+    return sqrt(MIN(s1, s2) / ((double)np));
 }
 
 void smacofZeroAnyMatrix(const int n, const int p, double **x) {

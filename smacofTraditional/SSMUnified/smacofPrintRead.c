@@ -24,8 +24,8 @@ void smacofPrintSymmetricMatrix(FILE *stream, const int n, const int width,
     return;
 }
 
-void smacofPrintAnyVector(FILE *stream, const int n, const int width,
-                          const int precision, double *x) {
+void smacofPrintVector(FILE *stream, const int n, const int width,
+                       const int precision, double *x) {
     for (int i = 0; i < n; i++) {
         fprintf(stream, "%+*.*f", width, precision, x[i]);
     }
@@ -35,33 +35,25 @@ void smacofPrintAnyVector(FILE *stream, const int n, const int width,
 
 // read data from a file into a one-dimensional array
 
-void smacofReadInputFile(const char *fname, double *delta) {
-    FILE *stream = fopen(fname, "r");
-    if (stream == NULL) {
-        printf("Error: cannot open %s\n", fname);
-        exit(EXIT_FAILURE);
-    }
+void smacofReadInputFile(FILE *stream, double *delta) {
     int k = 0;
     fscanf(stream, "%lf", &delta[k]);
     while (!feof(stream)) {
         k++;
         fscanf(stream, "%lf", &delta[k]);
     }
-    fclose(stream);
     return;
 }
 
-void smacofReadParameterFile(const char *fname, int *n, int *p, int *itmax,
+void smacofReadParameterFile(FILE *stream, int *n, int *p, int *itmax,
                              int *init, int *feps, int *ceps, int *width,
                              int *precision, int *verbose, int *relax,
                              int *interval, int *degree, int *ordinal,
                              int *weights) {
-    FILE *stream = fopen(fname, "r");
-    assert(stream != NULL);
     char *line = (char *)malloc(80 * sizeof(char));
     char aux1[20], aux2[20];
     int par = 0;
-    size_t len = 0;
+    size_t len = 256;
     ssize_t read;
     while ((read = getline(&line, &len, stream)) != -1) {
         sscanf(line, "%s %s %d", aux1, aux2, &par);
@@ -108,7 +100,6 @@ void smacofReadParameterFile(const char *fname, int *n, int *p, int *itmax,
             *weights = par;
         }
     }
-    fclose(stream);
     free(line);
     return;
 }
@@ -116,21 +107,21 @@ void smacofReadParameterFile(const char *fname, int *n, int *p, int *itmax,
 void smacofWriteEvalBmat(FILE *stream, const int n, const int width,
                          const int precision, double **bmat, double **vmat) {
     double **evec = smacofMakeAnyMatrix(n, n);
-    double *eval = smacofMakeAnyVector(n);
+    double *eval = smacofMakeVector(n);
     double **bvec = smacofMakeAnyMatrix(n, n);
     (void)smacofDoubleJacobi(n, bmat, vmat, evec, eval, 100, 15, false);
     fprintf(stream, "Eigenvalues V^+B(X)\n\n");
-    (void)smacofPrintAnyVector(stream, n, width, precision, eval);
-    (void)smacofFreeAnyVector(eval);
-    (void)smacofFreeAnyMatrix(n, evec);
-    (void)smacofFreeAnyMatrix(n, bvec);
+    (void)smacofPrintVector(stream, n, width, precision, eval);
+    (void)smacofFreeVector(eval);
+    (void)smacofFreeMatrix(n, evec);
+    (void)smacofFreeMatrix(n, bvec);
 }
 
 void smacofWriteOutputFile(FILE *stream, const int n, const int p,
                            const bool weights, const int width,
                            const int precision, double **delta, double **w,
-                           double **xnew, double **dmat, double **bmat,
-                           char *iterstring) {
+                           double **dhat, double **xnew, double **dmat,
+                           double **bmat, char *iterstring) {
     time_t t = time(NULL);
     struct tm *tm = localtime(&t);
     fprintf(stream, "%s\n\n", asctime(tm));
@@ -142,8 +133,8 @@ void smacofWriteOutputFile(FILE *stream, const int n, const int p,
         fprintf(stream, "Weights\n\n");
         smacofPrintSymmetricMatrix(stream, n, width, precision, w);
     }
-    fprintf(stream, "Weights W\n\n");
-    smacofPrintSymmetricMatrix(stream, n, width, precision, w);
+    fprintf(stream, "Transformed Data Dhat\n\n");
+    smacofPrintSymmetricMatrix(stream, n, width, precision, dhat);
     fprintf(stream, "Configuration X\n\n");
     smacofPrintAnyMatrix(stream, n, p, width, precision, xnew);
     fprintf(stream, "Distance Matrix D(X)\n\n");

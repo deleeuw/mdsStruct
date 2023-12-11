@@ -1,4 +1,4 @@
-#include "smacofCommon.h"
+#include "smacof.h"
 
 void smacofJacobi(const int n, const int m, double **a, double **evec,
                   double *eval, const int itmax, const int ieps,
@@ -7,8 +7,8 @@ void smacofJacobi(const int n, const int m, double **a, double **evec,
     double d = 0.0, s = 0.0, t = 0.0, u = 0.0, v = 0.0, p = 0.0, q = 0.0,
            r = 0.0;
     double fold = 0.0, fnew = 0.0, eps = pow(10.0, -(double)ieps);
-    double *oldi = smacofMakeAnyVector(n);
-    double *oldj = smacofMakeAnyVector(n);
+    double *oldi = smacofMakeVector(n);
+    double *oldj = smacofMakeVector(n);
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             evec[i][j] = (i == j) ? 1.0 : 0.0;
@@ -32,14 +32,20 @@ void smacofJacobi(const int n, const int m, double **a, double **evec,
                 u = sqrt((1 + t) / 2);
                 v = s * sqrt((1 - t) / 2);
                 for (int k = 0; k < n; k++) {
-                    oldi[k] = a[i][k];
-                    oldj[k] = a[j][k];
+                    int ik = MIN(i, k);
+                    int ki = MAX(i, k);
+                    int jk = MIN(j, k);
+                    int kj = MAX(j, k);
+                    oldi[k] = a[ki][ik];
+                    oldj[k] = a[kj][jk];
                 }
                 for (int k = 0; k < n; k++) {
-                    a[i][k] = u * oldi[k] - v * oldj[k];
-                    a[j][k] = v * oldi[k] + u * oldj[k];
-                    a[k][i] = a[i][k];
-                    a[k][j] = a[j][k];
+                    int ik = MIN(i, k);
+                    int ki = MAX(i, k);
+                    int jk = MIN(j, k);
+                    int kj = MAX(j, k);
+                    a[ki][ik] = u * oldi[k] - v * oldj[k];
+                    a[kj][jk] = v * oldi[k] + u * oldj[k];
                 }
                 for (int k = 0; k < n; k++) {
                     oldi[k] = evec[k][i];
@@ -50,7 +56,6 @@ void smacofJacobi(const int n, const int m, double **a, double **evec,
                 a[i][i] = SQUARE(u) * q + SQUARE(v) * r - 2 * u * v * p;
                 a[j][j] = SQUARE(v) * q + SQUARE(u) * r + 2 * u * v * p;
                 a[i][j] = u * v * (q - r) + (SQUARE(u) - SQUARE(v)) * p;
-                a[j][i] = a[i][j];
             }
         }
         fnew = 0.0;
@@ -69,51 +74,23 @@ void smacofJacobi(const int n, const int m, double **a, double **evec,
     for (int i = 0; i < m; i++) {
         eval[i] = a[i][i];
     }
-    (void)smacofFreeAnyVector(oldi);
-    (void)smacofFreeAnyVector(oldj);
+    (void)smacofFreeVector(oldi);
+    (void)smacofFreeVector(oldj);
     return;
 }
 
-/*
-void smacofDoubleJacobi(const int n, double **a, double **b, double **evec,
-                        double *eval, double **bvec, double *bval,
-                        const int itmax, const int ieps, const bool verbose) {
-    (void)smacofJacobi(n, n, b, evec, eval, itmax, ieps, verbose);
-    (void)smacofCopyAnyMatrix(n, n, evec, bvec);
-    (void)smacofCopyAnyVector(n, eval, bval);
-    double **h = smacofMakeAnyMatrix(n, n);
-    (void)smacofMultiplyAnyAnyMatrix(n, n, n, a, evec, h);
-    (void)smacofCrossprodAnyAnyMatrix(n, n, n, evec, h, a);
-    // X'AX with X=K\Lambda^{-1/2}
-    double *div = smacofMakeAnyVector(n);
-    for (int i = 0; i < n; i++) {
-        div[i] = sqrt(fabs(bval[i]));
-        if (div[i] < 1e-15) {
-            div[i] = 0.0;
-        } else {
-            div[i] = 1.0 / div[i];
-        }
-    }
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            a[i][j] *= (div[i] * div[j]);
-        }
-    }
-    (void)smacofJacobi(n, n, a, evec, eval, itmax, ieps, false);
-    (void)smacofPrintAnyVector(n, 15, 10, eval);
-    (void)smacofFreeAnyMatrix(n, h);
-    (void)smacofFreeAnyVector(div);
-}
-*/
+// U = X'AX thus U is symmetric
 
-void smacofMultipleAnySymmetricAnyMatrix(const int n, const int m, double **x,
+void smacofMultiplyAnySymmetricAnyMatrix(const int n, const int m, double **x,
                                          double **a, double **u) {
     for (int i = 0; i < m; i++) {
-        for (int j = 0; j < m; j++) {
+        for (int j = 0; j <= i; j++) {
             double sum = 0.0;
             for (int k = 0; k < n; k++) {
                 for (int l = 0; l < n; l++) {
-                    sum += x[k][i] * x[l][j] * a[k][l];
+                    int kl = MAX(k, l);
+                    int lk = MIN(k, l);
+                    sum += x[k][i] * x[l][j] * a[kl][lk];
                 }
             }
             u[i][j] = sum;
@@ -141,18 +118,18 @@ void smacofDoubleJacobi(const int n, double **a, double **b, double **evec,
                         double *eval, const int itmax, const int ieps,
                         const bool verbose) {
     double **bvec = smacofMakeAnyMatrix(n, n);
-    double *bval = smacofMakeAnyVector(n);
+    double *bval = smacofMakeVector(n);
     double **v = smacofMakeAnyMatrix(n, n);
     double **u = smacofMakeAnyMatrix(n, n);
     (void)smacofJacobi(n, n, b, bvec, bval, itmax, ieps, verbose);
     (void)smacofScaleMatrixColumns(n, n, -0.5, bvec, bval, v);
-    (void)smacofMultipleAnySymmetricAnyMatrix(n, n, v, a, u);
+    (void)smacofMultiplyAnySymmetricAnyMatrix(n, n, v, a, u);
     (void)smacofJacobi(n, n, u, bvec, eval, itmax, ieps, verbose);
     (void)smacofMultiplyAnyAnyMatrix(n, n, n, v, bvec, evec);
-    (void)smacofFreeAnyMatrix(n, bvec);
-    (void)smacofFreeAnyMatrix(n, v);
-    (void)smacofFreeAnyMatrix(n, u);
-    (void)smacofFreeAnyVector(bval);
+    (void)smacofFreeMatrix(n, bvec);
+    (void)smacofFreeMatrix(n, v);
+    (void)smacofFreeMatrix(n, u);
+    (void)smacofFreeVector(bval);
 }
 
 // for now without pivoting
@@ -199,26 +176,35 @@ void smacofCenter(const int n, const int p, double **x) {
 
 void smacofInvertPositiveDefiniteMatrix(const int n, double **x,
                                         double **xinv) {
-    (void)smacofCopyAnyMatrix(n, n, x, xinv);
+    (void)smacofCopySymmetricMatrix(n, x, xinv);
     for (int k = 0; k < n; k++) {
         double piv = xinv[k][k];
         for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
+            for (int j = 0; j <= i; j++) {
                 if ((i != k) && (j != k)) {
-                    xinv[i][j] -= xinv[i][k] * xinv[k][j] / piv;
+                    int ik = MAX(i, k);
+                    int ki = MIN(k, i);
+                    int jk = MAX(j, k);
+                    int kj = MIN(j, k);
+                    xinv[i][j] -= xinv[ik][ki] * xinv[jk][kj] / piv;
                 }
             }
         }
         for (int i = 0; i < n; i++) {
-            if (i != k) {
+            if (i == k) {
+                continue;
+            }
+            if (i < k) {
                 xinv[k][i] /= piv;
+            }
+            if (i > k) {
                 xinv[i][k] /= piv;
             }
         }
         xinv[k][k] = -1.0 / piv;
     }
     for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
+        for (int j = 0; j <= i; j++) {
             xinv[i][j] = -xinv[i][j];
         }
     }
@@ -227,8 +213,8 @@ void smacofInvertPositiveDefiniteMatrix(const int n, double **x,
 
 void smacofMultiplyAnyAnyMatrix(const int n, const int p, const int m,
                                 double **x, double **y, double **z) {
-    for (int j = 0; j < m; j++) {
-        for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
             double sum = 0.0;
             for (int k = 0; k < p; k++) {
                 sum += x[i][k] * y[k][j];
@@ -253,17 +239,31 @@ void smacofCrossprodAnyAnyMatrix(const int n, const int p, const int m,
     return;
 }
 
+void smacofCrossProdAnyMatrix(const int n, const int p, double **x,
+                              double **z) {
+    for (int j = 0; j < p; j++) {
+        for (int k = 0; k < p; k++) {
+            int jk = MAX(j, k);
+            int kj = MIN(j, k);
+            double sum = 0.0;
+            for (int i = 0; i < n; i++) {
+                sum += x[i][k] * x[i][j];
+            }
+            z[jk][kj] = sum;
+        }
+    }
+    return;
+}
+
 void smacofMultiplySymmetricAnyMatrix(const int n, const int p, double **a,
                                       double **x, double **y) {
     for (int s = 0; s < p; s++) {
         for (int i = 0; i < n; i++) {
             double sum = 0.0;
             for (int k = 0; k < n; k++) {
-                if (k <= i) {
-                    sum += a[i][k] * x[k][s];
-                } else {
-                    sum += a[k][i] * x[k][s];
-                }
+                int ik = MAX(i, k);
+                int ki = MIN(i, k);
+                sum += a[ik][ki] * x[k][s];
             }
             y[i][s] = sum;
         }
@@ -272,8 +272,8 @@ void smacofMultiplySymmetricAnyMatrix(const int n, const int p, double **a,
 }
 
 void smacofDistance(const int n, const int p, double **x, double **d) {
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j <= i; j++) {
             double sum = 0.0;
             for (int s = 0; s < p; s++) {
                 sum += SQUARE(x[i][s] - x[j][s]);
@@ -283,3 +283,34 @@ void smacofDistance(const int n, const int p, double **x, double **d) {
     }
     return;
 }
+
+/*
+int main(void) {
+    int n = 4, m = 1;
+    double **a = smacofMakeSymmetricMatrix(n);
+    double **evec = smacofMakeAnyMatrix(n, n);
+    double *eval = smacofMakeVector(n);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j <= i; j++) {
+            a[i][j] = (double)(i + j);
+        }
+    }
+    (void)smacofJacobi(n, m, a, evec, eval, 100, 15, true);
+    smacofPrintVector(stdout, n, 15, 10, eval);
+    smacofPrintAnyMatrix(stdout, n, n, 15, 10, evec);
+}
+*/
+
+/*
+  int main(void) {
+  int n = 4;
+  double **a = smacofMakeSymmetricMatrix(n);
+  double **b = smacofMakeSymmetricMatrix(n);
+  a[0][0] = a[1][1] = a[2][2] = a[3][3] = 3;
+  a[1][0] = a[2][0] = a[2][1] = a[3][0] = a[3][1] = a[3][2] = -1;
+  (void)smacofInverseVMatrix(n, a, b);
+  (void)smacofPrintSymmetricMatrix(stdout, n, 15, 10, a);
+  (void)smacofPrintSymmetricMatrix(stdout, n, 15, 10, b);
+}
+
+*/
