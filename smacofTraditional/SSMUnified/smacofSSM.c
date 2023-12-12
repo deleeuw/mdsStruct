@@ -15,8 +15,8 @@ int main(int argc, char **argv) {
     strcat(strcpy(parname, name), "Parameters.txt");
     FILE *parameterfile = fopen(parname, "r");
     assert(smacofReadParameterFile != NULL);
-    (void)smacofReadParameterFile(parameterfile, &n, &p, &itmax, &init, &feps, &ceps,
-                                  &width, &precision, &verbose, &relax,
+    (void)smacofReadParameterFile(parameterfile, &n, &p, &itmax, &init, &feps,
+                                  &ceps, &width, &precision, &verbose, &relax,
                                   &interval, &degree, &ordinal, &weights);
     fclose(parameterfile);
     int m = n * (n - 1) / 2;
@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
     (void)smacofSymmetricRtoC(n, deltavec, delta);
     fclose(deltafile);
     double **vmat = smacofMakeSymmetricMatrix(n);
-    double **vinv = smacofMakeSymmetricMatrix(n);      
+    double **vinv = smacofMakeSymmetricMatrix(n);
     double **w = smacofMakeSymmetricMatrix(n);
     if (weights) {
         strcat(strcpy(weightsname, name), "Weights.txt");
@@ -38,6 +38,7 @@ int main(int argc, char **argv) {
         double *weightsvec = smacofMakeVector(m);
         (void)smacofReadInputFile(weightsfile, weightsvec);
         (void)smacofSymmetricRtoC(n, weightsvec, w);
+        (void)smacofFreeVector(weightsvec);
         fclose(weightsfile);
     }
     strcat(strcpy(xoldname, name), "Xold.txt");
@@ -48,6 +49,7 @@ int main(int argc, char **argv) {
     double **xold = smacofMakeAnyMatrix(n, p);
     (void)smacofFromAnyRtoC(n, p, xoldvec, xold);
     fclose(xoldfile);
+    //(void)smacofPrintAnyMatrix(stdout, n, p, 15, 10, xold);
     (void)smacofFreeVector(deltavec);
     (void)smacofFreeVector(xoldvec);
     double **dmat = smacofMakeAnyMatrix(n, n);

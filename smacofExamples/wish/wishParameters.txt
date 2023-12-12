@@ -1,11 +1,11 @@
-n = 9
+n = 12
 p = 2
-init = 3
+init = 1
 itmax = 1000
 feps = 15
 ceps = 10
 verbose = 1
-relax = 1
+relax = 0
 width = 10
 precision = 6
 weights = 1

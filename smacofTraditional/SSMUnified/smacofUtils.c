@@ -55,14 +55,38 @@ double smacofMaxDistanceDifference(const int n, double **x, double **y) {
 
 double smacofRMSDifference(const int n, const int p, double **x, double **y) {
     int np = n * p;
-    double s1 = 0.0, s2 = 0.0;
+    double stot = 0.0;
     for (int s = 0; s < p; s++) {
+        double s1 = 0.0, s2 = 0.0;
         for (int i = 0; i < n; i++) {
             s1 += SQUARE(x[i][s] - y[i][s]);
             s2 += SQUARE(x[i][s] + y[i][s]);
         }
+        stot += MIN(s1, s2);
     }
-    return sqrt(MIN(s1, s2) / ((double)np));
+    return sqrt(stot / ((double)np));
+}
+
+double smacofEtaSquareDifference(const int n, const int p, const bool weights,
+                                 double **vmat, double **x, double **y) {
+    double stot = 0.0, fac = 0.0;
+    for (int s = 0; s < p; s++) {
+        for (int i = 0; i < n; i++) {
+            double dfi = x[i][s] - y[i][s];
+            for (int j = 0; j < n; j++) {
+                if (weights) {
+                    int ij = MAX(i, j);
+                    int ji = MIN(i, j);
+                    fac = vmat[ij][ji];
+                } else {
+                    fac = (i == j) ? 2.0 / ((double)n) : -2.0 / ((double)(n * (n - 1)));
+                }
+                double dfj = x[j][s] - y[j][s];
+                stot += fac * dfi * dfj;
+            }
+        }
+    }
+    return stot;
 }
 
 void smacofZeroAnyMatrix(const int n, const int p, double **x) {

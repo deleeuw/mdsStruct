@@ -10,23 +10,29 @@ void smacofSSMEngine(const int n, const int p, double **delta, double **w,
     double sold = 0.0, snew = 0.0;
     double eps1 = pow(10.0, -(double)ieps1), eps2 = pow(10.0, -(double)ieps2);
     double chnew = 0.0, chold = INFINITY, rate = 0.0;
-    (void)smacofNormWeights(n, w);
-    (void)smacofCopyAnyMatrix(n, n, delta, dhat);
-    (void)smacofNormDelta(n, weights, dhat, w);
     if (weights) {
+        (void)smacofNormWeights(n, w);
         (void)smacofMakeVMatrix(n, w, vmat);
         (void)smacofInverseVMatrix(n, vmat, vinv);
     }
+    (void)smacofCopyAnyMatrix(n, n, delta, dhat);
+    (void)smacofNormDelta(n, weights, dhat, w);
     (void)smacofInitial(n, p, init, weights, dhat, w, xold);
     (void)smacofDistance(n, p, xold, dmat);
     (void)smacofScale(n, p, weights, dhat, w, dmat, xold);
     sold = smacofStress(n, weights, dhat, w, dmat);
+    //(void)smacofPrintSymmetricMatrix(stdout, n, 15, 10, w);
+    //(void)smacofPrintSymmetricMatrix(stdout, n, 15, 10, vmat);
+    //(void)smacofPrintSymmetricMatrix(stdout, n, 15, 10, vinv);
+    //(void)smacofPrintSymmetricMatrix(stdout, n, 15, 10, dhat);
+    //(void)smacofPrintSymmetricMatrix(stdout, n, 15, 10, dmat);
+    //(void)smacofPrintAnyMatrix(stdout, n, p, 15, 10, xold);
     // the fun starts here
     while (true) {
-        (void)smacofGuttmanTransform(n, p, weights, delta, dmat, w, vinv, xold,
+        (void)smacofGuttmanTransform(n, p, weights, dhat, dmat, w, vinv, xold,
                                      xnew);
-        chnew = smacofRMSDifference(n, p, xold, xnew);
-        rate = chnew / chold;
+        chnew = smacofEtaSquareDifference(n, p, weights, vmat, xold, xnew);
+        rate = sqrt(chnew / chold);
         if (relax) {
             (void)smacofRelax(n, p, rate, xold, xnew);
         }
@@ -34,7 +40,7 @@ void smacofSSMEngine(const int n, const int p, double **delta, double **w,
         snew = smacofStress(n, weights, dhat, w, dmat);
         if (verbose) {
             printf(
-                "itel %3d sold %12.10f snew %12.10f sdif %+12.10f rmsd "
+                "itel %3d sold %12.10f snew %12.10f sdif %+12.10f etad "
                 "%+12.10f rate %12.10f\n",
                 itel, sold, snew, sold - snew, chnew, rate);
         }

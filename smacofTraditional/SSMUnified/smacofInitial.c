@@ -13,7 +13,7 @@ void smacofInitial(const int n, const int p, const int init, const bool weights,
             (void)smacofInitRandom(n, p, xold);
             break;
     }
-    (void)smacofCenter(n, p, xold   );
+    (void)smacofCenter(n, p, xold);
     return;
 }
 

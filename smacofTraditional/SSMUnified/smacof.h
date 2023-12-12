@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
 #include <time.h>
 
@@ -48,6 +49,8 @@ double smacofMaxConfigurationDifference(const int n, const int p, double **x,
                                         double **y);
 double smacofMaxDistanceDifference(const int n, double **dold, double **dnew);
 double smacofRMSDifference(const int n, const int p, double **x, double **y);
+double smacofEtaSquareDifference(const int n, const int p, const bool weights,
+                                 double **vmat, double **x, double **y);
 void smacofZeroAnyMatrix(const int n, const int p, double **x);
 
 // smacofMatrixUtils.c

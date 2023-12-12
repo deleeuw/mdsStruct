@@ -18,7 +18,7 @@ double smacofStress(const int n, const bool weights, double **delta, double **w,
 }
 
 void smacofGuttmanTransform(const int n, const int p, const bool weights,
-                            double **delta, double **dmat, double **w,
+                            double **dhat, double **dmat, double **w,
                             double **vinv, double **xold, double **xnew) {
     double **xaux = smacofMakeAnyMatrix(n, p);
     for (int s = 0; s < p; s++) {
@@ -30,13 +30,13 @@ void smacofGuttmanTransform(const int n, const int p, const bool weights,
                 }
                 int ij = MAX(i, j);
                 int ji = MIN(i, j);
-                double rat = (delta[ij][ji] / dmat[ij][ji]);
+                double rat = (dhat[ij][ji] / dmat[ij][ji]);
                 if (weights) {
                     rat *= w[ij][ji];
-                } 
+                }
                 sum += rat * (xold[i][s] - xold[j][s]);
             }
-            xaux[i][s] = -sum;
+            xaux[i][s] = sum;
         }
     }
     if (weights) {
@@ -101,4 +101,3 @@ void smacofInverseVMatrix(const int n, double **vmat, double **vinv) {
     smacofFreeMatrix(n, vadd);
     return;
 }
-

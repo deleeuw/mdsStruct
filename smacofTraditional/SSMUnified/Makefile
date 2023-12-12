@@ -41,7 +41,7 @@ clib: ofiles
 smacofSSM: clib
 	$(CC) -o smacofSSM $(CFLAGS) $(drivers) -lsmacofSSM
 	mv -f smacofSSM /usr/local/bin
-
+	
 smacofSSMUDebug: $(includes) $(sources) $(drivers)
 	$(CC) -o smacofSSMDebug $(DFLAGS) $(drivers) $(sources)
 
