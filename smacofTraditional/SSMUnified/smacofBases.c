@@ -1,6 +1,4 @@
-#include "smacofCommon.h"
-
-/*
+#include "smacof.h"
 
 bool smacofCheckIncreasing(const int ninner, const double *innerknots,
 const double lowend, const double highend) { if (lowend >= innerknots[0]) {
@@ -102,7 +100,6 @@ void smacofBsplineBasis(const double *x, const double *knots, const int *order,
     free(q);
     return;
 }
-*/
 
 // Given a matrix X form the matrix of decreasing sums in the same space
 // y_{ij} = sum_{k=j}^m x_{ik}

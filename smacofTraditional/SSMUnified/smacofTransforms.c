@@ -1,4 +1,4 @@
-#include "smacofUnweighted.h"
+#include "smacof.h"
 
 void smacofUnweightedInterval(const int n, double **delta, double **dmat,
                               double **dhat) {

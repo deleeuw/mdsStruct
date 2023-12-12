@@ -121,7 +121,7 @@ void smacofWriteOutputFile(FILE *stream, const int n, const int p,
                            const bool weights, const int width,
                            const int precision, double **delta, double **w,
                            double **dhat, double **xnew, double **dmat,
-                           double **bmat, char *iterstring) {
+                           char *iterstring) {
     time_t t = time(NULL);
     struct tm *tm = localtime(&t);
     fprintf(stream, "%s\n\n", asctime(tm));
@@ -139,7 +139,5 @@ void smacofWriteOutputFile(FILE *stream, const int n, const int p,
     smacofPrintAnyMatrix(stream, n, p, width, precision, xnew);
     fprintf(stream, "Distance Matrix D(X)\n\n");
     smacofPrintSymmetricMatrix(stream, n, width, precision, dmat);
-    fprintf(stream, "Fit Matrix B(X)\n\n");
-    smacofPrintSymmetricMatrix(stream, n, width, precision, bmat);
     return;
 }

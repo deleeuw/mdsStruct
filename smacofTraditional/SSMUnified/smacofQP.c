@@ -1,7 +1,7 @@
 
 #include "smacof.h"
 
-void smacofUnweightedDykstra(double *x, double *z,
+void smacofDykstra(double *x, double *z,
                    const double *amat, const int *pn, const int *pm,
                    const int *pitmax, const int *peps, const bool *pverbose) {
     int n = *pn, m = *pm, nm = n * m, nrow = 1, itel = 1, itmax = *pitmax;

@@ -1,6 +1,6 @@
-#include "smacofUnweighted.h"
+#include "smacof.h"
 
-void smacoUnweightedGradient(const int n, const int p, const double *delta, const double *dold,
+void smacofGradient(const int n, const int p, const double *delta, const double *dold,
                             const double *xold, double *xnew, double *gradient) {
     int n = *pn, p = *pp, np = n * p, m = n * (n - 1) / 2;
     double *bmat = (double *)calloc((size_t)m, (size_t)sizeof(double));
@@ -32,7 +32,7 @@ void smacoUnweightedGradient(const int n, const int p, const double *delta, cons
 // matrices. Then add V and B to diagonal blocks
 // It makes sense to use an array of p(p+1)/2 pointers, each pointing to a block
 
-void smacofUnweightedHessian(const int p, const int p, const double *delta,
+void smacofHessian(const int p, const int p, const double *delta,
                            const double *xconf, const double *dmat,
                            const double *bmat) {
     int n = *pn, p = *pp, m = n * (n - 1) / 2, q = p * (p - 1) / 2;

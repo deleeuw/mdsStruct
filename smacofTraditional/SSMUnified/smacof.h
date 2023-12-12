@@ -6,13 +6,14 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
 
 #define PI (2.0 * asin(1.0))
 #define SSIZE 80
 #define OSIZE 256
+#define HAVE 4
 
 #define SQUARE(x) ((x) * (x))
 #define THIRD(x) ((x) * (x) * (x))
@@ -129,7 +130,7 @@ void smacofWriteOutputFile(FILE *stream, const int n, const int p,
                            const bool weights, const int width,
                            const int precision, double **delta, double **w,
                            double **dhat, double **xnew, double **dmat,
-                           double **bmat, char *iterstring);
+                           char *iterstring);
 
 void smacofWriteEvalBmat(FILE *stream, const int n, const int width,
                          const int precision, double **bmat, double **vmat);

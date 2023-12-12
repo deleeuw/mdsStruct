@@ -79,7 +79,8 @@ double smacofEtaSquareDifference(const int n, const int p, const bool weights,
                     int ji = MIN(i, j);
                     fac = vmat[ij][ji];
                 } else {
-                    fac = (i == j) ? 2.0 / ((double)n) : -2.0 / ((double)(n * (n - 1)));
+                    fac = (i == j) ? 2.0 / ((double)n)
+                                   : -2.0 / ((double)(n * (n - 1)));
                 }
                 double dfj = x[j][s] - y[j][s];
                 stot += fac * dfi * dfj;

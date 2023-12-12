@@ -1,4 +1,4 @@
-#include "../Common/smacofCommon.h"
+#include "smacof.h"
 
 void smacofUnweightedCCD(const int n, const int m, double *y,
                          double *b, double *dhat, double **x,

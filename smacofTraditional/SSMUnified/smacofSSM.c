@@ -28,10 +28,12 @@ int main(int argc, char **argv) {
     double **delta = smacofMakeSymmetricMatrix(n);
     (void)smacofSymmetricRtoC(n, deltavec, delta);
     fclose(deltafile);
-    double **vmat = smacofMakeSymmetricMatrix(n);
-    double **vinv = smacofMakeSymmetricMatrix(n);
-    double **w = smacofMakeSymmetricMatrix(n);
+    (void)smacofFreeVector(deltavec);
+    double **w = NULL, **vmat = NULL, **vinv = NULL;
     if (weights) {
+        vmat = smacofMakeSymmetricMatrix(n);
+        vinv = smacofMakeSymmetricMatrix(n);
+        w = smacofMakeSymmetricMatrix(n);
         strcat(strcpy(weightsname, name), "Weights.txt");
         FILE *weightsfile = fopen(weightsname, "r");
         assert(weightsfile != NULL);
@@ -40,21 +42,26 @@ int main(int argc, char **argv) {
         (void)smacofSymmetricRtoC(n, weightsvec, w);
         (void)smacofFreeVector(weightsvec);
         fclose(weightsfile);
+    } else {
+        vmat = smacofMakeSymmetricMatrix(0);
+        vinv = smacofMakeSymmetricMatrix(0);
+        w = smacofMakeSymmetricMatrix(0);
     }
-    strcat(strcpy(xoldname, name), "Xold.txt");
-    FILE *xoldfile = fopen(xoldname, "r");
-    assert(xoldfile != NULL);
-    double *xoldvec = smacofMakeVector(n * p);
-    (void)smacofReadInputFile(xoldfile, xoldvec);
-    double **xold = smacofMakeAnyMatrix(n, p);
-    (void)smacofFromAnyRtoC(n, p, xoldvec, xold);
-    fclose(xoldfile);
-    //(void)smacofPrintAnyMatrix(stdout, n, p, 15, 10, xold);
-    (void)smacofFreeVector(deltavec);
-    (void)smacofFreeVector(xoldvec);
+    double **xold = NULL;
+    if (init == HAVE) {
+        strcat(strcpy(xoldname, name), "Xold.txt");
+        FILE *xoldfile = fopen(xoldname, "r");
+        assert(xoldfile != NULL);
+        double *xoldvec = smacofMakeVector(n * p);
+        (void)smacofReadInputFile(xoldfile, xoldvec);
+        (void)smacofFromAnyRtoC(n, p, xoldvec, xold);
+        (void)smacofFreeVector(xoldvec);
+        fclose(xoldfile);
+    } else {
+        xold = smacofMakeAnyMatrix(n, p);
+    }
     double **dmat = smacofMakeAnyMatrix(n, n);
     double **dhat = smacofMakeAnyMatrix(n, n);
-    double **bmat = smacofMakeAnyMatrix(n, n);
     double **xnew = smacofMakeAnyMatrix(n, p);
     // now we are getting serious
     (void)smacofSSMEngine(n, p, delta, w, xold, xnew, dmat, dhat, vmat, vinv,
@@ -65,16 +72,17 @@ int main(int argc, char **argv) {
     FILE *stream = fopen(outname, "w");
     assert(stream != NULL);
     (void)smacofWriteOutputFile(stream, n, p, weights, width, precision, delta,
-                                w, dhat, xnew, dmat, bmat, iterstring);
+                                w, dhat, xnew, dmat, iterstring);
     (void)smacofFreeMatrix(n, delta);
     (void)smacofFreeMatrix(n, dmat);
     (void)smacofFreeMatrix(n, dhat);
-    (void)smacofFreeMatrix(n, bmat);
     (void)smacofFreeMatrix(n, xold);
     (void)smacofFreeMatrix(n, xnew);
-    (void)smacofFreeMatrix(n, w);
-    (void)smacofFreeMatrix(n, vmat);
-    (void)smacofFreeMatrix(n, vinv);
+    if (weights) {
+        (void)smacofFreeMatrix(n, w);
+        (void)smacofFreeMatrix(n, vmat);
+        (void)smacofFreeMatrix(n, vinv);
+    }
     free(iterstring);
     fclose(stream);
     return EXIT_SUCCESS;
