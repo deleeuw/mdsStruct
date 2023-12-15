@@ -2,14 +2,16 @@
 
 void smacofSSMEngine(const int n, const int p, double **delta, double **w,
                      double **xold, double **xnew, double **dmat, double **dhat,
-                     double **basis, const int init, const int itmax, const int ieps1,
-                     const int ieps2, const bool verbose, const bool relax,
-                     const bool weights, const int transform, char *iterstring) {
-    int itel = 1;
+                     double **basis, const int init, const int itmax,
+                     const int ieps1, const int ieps2, const bool verbose,
+                     const bool relax, const bool weights, const int transform,
+                     const int degree, const int ordinal, char *iterstring) {
+    int itel = 1, m = n * (n - 1) / 2;
     double sold = 0.0, snew = 0.0, smid = 0.0;
     double eps1 = pow(10.0, -(double)ieps1), eps2 = pow(10.0, -(double)ieps2);
     double chnew = 0.0, chold = INFINITY, rate = 0.0;
     double **vmat = NULL, **vinv = NULL;
+    double *dmatvec = NULL, *dhatvec = NULL, *bcoef = NULL;
     if (weights) {
         vmat = smacofMakeSymmetricMatrix(n);
         vinv = smacofMakeSymmetricMatrix(n);
@@ -20,8 +22,11 @@ void smacofSSMEngine(const int n, const int p, double **delta, double **w,
         vmat = smacofMakeSymmetricMatrix(0);
         vinv = smacofMakeSymmetricMatrix(0);
     }
-    (void)smacofFreeMatrix(n, vmat);
-    (void)smacofFreeMatrix(n, vinv);
+    if ((transform == POLYNOMIAL) || (transform == SPLINICAL)) {
+        dmatvec = smacofMakeVector(m);
+        dhatvec = smacofMakeVector(m);
+        bcoef = smacofMakeVector(degree);
+    }
     (void)smacofCopyAnyMatrix(n, n, delta, dhat);
     (void)smacofNormDelta(n, weights, dhat, w);
     (void)smacofInitial(n, p, init, weights, dhat, w, xold);
@@ -44,18 +49,23 @@ void smacofSSMEngine(const int n, const int p, double **delta, double **w,
             (void)smacofRelax(n, p, rate, xold, xnew);
         }
         (void)smacofDistance(n, p, xnew, dmat);
-        smid = smacofStress(n, weights, dhat, w, dmat);  
+        smid = smacofStress(n, weights, dhat, w, dmat);
         if (transform == INTERVAL) {
-          (void)smacofInterval(n, delta, dmat, dhat);
-          (void)smacofNormDelta(n, weights, dhat, w);
+            (void)smacofInterval(n, delta, dmat, dhat);
+            (void)smacofNormDelta(n, weights, dhat, w);
         }
-        if (transform  == POLYNOMIAL) {
-          ;
+        if (transform == POLYNOMIAL) {
+            (void)smacofSymmetricCtoR(n, dmat, dmatvec);
+            (void)smacofCCD(n, degree, dmatvec, bcoef, dhatvec, basis, 10, 10,
+                            true, ordinal);
+            (void)smacofSymmetricRtoC(n, dhatvec, dhat);
+            (void)smacofNormDelta(n, weights, dhat, w);
         }
         snew = smacofStress(n, weights, dhat, w, dmat);
         if (verbose) {
             printf(
-                "itel %3d sold %12.10f smid %12.10f snew %12.10f sdif %+12.10f etad "
+                "itel %3d sold %12.10f smid %12.10f snew %12.10f sdif %+12.10f "
+                "etad "
                 "%+12.10f rate %12.10f\n",
                 itel, sold, smid, snew, sold - snew, chnew, rate);
         }

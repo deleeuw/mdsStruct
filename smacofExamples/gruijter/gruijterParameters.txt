@@ -1,7 +1,7 @@
 n = 9
 p = 2
 init = 3
-itmax = 10
+itmax = 1000
 feps = 15
 ceps = 10
 verbose = 1

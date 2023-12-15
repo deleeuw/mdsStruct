@@ -1,7 +1,6 @@
 #include "smacof.h"
 
-void smacofInterval(const int n, double **delta, double **dmat,
-                              double **dhat) {
+void smacofInterval(const int n, double **delta, double **dmat, double **dhat) {
     double deltamin = INFINITY, alpha = 0.0, beta = 0.0, gamma = 0.0, s1 = 0.0,
            s2 = 0.0;
     double sed = 0.0, see = 0.0, se = 0.0, sd = 0.0, sdd = 0.0,

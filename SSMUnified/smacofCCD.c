@@ -2,7 +2,7 @@
 
 void smacofCCD(const int n, const int m, double *y, double *b, double *dhat,
                double **x, const int itmax, const int eps, const bool verbose,
-               const bool nonnegative) {
+               const bool ordinal) {
     double *s = (double *)calloc((size_t)m, (size_t)sizeof(double));
     double *r = (double *)calloc((size_t)n, (size_t)sizeof(double));
     double deps = pow(10.0, -(double)eps);
@@ -28,7 +28,7 @@ void smacofCCD(const int n, const int m, double *y, double *b, double *dhat,
                 sum += x[i][j] * r[i];
             }
             chng = -sum / s[j];
-            if (nonnegative) {
+            if (ordinal) {
                 chng = MAX(-b[j], chng);
             }
             meps = MAX(meps, fabs(chng));
@@ -40,7 +40,7 @@ void smacofCCD(const int n, const int m, double *y, double *b, double *dhat,
             }
         }  // end of CCD cycle
         if (verbose) {
-            printf("itel %3d sold %15.10f snew %15.10f meps %15.10f\n", itel,
+            printf("CCD itel %3d sold %15.10f snew %15.10f meps %15.10f\n", itel,
                    sold, snew, meps);
         }
         if ((itel == itmax) || (meps < deps)) {

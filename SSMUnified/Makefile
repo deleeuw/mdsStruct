@@ -12,11 +12,11 @@ sources = \
 	smacofInitial.c \
 	smacofBases.c \
 	smacofTransforms.c \
+	smacofCCD.c \
 	smacofIndices.c \
 	smacofCore.c 
 
 notyet = \
-	smacofCCD.c \
 	smacofQP.c \
 	smacofSort.c \
 	smacofIsotone.c \
@@ -33,33 +33,34 @@ objects = \
 	smacofInitial.o \
 	smacofBases.o \
 	smacofTransforms.o \
+	smacofCCD.o \
 	smacofIndices.o \
 	smacofCore.o 
 
-drivers = smacofSSM.c \
-	smacofSSMEngine.c
+drivers = smacofSS.c \
+	smacofSSEngine.c
 
 includes = smacof.h
 
-all: smacofSSM
+all: smacofSS
 
 ofiles: $(includes) $(sources)
 	$(CC) -c $(CFLAGS) $(sources)
 
 clib: ofiles 
-	ar rcs libsmacofSSM.a $(objects)
-	mv -f libsmacofSSM.a /usr/local/lib
+	ar rcs libsmacofSS.a $(objects)
+	mv -f libsmacofSS.a /usr/local/lib
 	rm -f *.o
 
-smacofSSM: clib
-	$(CC) -o smacofSSM $(CFLAGS) $(drivers) -lsmacofSSM
-	mv -f smacofSSM /usr/local/bin
+smacofSS: clib
+	$(CC) -o smacofSS $(CFLAGS) $(drivers) -lsmacofSS
+	mv -f smacofSS /usr/local/bin
 	
-smacofSSMUDebug: $(includes) $(sources) $(drivers)
-	$(CC) -o smacofSSMDebug $(DFLAGS) $(drivers) $(sources)
+smacofSSDebug: $(includes) $(sources) $(drivers)
+	$(CC) -o smacofSSDebug $(DFLAGS) $(drivers) $(sources)
 
 rlib: ofiles
-	R CMD SHLIB -o libsmacofSSM.so smacofSSMEngine.c libsmacofSSM.a
+	R CMD SHLIB -o libsmacofSS.so smacofSSEngine.c libsmacofSS.a
 
 format: $(includes) $(sources) $(drivers)
 	clang-format -i -style="{BasedOnStyle: google, IndentWidth: 4}" \
@@ -69,5 +70,6 @@ clean:
 	rm -f $(objects) ../*/*.o
 
 pristine: clean
-	rm -f smacofSSM smacofSSMDebug \
-		libsmacofSSM.a libsmacofSSM.so libsmacofSSM.0.dylib libsmacofSSM.dylib
+	rm -f smacofSS smacofSSDebug \
+		libsmacofSS.a libsmacofSS.so libsmacofSS.0.dylib libsmacofSS.dylib
+

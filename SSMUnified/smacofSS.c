@@ -72,8 +72,9 @@ int main(int argc, char **argv) {
     double **dhat = smacofMakeAnyMatrix(n, n);
     double **xnew = smacofMakeAnyMatrix(n, p);
     // now we are getting serious
-    (void)smacofSSMEngine(n, p, delta, w, xold, xnew, dmat, dhat, basis, init, itmax,
-                          feps, ceps, verbose, relax, weights, transform, iterstring);
+    (void)smacofSSMEngine(n, p, delta, w, xold, xnew, dmat, dhat, basis, init,
+                          itmax, feps, ceps, verbose, relax, weights, transform,
+                          degree, ordinal, iterstring);
     // phew
     strcat(strcat(strcpy(outname, name), progname), "Output.txt");
     FILE *stream = fopen(outname, "w");
