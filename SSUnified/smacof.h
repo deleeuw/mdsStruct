@@ -45,9 +45,10 @@ int UINDEX(const int i, const int j, const int n);
 
 // smacofCCD.c
 
-void smacofCCD(const int n, const int m, double *y, double *b, double *dhat,
-               double **x, const int itmax, const int eps, const bool verbose,
-               const bool nonnegative);
+void smacofCCD(const int n, const int degree, double *dmatvec, double *wvec,
+               double *b, double *dhatvec, double **z, const int itmax,
+               const int eps, const bool verbose, const bool weights,
+               const bool ordinal);
 
 // smacofDerivatives.c
 

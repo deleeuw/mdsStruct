@@ -36,7 +36,7 @@ objects = \
 	smacofCCD.o \
 	smacofIndices.o \
 	smacofCore.o 
-
+	
 drivers = smacofSS.c \
 	smacofSSEngine.c
 
@@ -60,7 +60,7 @@ smacofSSDebug: $(includes) $(sources) $(drivers)
 	$(CC) -o smacofSSDebug $(DFLAGS) $(drivers) $(sources)
 
 rlib: ofiles
-	R CMD SHLIB -o libsmacofSS.so smacofSSEngine.c libsmacofSS.a
+	R CMD SHLIB -o libsmacofSS.so smacofSSEngine.c $(LLIB)/libsmacofSS.a
 
 format: $(includes) $(sources) $(drivers)
 	clang-format -i -style="{BasedOnStyle: google, IndentWidth: 4}" \

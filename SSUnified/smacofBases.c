@@ -145,7 +145,7 @@ void smacofBernsteinBase(const int n, const int m, const double *y,
     if (ordinal) {
         (void)smacofCumsumMatrix(n, m, z);
     }
-    (void)smacofPrintAnyMatrix(stdout, n, m, 15, 10, z);
+    //(void)smacofPrintAnyMatrix(stdout, n, m, 15, 10, z);
     return;
 }
 

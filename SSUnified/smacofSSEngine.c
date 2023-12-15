@@ -11,7 +11,7 @@ void smacofSSMEngine(const int n, const int p, double **delta, double **w,
     double eps1 = pow(10.0, -(double)ieps1), eps2 = pow(10.0, -(double)ieps2);
     double chnew = 0.0, chold = INFINITY, rate = 0.0;
     double **vmat = NULL, **vinv = NULL;
-    double *dmatvec = NULL, *dhatvec = NULL, *bcoef = NULL;
+    double *dmatvec = NULL, *dhatvec = NULL, *wvec = NULL, *bcoef = NULL;
     if (weights) {
         vmat = smacofMakeSymmetricMatrix(n);
         vinv = smacofMakeSymmetricMatrix(n);
@@ -26,6 +26,10 @@ void smacofSSMEngine(const int n, const int p, double **delta, double **w,
         dmatvec = smacofMakeVector(m);
         dhatvec = smacofMakeVector(m);
         bcoef = smacofMakeVector(degree);
+        if (weights) {
+            wvec = smacofMakeVector(m);
+            (void)smacofSymmetricCtoR(n, w, wvec);
+        }
     }
     (void)smacofCopyAnyMatrix(n, n, delta, dhat);
     (void)smacofNormDelta(n, weights, dhat, w);
@@ -56,8 +60,8 @@ void smacofSSMEngine(const int n, const int p, double **delta, double **w,
         }
         if (transform == POLYNOMIAL) {
             (void)smacofSymmetricCtoR(n, dmat, dmatvec);
-            (void)smacofCCD(n, degree, dmatvec, bcoef, dhatvec, basis, 10, 10,
-                            true, ordinal);
+            (void)smacofCCD(n, degree, dmatvec, wvec, bcoef, dhatvec, basis, 3,
+                            10, false, weights, ordinal);
             (void)smacofSymmetricRtoC(n, dhatvec, dhat);
             (void)smacofNormDelta(n, weights, dhat, w);
         }
@@ -81,5 +85,16 @@ void smacofSSMEngine(const int n, const int p, double **delta, double **w,
             "itel %3d sold %12.10f snew %12.10f sdif %+12.10f rmsd %+12.10f "
             "rate %12.10f\n",
             itel, sold, snew, sold - snew, chnew, rate);
+    if ((transform == POLYNOMIAL) || (transform == SPLINICAL)) {
+        (void)smacofFreeVector(dhatvec);
+        (void)smacofFreeVector(dmatvec);
+        if (weights) {
+            (void)smacofFreeVector(wvec);
+        }
+    }
+    if (weights) {
+        (void)smacofFreeMatrix(n, vmat);
+        (void)smacofFreeMatrix(n, vinv);
+    }
     return;
 }

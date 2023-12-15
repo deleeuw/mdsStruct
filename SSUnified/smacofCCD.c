@@ -1,31 +1,47 @@
 #include "smacof.h"
 
-void smacofCCD(const int n, const int m, double *y, double *b, double *dhat,
-               double **x, const int itmax, const int eps, const bool verbose,
+void smacofCCD(const int n, const int degree, double *dmatvec, double *wvec,
+               double *b, double *dhatvec, double **z, const int itmax,
+               const int eps, const bool verbose, const bool weights,
                const bool ordinal) {
-    double *s = (double *)calloc((size_t)m, (size_t)sizeof(double));
-    double *r = (double *)calloc((size_t)n, (size_t)sizeof(double));
+    int itel = 1, m = n * (n - 1) / 2;
+    double *s = (double *)calloc((size_t)degree, (size_t)sizeof(double));
+    double *r = (double *)calloc((size_t)m, (size_t)sizeof(double));
     double deps = pow(10.0, -(double)eps);
-    int itel = 1;
-    double sold = 0.0;
-    for (int j = 0; j < m; j++) {
+    double sold = 0.0, fac = 0.0, fic = 1.0 / (double)m;
+    for (int j = 0; j < degree; j++) {
         double sum = 0.0;
-        for (int i = 0; i < n; i++) {
-            sum += SQUARE(x[i][j]);
+        for (int i = 0; i < m; i++) {
+            if (weights) {
+                fac = wvec[i];
+            } else {
+                fac = fic;
+            }
+            sum += fac * SQUARE(z[i][j]);
         }
         s[j] = sum;
     }
-    for (int i = 0; i < n; i++) {
-        r[i] = dhat[i] - y[i];
-        sold += SQUARE(r[i]);
+    for (int i = 0; i < m; i++) {
+        r[i] = dhatvec[i] - dmatvec[i];
+        if (weights) {
+            fac = wvec[i];
+        } else {
+            fac = fic;
+        }
+        sold += fac * SQUARE(r[i]);
     }
     double snew = sold;
     while (true) {
         double meps = 0.0, chng = 0.0;
-        for (int j = 0; j < m; j++) {
+        for (int j = 0; j < degree; j++) {
             double sum = 0.0;
-            for (int i = 0; i < n; i++) {
-                sum += x[i][j] * r[i];
+            for (int i = 0; i < m; i++) {
+                if (weights) {
+                    fac = wvec[i];
+                } else {
+                    fac = fic;
+                }
+                sum += fac * z[i][j] * r[i];
             }
             chng = -sum / s[j];
             if (ordinal) {
@@ -34,15 +50,16 @@ void smacofCCD(const int n, const int m, double *y, double *b, double *dhat,
             meps = MAX(meps, fabs(chng));
             b[j] += chng;
             snew -= s[j] * chng * chng;
-            for (int i = 0; i < n; i++) {
-                dhat[i] += chng * x[i][j];
-                r[i] += chng * x[i][j];
+            for (int i = 0; i < m; i++) {
+                dhatvec[i] += chng * z[i][j];
+                r[i] += chng * z[i][j];
             }
         }  // end of CCD cycle
         if (verbose) {
-            printf("CCD itel %3d sold %15.10f snew %15.10f meps %15.10f\n", itel,
-                   sold, snew, meps);
+            printf("CCD itel %3d sold %15.10f snew %15.10f meps %15.10f\n",
+                   itel, sold, snew, meps);
         }
+        // (void)smacofPrintVector(stdout, m, 15, 10, dhatvec);
         if ((itel == itmax) || (meps < deps)) {
             break;
         }

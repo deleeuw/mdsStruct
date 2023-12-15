@@ -165,6 +165,22 @@ infinite iterative procedure to compute the optial $\Delta\in\mathfrak{D}$ for g
 a more balanced approach is to take several inner iterations in the first step and several
 innewr iterations in the second step. How many of each, nobody knows.
 
+# CCD
+
+Minimize
+$$
+\sigma(\beta,X)=\mathop{\sum\sum}_{1\leq i<j\leq n}w_{ij}(\delta_{ij}(\beta)-d_{ij}(X))^2=(Z\beta-d)'W(Z\beta-d)
+$$
+$\beta^+=\beta+\epsilon\ e_j$ and $Z\beta^+=Z\beta+\epsilon z_j$
+$$
+\sigma(\beta^+, X)=((Z\beta-d)+\epsilon z_j)'W((Z\beta-d)+\epsilon z_j)=\sigma(\beta,X)+2\epsilon z_j'Wr+\epsilon^2z_j'Wz_j
+$$
+$$
+\epsilon^+=\frac{r'Wz_j}{z_j'Wz_j}
+$$
+(in the ordinal case $\epsilon^+=0$ if $r'Wz_j<0$). Now update $\beta$ and update
+$r$ wih $r^+=Z\beta^+-d=r+\epsilon^+ z_j$.
+
 # Memory
 
 This is mostly for my own education.
