@@ -1,9 +1,8 @@
 #include "smacof.h"
 
-void smacofUnweightedCCD(const int n, const int m, double *y,
-                         double *b, double *dhat, double **x,
-                         const int itmax, const int eps,
-                         const bool verbose, const bool nonnegative) {
+void smacofCCD(const int n, const int m, double *y, double *b, double *dhat,
+               double **x, const int itmax, const int eps, const bool verbose,
+               const bool nonnegative) {
     double *s = (double *)calloc((size_t)m, (size_t)sizeof(double));
     double *r = (double *)calloc((size_t)n, (size_t)sizeof(double));
     double deps = pow(10.0, -(double)eps);
@@ -35,7 +34,7 @@ void smacofUnweightedCCD(const int n, const int m, double *y,
             meps = MAX(meps, fabs(chng));
             b[j] += chng;
             snew -= s[j] * chng * chng;
-            for (int  i = 0; i < n; i++) {
+            for (int i = 0; i < n; i++) {
                 dhat[i] += chng * x[i][j];
                 r[i] += chng * x[i][j];
             }

@@ -1,21 +1,21 @@
-n = 9
+n = 36
 p = 2
-init = 3
-itmax = 10
+init = 1
+itmax = 1000
 feps = 15
 ceps = 10
 verbose = 1
-relax = 1
+relax = 0
 width = 10
 precision = 6
 weights = 0
 jitmax = 100
 jeps = 15
 ordinal = 0
-transform = 2
+transform = 0
 degree = 4
 numbknots = 5
 knotplace = 1
-
+interval = 1
 
 

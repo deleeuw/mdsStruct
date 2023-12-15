@@ -13,7 +13,12 @@
 #define PI (2.0 * asin(1.0))
 #define SSIZE 80
 #define OSIZE 256
-#define HAVE 4
+#define HAVE_INIT 4
+
+#define RATIO 0
+#define INTERVAL 1
+#define POLYNOMIAL 2
+#define SPLINICAL 3
 
 #define SQUARE(x) ((x) * (x))
 #define THIRD(x) ((x) * (x) * (x))
@@ -24,10 +29,32 @@
 
 void smacofSSMEngine(const int n, const int p, double **delta, double **w,
                      double **xold, double **xnew, double **dmat, double **dhat,
-                     double **vmat, double **vinv, const int init,
-                     const int itmax, const int ieps1, const int ieps2,
-                     const bool verbose, const bool relax, const bool weights,
-                     char *iterstring);
+                     double **basis, const int init, const int itmax, const int ieps1,
+                     const int ieps2, const bool verbose, const bool relax,
+                     const bool weights, const int transform, char *iterstring);
+
+// smacofIndices.c
+
+int VINDEX(const int i);
+int MINDEX(const int i, const int j, const int n);
+int SINDEX(const int i, const int j, const int n);
+int PINDEX(const int i, const int j, const int n);
+int TINDEX(const int i, const int j, const int n);
+int UINDEX(const int i, const int j, const int n);
+
+// smacofCCD.c
+
+void smacofCCD(const int n, const int m, double *y, double *b, double *dhat,
+               double **x, const int itmax, const int eps, const bool verbose,
+               const bool nonnegative);
+
+// smacofDerivatives.c
+
+void smacofGradient(const int n, const int p, const double *delta,
+                    const double *dold, const double *xold, double *xnew,
+                    double *gradient);
+void smacofHessian(const int n, const int p, const double *delta,
+                   const double *xconf, const double *dmat, const double *bmat);
 
 // smacofRCTranslation.c
 
@@ -83,11 +110,9 @@ void smacofDistance(const int n, const int p, double **x, double **d);
 void smacofCenter(const int n, const int p, double **x);
 void smacofScaleMatrixColumns(const int n, const int m, const double p,
                               double **x, double *y, double **v);
-void smacofMultipleAnySymmetricAnyMatrix(const int n, const int m, double **x,
+void smacofMultiplyAnySymmetricAnyMatrix(const int n, const int m, double **x,
                                          double **a, double **u);
-void smacofDoubleJacobi(const int n, double **a, double **b, double **evec,
-                        double *eval, const int itmax, const int ieps,
-                        const bool verbose);
+
 
 // smacofPrintRead.c
 
@@ -101,8 +126,16 @@ void smacofReadInputFile(FILE *stream, double *delta);
 void smacofReadParameterFile(FILE *stream, int *n, int *p, int *itmax,
                              int *init, int *feps, int *ceps, int *width,
                              int *precision, int *verbose, int *relax,
-                             int *interval, int *degree, int *ordinal,
+                             int *transform, int *degree, int *ordinal,
                              int *weights);
+void smacofWriteOutputFile(FILE *stream, const int n, const int p,
+                           const bool weights, const int width,
+                           const int precision, double **delta, double **w,
+                           double **dhat, double **xnew, double **dmat,
+                           char *iterstring);
+void smacofWriteEvalBmat(FILE *stream, const int n, const int width,
+                         const int precision, double **bmat, double **vmat);
+double smacofMaxWeights(const int n, double **w);
 
 // smacofAccelerate.c
 
@@ -114,8 +147,8 @@ void smacofRelax(const int n, const int p, const double rate, double **xold,
 void smacofBernsteinBase(const int n, const int m, const double *x,
                          const bool ordinal, double **z);
 void smacofCumsumMatrix(const int n, const int m, double **x);
-void smacofCheckIncreasing(const double *, const double *, const double *,
-                           const int *, bool *);
+bool smacofCheckIncreasing(const int ninner, const double *innerknots,
+                           const double lowend, const double highend);
 void smacofExtendPartition(const double *, const int *, const int *,
                            const int *, const double *, const double *,
                            double *);
@@ -125,17 +158,6 @@ void smacofBsplines(const double *, const double *, const int *, const int *,
                     int *, double *);
 void smacofBsplineBasis(const double *, const double *, const int *,
                         const int *, const int *, double *);
-
-void smacofWriteOutputFile(FILE *stream, const int n, const int p,
-                           const bool weights, const int width,
-                           const int precision, double **delta, double **w,
-                           double **dhat, double **xnew, double **dmat,
-                           char *iterstring);
-
-void smacofWriteEvalBmat(FILE *stream, const int n, const int width,
-                         const int precision, double **bmat, double **vmat);
-
-double smacofMaxWeights(const int n, double **w);
 
 // smacofCore.c
 
@@ -166,13 +188,18 @@ void smacofInitMaximumSum(const int n, const int p, const bool weights,
 void smacofInitial(const int n, const int p, const int init, const bool weights,
                    double **delta, double **w, double **xini);
 
-// smacofDerivatives.c
+// smacofQP.c
 
-void smacofGradient(const double **delta, const double **w, const double *vinv,
-                    const double *dold, const double *xold, double *xnew,
-                    double *gradient, const unsigned *pn, const unsigned *pp);
-void smacofHessian(const int n, const int p, double **delta, double **w,
-                   double **dmat, double **bmat, double **vmat, double **x,
-                   double ****hessian);
+void smacofDykstra(double *x, double *z, const double *amat, const int *pn,
+                   const int *pm, const int *pitmax, const int *peps,
+                   const bool *pverbose);
+
+void smacofHildreth(double *x, const double *y, double *lbd, const double *amat,
+                    const int *pn, const int *pm, const int *pitmax,
+                    const int *peps, const bool *pverbose);
+
+// smacofTransforms.c
+
+void smacofInterval(const int n, double **delta, double **dmat, double **dhat);
 
 #endif /* SMACOF_H */

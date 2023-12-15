@@ -1,9 +1,9 @@
 
 #include "smacof.h"
 
-void smacofDykstra(double *x, double *z,
-                   const double *amat, const int *pn, const int *pm,
-                   const int *pitmax, const int *peps, const bool *pverbose) {
+void smacofDykstra(double *x, double *z, const double *amat, const int *pn,
+                   const int *pm, const int *pitmax, const int *peps,
+                   const bool *pverbose) {
     int n = *pn, m = *pm, nm = n * m, nrow = 1, itel = 1, itmax = *pitmax;
     double eps = pow((double)10, (double)-*peps);
     bool verbose = *pverbose;
@@ -93,10 +93,9 @@ void smacofDykstra(double *x, double *z,
     free(xaux);
 }
 
-void smacofHildreth(double *x, const double *y, double *lbd,
-                    const double *amat, const int *pn,
-                    const int *pm, const int *pitmax, const int *peps,
-                    const bool *pverbose) {
+void smacofHildreth(double *x, const double *y, double *lbd, const double *amat,
+                    const int *pn, const int *pm, const int *pitmax,
+                    const int *peps, const bool *pverbose) {
     int n = *pn, m = *pm, itel = 1, itmax = *pitmax;
     double eps = pow((double)10, (double)-*peps);
     bool verbose = *pverbose;
@@ -143,7 +142,8 @@ void smacofHildreth(double *x, const double *y, double *lbd,
     }
 }
 
-int main() {
+/*
+ * int main() {
     double amat[12] = {-1.0, 0.0, 0.0,  1.0, -1.0, 0.0,
                        0.0,  1.0, -1.0, 0.0, 0.0,  1.0};
     double weights[4] = {1.0, 1.0, 1.0, 1.0};
@@ -158,3 +158,4 @@ int main() {
     (void)smacofHildreth(x, y, lbd, weights, amat, &n, &m, &itmax, &eps,
                          &verbose);
 }
+*/

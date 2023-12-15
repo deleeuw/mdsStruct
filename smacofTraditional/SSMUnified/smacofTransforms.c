@@ -1,6 +1,6 @@
 #include "smacof.h"
 
-void smacofUnweightedInterval(const int n, double **delta, double **dmat,
+void smacofInterval(const int n, double **delta, double **dmat,
                               double **dhat) {
     double deltamin = INFINITY, alpha = 0.0, beta = 0.0, gamma = 0.0, s1 = 0.0,
            s2 = 0.0;

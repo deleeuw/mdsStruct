@@ -48,7 +48,7 @@ void smacofReadInputFile(FILE *stream, double *delta) {
 void smacofReadParameterFile(FILE *stream, int *n, int *p, int *itmax,
                              int *init, int *feps, int *ceps, int *width,
                              int *precision, int *verbose, int *relax,
-                             int *interval, int *degree, int *ordinal,
+                             int *transform, int *degree, int *ordinal,
                              int *weights) {
     char *line = (char *)malloc(80 * sizeof(char));
     char aux1[20], aux2[20];
@@ -87,8 +87,8 @@ void smacofReadParameterFile(FILE *stream, int *n, int *p, int *itmax,
         if (strcmp("relax", aux1) == 0) {
             *relax = par;
         }
-        if (strcmp("interval", aux1) == 0) {
-            *interval = par;
+        if (strcmp("transform", aux1) == 0) {
+            *transform = par;
         }
         if (strcmp("degree", aux1) == 0) {
             *degree = par;

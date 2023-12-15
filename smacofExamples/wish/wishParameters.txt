@@ -16,6 +16,6 @@ transform = 0
 degree = 4
 numbknots = 5
 knotplace = 1
-interval = 1
+interval = 0
 
 

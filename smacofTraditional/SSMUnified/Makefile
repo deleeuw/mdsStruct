@@ -10,7 +10,17 @@ sources = \
 	smacofAccelerate.c \
 	smacofNorm.c \
 	smacofInitial.c \
+	smacofBases.c \
+	smacofTransforms.c \
+	smacofIndices.c \
 	smacofCore.c 
+
+notyet = \
+	smacofCCD.c \
+	smacofQP.c \
+	smacofSort.c \
+	smacofIsotone.c \
+	smacofDerivatives.c 
 
 objects = \
 	smacofPrintRead.o \
@@ -21,6 +31,9 @@ objects = \
 	smacofAccelerate.o \
 	smacofNorm.o \
 	smacofInitial.o \
+	smacofBases.o \
+	smacofTransforms.o \
+	smacofIndices.o \
 	smacofCore.o 
 
 drivers = smacofSSM.c \
