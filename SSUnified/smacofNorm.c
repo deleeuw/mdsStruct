@@ -23,6 +23,27 @@ void smacofNormDelta(const int n, const bool weights, double **delta,
     return;
 }
 
+void smacofSqueezeDelta(const int n, const bool ratio, double **delta,
+                        double **dhat) {
+    double min = INFINITY, max = -INFINITY;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j <= i; j++) {
+            max = MAX(max, delta[i][j]);
+            min = MIN(min, delta[i][j]);
+        }
+    }
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j <= i; j++) {
+            if (ratio) {
+                dhat[i][j] = delta[i][j] / max;
+            } else {
+                dhat[i][j] = (delta[i][j] - min) / (max - min);
+            }
+        }
+    }
+    return;
+}
+
 void smacofScale(const int n, const int p, const bool weights, double **delta,
                  double **w, double **dold, double **xold) {
     double swde = 0.0, swdd = 0.0, lbd = 0.0;

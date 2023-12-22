@@ -60,7 +60,7 @@ smacofSSDebug: $(includes) $(sources) $(drivers)
 	$(CC) -o smacofSSDebug $(DFLAGS) $(drivers) $(sources)
 
 rlib: ofiles
-	R CMD SHLIB -o libsmacofSS.so smacofSSEngine.c $(LLIB)/libsmacofSS.a
+	R CMD SHLIB -o libsmacofSS.so smacofSSEngineR.c $(sources)
 
 format: $(includes) $(sources) $(drivers)
 	clang-format -i -style="{BasedOnStyle: google, IndentWidth: 4}" \

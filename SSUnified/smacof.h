@@ -27,12 +27,19 @@
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 #define KDELTA(i, j) (((i) == (j)) ? 1 : 0)
 
-void smacofSSMEngine(const int n, const int p, double **delta, double **w,
+void smacofSSEngine(const int n, const int p, double **delta, double **w,
                      double **xold, double **xnew, double **dmat, double **dhat,
                      double **basis, const int init, const int itmax,
                      const int ieps1, const int ieps2, const bool verbose,
                      const bool relax, const bool weights, const int transform,
                      const int degree, const int ordinal, char *iterstring);
+
+void smacofSSEngineR(const int n, const int p, double *deltavec, double *wvec,
+                     double *xoldvec, double *xnewvec, double *dmatvec, double *dhatvec,
+                     const int init, const int itmax,
+                     const int ieps1, const int ieps2, const bool verbose,
+                     const bool relax, const bool weights, const int transform,
+                     const int degree, const int ordinal);
 
 // smacofIndices.c
 
@@ -60,7 +67,7 @@ void smacofHessian(const int n, const int p, const double *delta,
 
 // smacofRCTranslation.c
 
-void smacofFromAnyRtoC(const int nrow, const int ncol, const double *rmatrix,
+void smacofAnyRtoC(const int nrow, const int ncol, const double *rmatrix,
                        double **cmatrix);
 void smacofFromSymmetricHollowRtoC(const int n, const double *rmatrix,
                                    double **cmatrix);
@@ -68,9 +75,8 @@ void smacofSymmetricRtoC(const int n, const double *rmatrix, double **cmatrix);
 void smacofSymmetricCtoR(const int n, double **x, double *y);
 void smacofFromLowerTriangularRtoC(const int n, const double *rvector,
                                    double **cmatrix);
-void smacofFromAnyCtoR(const int nrow, const int ncol, const double **cmatrix,
+void smacofAnyCtoR(const int nrow, const int ncol, const double **cmatrix,
                        double *rmatrix);
-void smacofFromSymmetricCtoR(const int n, double **x, double *y);
 
 // smacofUtils.c
 

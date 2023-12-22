@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
         assert(xoldfile != NULL);
         double *xoldvec = smacofMakeVector(n * p);
         (void)smacofReadInputFile(xoldfile, xoldvec);
-        (void)smacofFromAnyRtoC(n, p, xoldvec, xold);
+        (void)smacofAnyRtoC(n, p, xoldvec, xold);
         (void)smacofFreeVector(xoldvec);
         fclose(xoldfile);
     }
@@ -72,9 +72,9 @@ int main(int argc, char **argv) {
     double **dhat = smacofMakeAnyMatrix(n, n);
     double **xnew = smacofMakeAnyMatrix(n, p);
     // now we are getting serious
-    (void)smacofSSMEngine(n, p, delta, w, xold, xnew, dmat, dhat, basis, init,
-                          itmax, feps, ceps, verbose, relax, weights, transform,
-                          degree, ordinal, iterstring);
+    (void)smacofSSEngine(n, p, delta, w, xold, xnew, dmat, dhat, basis, init,
+                         itmax, feps, ceps, verbose, relax, weights, transform,
+                         degree, ordinal, iterstring);
     // phew
     strcat(strcat(strcpy(outname, name), progname), "Output.txt");
     FILE *stream = fopen(outname, "w");
