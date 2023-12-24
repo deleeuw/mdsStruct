@@ -48,8 +48,10 @@ void smacofReadInputFile(FILE *stream, double *delta) {
 void smacofReadParameterFile(FILE *stream, int *n, int *p, int *itmax,
                              int *init, int *feps, int *ceps, int *width,
                              int *precision, int *verbose, int *relax,
-                             int *transform, int *degree, int *ordinal,
-                             int *weights) {
+                             int *degree, int *ordinal, int *weights,
+                             int *iknots, double *lowend, double *highend,
+                             int *anchor, int *knotspots, int *ninner,
+                             int *percentiles) {
     char *line = (char *)malloc(80 * sizeof(char));
     char aux1[20], aux2[20];
     int par = 0;
@@ -87,9 +89,6 @@ void smacofReadParameterFile(FILE *stream, int *n, int *p, int *itmax,
         if (strcmp("relax", aux1) == 0) {
             *relax = par;
         }
-        if (strcmp("transform", aux1) == 0) {
-            *transform = par;
-        }
         if (strcmp("degree", aux1) == 0) {
             *degree = par;
         }
@@ -98,6 +97,27 @@ void smacofReadParameterFile(FILE *stream, int *n, int *p, int *itmax,
         }
         if (strcmp("weights", aux1) == 0) {
             *weights = par;
+        }
+        if (strcmp("iknots", aux1) == 0) {
+            *iknots = par;
+        }
+        if (strcmp("lowend", aux1) == 0) {
+            *lowend = par;
+        }
+        if (strcmp("highend", aux1) == 0) {
+            *highend = par;
+        }
+        if (strcmp("anchor", aux1) == 0) {
+            *anchor = par;
+        }
+        if (strcmp("knotspots", aux1) == 0) {
+            *knotspots = par;
+        }
+        if (strcmp("ninner", aux1) == 0) {
+            *ninner = par;
+        }
+        if (strcmp("percentiles", aux1) == 0) {
+            *percentiles = par;
         }
     }
     free(line);

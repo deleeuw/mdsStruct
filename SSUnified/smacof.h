@@ -13,7 +13,8 @@
 #define PI (2.0 * asin(1.0))
 #define SSIZE 80
 #define OSIZE 256
-#define HAVE_INIT 4
+#define HAVE_INIT_CONFIGURATION 4
+#define HAVE_INNER_KNOTS 1
 
 #define RATIO 0
 #define INTERVAL 1
@@ -28,18 +29,11 @@
 #define KDELTA(i, j) (((i) == (j)) ? 1 : 0)
 
 void smacofSSEngine(const int n, const int p, double **delta, double **w,
-                     double **xold, double **xnew, double **dmat, double **dhat,
-                     double **basis, const int init, const int itmax,
-                     const int ieps1, const int ieps2, const bool verbose,
-                     const bool relax, const bool weights, const int transform,
-                     const int degree, const int ordinal, char *iterstring);
-
-void smacofSSEngineR(const int n, const int p, double *deltavec, double *wvec,
-                     double *xoldvec, double *xnewvec, double *dmatvec, double *dhatvec,
-                     const int init, const int itmax,
-                     const int ieps1, const int ieps2, const bool verbose,
-                     const bool relax, const bool weights, const int transform,
-                     const int degree, const int ordinal);
+                    double **xold, double **xnew, double **dmat, double **dhat,
+                    double **basis, const int init, const int itmax,
+                    const int ieps1, const int ieps2, const bool verbose,
+                    const bool relax, const bool weights, const int degree,
+                    const int ordinal, char *iterstring);
 
 // smacofIndices.c
 
@@ -68,7 +62,7 @@ void smacofHessian(const int n, const int p, const double *delta,
 // smacofRCTranslation.c
 
 void smacofAnyRtoC(const int nrow, const int ncol, const double *rmatrix,
-                       double **cmatrix);
+                   double **cmatrix);
 void smacofFromSymmetricHollowRtoC(const int n, const double *rmatrix,
                                    double **cmatrix);
 void smacofSymmetricRtoC(const int n, const double *rmatrix, double **cmatrix);
@@ -76,7 +70,7 @@ void smacofSymmetricCtoR(const int n, double **x, double *y);
 void smacofFromLowerTriangularRtoC(const int n, const double *rvector,
                                    double **cmatrix);
 void smacofAnyCtoR(const int nrow, const int ncol, const double **cmatrix,
-                       double *rmatrix);
+                   double *rmatrix);
 
 // smacofUtils.c
 
@@ -134,8 +128,10 @@ void smacofReadInputFile(FILE *stream, double *delta);
 void smacofReadParameterFile(FILE *stream, int *n, int *p, int *itmax,
                              int *init, int *feps, int *ceps, int *width,
                              int *precision, int *verbose, int *relax,
-                             int *transform, int *degree, int *ordinal,
-                             int *weights);
+                             int *degree, int *ordinal, int *weights,
+                             int *iknots, double *lowend, double *highend,
+                             int *anchor, int *knotspots, int *ninner,
+                             int *percentiles);
 void smacofWriteOutputFile(FILE *stream, const int n, const int p,
                            const bool weights, const int width,
                            const int precision, double **delta, double **w,
@@ -155,17 +151,21 @@ void smacofRelax(const int n, const int p, const double rate, double **xold,
 void smacofBernsteinBase(const int n, const int m, const double *x,
                          const bool ordinal, double **z);
 void smacofCumsumMatrix(const int n, const int m, double **x);
-bool smacofCheckIncreasing(const int ninner, const double *innerknots,
-                           const double lowend, const double highend);
-void smacofExtendPartition(const double *, const int *, const int *,
-                           const int *, const double *, const double *,
-                           double *);
-void smacofBisect(const double *, const double *, const int *, const int *,
-                  int *);
-void smacofBsplines(const double *, const double *, const int *, const int *,
-                    int *, double *);
-void smacofBsplineBasis(const double *, const double *, const int *,
-                        const int *, const int *, double *);
+void smacofCheckIncreasing(const double *innerknots, const double *lowend,
+                           const double *highend, const int *ninner,
+                           bool *fail);
+void smacofExtendPartition(const double *innerknots, const int *multiplicities,
+                           const int *order, const int *ninner,
+                           const double *lowend, const double *highend,
+                           double *extended);
+void smacofBisect(const double *x, const double *knots, const int *lowindex,
+                  const int *highindex, int *index);
+void smacofBsplines(const double *x, const double *knots, const int *order,
+                    const int *nknots, int *index, double *q);
+void smacofBsplineBasis(const double *x, double *knots, const int *order,
+                        const int *nknots, const int *nvalues, double *result);
+void smacofMakeInnerKnots(const int ninner,  // const bool percentiles,
+                          double *innerknots);
 
 // smacofCore.c
 

@@ -7,19 +7,23 @@ int main(int argc, char **argv) {
     }
     char *name = argv[1], *progname = &(argv[0])[6];
     char parname[SSIZE], deltaname[SSIZE], xoldname[SSIZE], outname[SSIZE],
-        weightsname[SSIZE];
+        weightsname[SSIZE], iknotname[SSIZE];
     int n = 0, p = 0, init = 0, itmax = 0, feps = 0, ceps = 0, verbose = 0,
-        width = 0, precision = 0, relax = 0, transform = 0, degree = 0,
-        ordinal = 0, weights = 0;
+        width = 0, precision = 0, relax = 0, degree = 0, ordinal = 0,
+        weights = 0, iknots = 0, anchor = 0, knotspots = 0, ninner = 0,
+        percentiles = 0;
+    double lowend = 0.0, highend = 0.0;
     char *iterstring = (char *)malloc((size_t)OSIZE * sizeof(char));
     strcat(strcpy(parname, name), "Parameters.txt");
     FILE *parameterfile = fopen(parname, "r");
     assert(smacofReadParameterFile != NULL);
-    (void)smacofReadParameterFile(parameterfile, &n, &p, &itmax, &init, &feps,
-                                  &ceps, &width, &precision, &verbose, &relax,
-                                  &transform, &degree, &ordinal, &weights);
+    (void)smacofReadParameterFile(
+        parameterfile, &n, &p, &itmax, &init, &feps, &ceps, &width, &precision,
+        &verbose, &relax, &degree, &ordinal, &weights, &iknots, &lowend,
+        &highend, &anchor, &knotspots, &ninner, &percentiles);
     fclose(parameterfile);
-    int m = n * (n - 1) / 2;
+    int m = n * (n - 1) / 2, order = degree + 1, nknots = ninner + (2 * order),
+        span = nknots - order;
     strcat(strcpy(deltaname, name), "Delta.txt");
     FILE *deltafile = fopen(deltaname, "r");
     assert(deltafile != NULL);
@@ -43,7 +47,7 @@ int main(int argc, char **argv) {
         w = smacofMakeSymmetricMatrix(0);
     }
     double **xold = smacofMakeAnyMatrix(n, p);
-    if (init == HAVE_INIT) {
+    if (init == HAVE_INIT_CONFIGURATION) {
         strcat(strcpy(xoldname, name), "Xold.txt");
         FILE *xoldfile = fopen(xoldname, "r");
         assert(xoldfile != NULL);
@@ -53,28 +57,39 @@ int main(int argc, char **argv) {
         (void)smacofFreeVector(xoldvec);
         fclose(xoldfile);
     }
-    double **basis = NULL;
-    if (transform == POLYNOMIAL) {
-        double *y = smacofMakeVector(m);
-        double dmax = -INFINITY, dmin = INFINITY;
-        for (int i = 0; i < m; i++) {
-            dmax = MAX(dmax, deltavec[i]);
-            dmin = MIN(dmin, deltavec[i]);
-        }
-        for (int i = 0; i < m; i++) {
-            y[i] = (deltavec[i] - dmin) / (dmax - dmin);
-        }
-        basis = smacofMakeAnyMatrix(m, degree);
-        (void)smacofBernsteinBase(m, degree, y, ordinal, basis);
-        (void)smacofFreeVector(y);
+    double *innerknots = smacofMakeVector(ninner);
+    int *multiplicities = (int *)calloc((size_t)ninner, (size_t)sizeof(int));
+    for (int i = 0; i < ninner; i++) {
+        multiplicities[i] = 1;
+    }
+    if (iknots == HAVE_INNER_KNOTS) {
+        strcat(strcpy(iknotname, name), "Knots.txt");
+        FILE *iknotfile = fopen(iknotname, "r");
+        assert(iknotfile != NULL);
+        (void)smacofReadInputFile(iknotfile, innerknots);
+        fclose(iknotfile);
+    } else {
+        (void)smacofMakeInnerKnots(ninner, /*percentiles,*/ innerknots);
+    }
+    double *knots = smacofMakeVector(nknots);
+    (void)smacofExtendPartition(innerknots, multiplicities, &order, &ninner,
+                                &lowend, &highend, knots);
+    double *basisvector = smacofMakeVector(m * span);
+    (void)smacofBsplineBasis(deltavec, knots, &order, &nknots, &m, basisvector);
+    double **basis = smacofMakeAnyMatrix(m, span);
+    (void)smacofAnyRtoC(m, span, basisvector, basis);
+    (void)smacofFreeVector(basisvector);
+    (void)smacofPrintAnyMatrix(stdout, m, span, 10, 4, basis);
+    if (ordinal) {
+        (void)smacofCumsumMatrix(n, span, basis);
     }
     double **dmat = smacofMakeAnyMatrix(n, n);
     double **dhat = smacofMakeAnyMatrix(n, n);
     double **xnew = smacofMakeAnyMatrix(n, p);
     // now we are getting serious
     (void)smacofSSEngine(n, p, delta, w, xold, xnew, dmat, dhat, basis, init,
-                         itmax, feps, ceps, verbose, relax, weights, transform,
-                         degree, ordinal, iterstring);
+                         itmax, feps, ceps, verbose, relax, weights, degree,
+                         ordinal, iterstring);
     // phew
     strcat(strcat(strcpy(outname, name), progname), "Output.txt");
     FILE *stream = fopen(outname, "w");

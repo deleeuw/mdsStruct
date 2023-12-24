@@ -4,8 +4,8 @@ void smacofSSEngine(const int n, const int p, double **delta, double **w,
                     double **xold, double **xnew, double **dmat, double **dhat,
                     double **basis, const int init, const int itmax,
                     const int ieps1, const int ieps2, const bool verbose,
-                    const bool relax, const bool weights, const int transform,
-                    const int degree, const int ordinal, char *iterstring) {
+                    const bool relax, const bool weights, const int degree,
+                    const int ordinal, char *iterstring) {
     int itel = 1, m = n * (n - 1) / 2;
     double sold = 0.0, snew = 0.0, smid = 0.0;
     double eps1 = pow(10.0, -(double)ieps1), eps2 = pow(10.0, -(double)ieps2);
@@ -22,14 +22,12 @@ void smacofSSEngine(const int n, const int p, double **delta, double **w,
         vmat = smacofMakeSymmetricMatrix(0);
         vinv = smacofMakeSymmetricMatrix(0);
     }
-    if ((transform == POLYNOMIAL) || (transform == SPLINICAL)) {
-        dmatvec = smacofMakeVector(m);
-        dhatvec = smacofMakeVector(m);
-        bcoef = smacofMakeVector(degree);
-        if (weights) {
-            wvec = smacofMakeVector(m);
-            (void)smacofSymmetricCtoR(n, w, wvec);
-        }
+    dmatvec = smacofMakeVector(m);
+    dhatvec = smacofMakeVector(m);
+    bcoef = smacofMakeVector(degree);
+    if (weights) {
+        wvec = smacofMakeVector(m);
+        (void)smacofSymmetricCtoR(n, w, wvec);
     }
     (void)smacofCopyAnyMatrix(n, n, delta, dhat);
     (void)smacofNormDelta(n, weights, dhat, w);
@@ -54,17 +52,18 @@ void smacofSSEngine(const int n, const int p, double **delta, double **w,
         }
         (void)smacofDistance(n, p, xnew, dmat);
         smid = smacofStress(n, weights, dhat, w, dmat);
-        if (transform == INTERVAL) {
+        /*if (transform == INTERVAL) {
             (void)smacofInterval(n, delta, dmat, dhat);
             (void)smacofNormDelta(n, weights, dhat, w);
         }
-        if (transform == POLYNOMIAL) {
-            (void)smacofSymmetricCtoR(n, dmat, dmatvec);
-            (void)smacofCCD(n, degree, dmatvec, wvec, bcoef, dhatvec, basis, 3,
-                            10, false, weights, ordinal);
-            (void)smacofSymmetricRtoC(n, dhatvec, dhat);
-            (void)smacofNormDelta(n, weights, dhat, w);
-        }
+        */
+        // if (transform == POLYNOMIAL) {
+        (void)smacofSymmetricCtoR(n, dmat, dmatvec);
+        (void)smacofCCD(n, degree, dmatvec, wvec, bcoef, dhatvec, basis, 3, 10,
+                        false, weights, ordinal);
+        (void)smacofSymmetricRtoC(n, dhatvec, dhat);
+        (void)smacofNormDelta(n, weights, dhat, w);
+        //}
         snew = smacofStress(n, weights, dhat, w, dmat);
         if (verbose) {
             printf(
@@ -85,13 +84,13 @@ void smacofSSEngine(const int n, const int p, double **delta, double **w,
             "itel %3d sold %12.10f snew %12.10f sdif %+12.10f rmsd %+12.10f "
             "rate %12.10f\n",
             itel, sold, snew, sold - snew, chnew, rate);
-    if ((transform == POLYNOMIAL) || (transform == SPLINICAL)) {
-        (void)smacofFreeVector(dhatvec);
-        (void)smacofFreeVector(dmatvec);
-        if (weights) {
-            (void)smacofFreeVector(wvec);
-        }
+    // if ((transform == POLYNOMIAL) || (transform == SPLINICAL)) {
+    (void)smacofFreeVector(dhatvec);
+    (void)smacofFreeVector(dmatvec);
+    if (weights) {
+        (void)smacofFreeVector(wvec);
     }
+    //}
     if (weights) {
         (void)smacofFreeMatrix(n, vmat);
         (void)smacofFreeMatrix(n, vinv);

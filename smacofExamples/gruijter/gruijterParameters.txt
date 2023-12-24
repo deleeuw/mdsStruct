@@ -1,7 +1,7 @@
 n = 9
 p = 2
 init = 3
-itmax = 100000
+itmax = 10
 feps = 15
 ceps = 10
 verbose = 1
@@ -11,11 +11,16 @@ precision = 6
 weights = 1
 jitmax = 100
 jeps = 15
-ordinal = 0
-transform = 2
-degree = 4
-numbknots = 5
+ditmax = 3
+deps = 15
+iknots = 1
+ordinal = 1
+degree = 2
+ninner = 5
 knotplace = 1
+lowend = 3.0
+highend = 9.0
+anchor = 0
 
 
 

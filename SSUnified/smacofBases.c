@@ -1,7 +1,8 @@
 #include "smacof.h"
 
-void checkIncreasing(const double *innerknots, const double *lowend,
-                     const double *highend, const int *ninner, bool *fail) {
+void smacofCheckIncreasing(const double *innerknots, const double *lowend,
+                           const double *highend, const int *ninner,
+                           bool *fail) {
     *fail = false;
     if (*lowend >= innerknots[VINDEX(1)]) {
         *fail = true;
@@ -19,9 +20,10 @@ void checkIncreasing(const double *innerknots, const double *lowend,
     }
 }
 
-void extendPartition(const double *innerknots, const int *multiplicities,
-                     const int *order, const int *ninner, const double *lowend,
-                     const double *highend, double *extended) {
+void smacofExtendPartition(const double *innerknots, const int *multiplicities,
+                           const int *order, const int *ninner,
+                           const double *lowend, const double *highend,
+                           double *extended) {
     int k = 1;
     for (int i = 1; i <= *order; i++) {
         extended[VINDEX(k)] = *lowend;
@@ -38,8 +40,8 @@ void extendPartition(const double *innerknots, const int *multiplicities,
     }
 }
 
-void bisect(const double *x, const double *knots, const int *lowindex,
-            const int *highindex, int *index) {
+void smacofBisect(const double *x, const double *knots, const int *lowindex,
+                  const int *highindex, int *index) {
     int l = *lowindex, u = *highindex, mid = 0;
     while ((u - l) > 1) {
         mid = (int)floor((u + l) / 2);
@@ -52,13 +54,39 @@ void bisect(const double *x, const double *knots, const int *lowindex,
     return;
 }
 
-void bsplines(const double *x, const double *knots, const int *order,
-              const int *nknots, int *index, double *q) {
+void smacofMakeInnerKnots(const int ninner,  // const bool percentiles,
+                          double *innerknots) {
+    for (int i = 1; i <= ninner; i++) {
+        innerknots[i - 1] = (double)i / (double)(ninner + 1);
+    }
+    /*
+    if (percentiles) {
+        (void)qsort(dsort, (size_t)n, (size_t)sizeof(double), smacofComparison);
+        for (int i = 0; i < ninner; i++) {
+            innerknots[i] = smacofPercentile(innerknots[i], dsort);
+        }
+    }
+    */
+    return;
+}
+
+/*
+double smacofPercentile(const int n, const double q, double *dsort) {
+    // R8 method of Hyndman and Fan
+    double n1 = floor(q * (n + (1.0 / 3.0))) + (1.0 / 3.0);
+    double n2 = n1 + 1.0;
+    double r = x * (n + 1.0) - floor(q * (n + 1.0));
+    return;
+}
+*/
+
+void smacofBsplines(const double *x, const double *knots, const int *order,
+                    const int *nknots, int *index, double *q) {
     int lowindex = 1, highindex = *nknots, m = *order, j, jp1;
     double drr, dll, saved, term;
     double *dr = (double *)calloc((size_t)m, sizeof(double));
     double *dl = (double *)calloc((size_t)m, sizeof(double));
-    (void)bisect(x, knots, &lowindex, &highindex, index);
+    (void)smacofBisect(x, knots, &lowindex, &highindex, index);
     int l = *index;
     for (j = 1; j <= m; j++) {
         q[VINDEX(j)] = 0.0;
@@ -83,22 +111,22 @@ void bsplines(const double *x, const double *knots, const int *order,
             saved = dll * term;
         }
         q[VINDEX(jp1)] = saved;
-        j  = jp1;
+        j = jp1;
     }
     free(dr);
     free(dl);
     return;
 }
 
-void bsplineBasis(const double *x, const double *knots, const int *order,
-                  const int *nknots, const int *nvalues, double *result) {
+void smacofBsplineBasis(const double *x, double *knots, const int *order,
+                        const int *nknots, const int *nvalues, double *result) {
     int m = *order, l = 0;
     double *q = (double *)calloc((size_t)m + 1, sizeof(double));
     for (int i = 1; i <= *nvalues; i++) {
-        (void)bsplines(x + VINDEX(i), knots, order, nknots, &l, q);
-          for (int j = 1; j <= m; j++) {
-            int r = MIN(l - m + j, *nknots - m);
-            result[MINDEX(i, r, *nvalues)] = q[VINDEX(j)];
+        (void)smacofBsplines(x + VINDEX(i), knots, order, nknots, &l, q);
+        for (int j = 1; j <= m; j++) {
+            //int r = MIN(l - m + j, *nknots - m);
+            result[MINDEX(i, l - m + j, *nvalues)] = q[VINDEX(j)];
         }
     }
     free(q);
@@ -147,35 +175,5 @@ void smacofBernsteinBase(const int n, const int m, const double *y,
     if (ordinal) {
         (void)smacofCumsumMatrix(n, m, z);
     }
-    //(void)smacofPrintAnyMatrix(stdout, n, m, 15, 10, z);
     return;
 }
-
-/*
-double innerknots[3] = {.1, .3, .7};
-int multiplicities[3] = {1, 1, 1};
-const int order = 2;
-const int ninner = 3;
-const double lowend = 0;
-const double highend = 1;
-const int nknots = 7;
-const int nvalues = 10;
-double extended[7] = {0};
-double x[10] = {.1, .2, .3, .4, .5, .6, .7, .8, .9, 1.0};
-double result[50] = {0};
-
-int main(void) {
-    (void)smacofExtendPartition(innerknots, multiplicities, &order, &ninner,
-                                &lowend, &highend, extended);
-    (void)smacofPrintVector(stdout, nknots, 15, 10, extended);
-    (void)smacofBsplineBasis(x, extended, &order, &nknots, &nvalues, result);
-    (void)smacofPrintVector(stdout, 50, 15, 10, result);
-    for (int i = 0; i < 10; i++) {
-        for (int j = 0; j < 5; j++) {
-            printf("%15.10f ", result[MINDEX(i, j, 10)]);
-        }
-        printf("\n");
-    }
-    return EXIT_SUCCESS;
-}
-*/
