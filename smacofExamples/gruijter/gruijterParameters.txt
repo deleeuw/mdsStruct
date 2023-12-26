@@ -1,26 +1,33 @@
 n = 9
 p = 2
-init = 3
-itmax = 10
-feps = 15
-ceps = 10
+haveinit = 3
+itmax = 100
+feps = 10
+ceps = 6
 verbose = 1
 relax = 1
 width = 10
 precision = 6
-weights = 1
+weights = 0
 jitmax = 100
 jeps = 15
-ditmax = 3
-deps = 15
-iknots = 1
-ordinal = 1
+jverbose = 0
+ditmax = 20
+deps = 6
+dverbose = 0
+haveknots = 0
+ordinal = 0
 degree = 2
-ninner = 5
-knotplace = 1
+ninner = 2
 lowend = 3.0
 highend = 9.0
+percentiles = 0
 anchor = 0
+writefile = 0
+makeplots = 0
+transform = 0
+
+
 
 
 

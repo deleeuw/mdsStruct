@@ -171,16 +171,83 @@ Minimize
 $$
 \sigma(\beta,X)=\mathop{\sum\sum}_{1\leq i<j\leq n}w_{ij}(\delta_{ij}(\beta)-d_{ij}(X))^2=(Z\beta-d)'W(Z\beta-d)
 $$
-$\beta^+=\beta+\epsilon\ e_j$ and $Z\beta^+=Z\beta+\epsilon z_j$
 $$
-\sigma(\beta^+, X)=((Z\beta-d)+\epsilon z_j)'W((Z\beta-d)+\epsilon z_j)=\sigma(\beta,X)+2\epsilon z_j'Wr+\epsilon^2z_j'Wz_j
+\sigma(\beta)=\frac{(Z\beta-d)'W(Z\beta-d)}{\beta'Z'WZ\beta}
 $$
-$$
-\epsilon^+=\frac{r'Wz_j}{z_j'Wz_j}
-$$
-(in the ordinal case $\epsilon^+=0$ if $r'Wz_j<0$). Now update $\beta$ and update
-$r$ wih $r^+=Z\beta^+-d=r+\epsilon^+ z_j$.
+$\tilde\beta=\beta+\epsilon\ e_j$ and $Z\tilde\beta=Z\beta+\epsilon z_j$
 
+Let $\delta=Z\beta$ and $r=\delta-d$
+$$
+\sigma(\tilde\beta)=\frac{(r+\epsilon z_j)'W(r+\epsilon z_j)}{(\delta+\epsilon z_j)'W(\delta+\epsilon z_j)}=\frac{r'Wr+2\epsilon r'Wz_j+\epsilon^2 s_j}
+{\delta'W\delta+2\epsilon\delta'Wz_j+\epsilon^2s_j}
+$$
+
+with $s_j=z_j'Wz_j$. Derivative wrt $\epsilon$ is zero if
+$$
+(\delta'W\delta+2\epsilon\delta'Wz_j+\epsilon^2s_j)(r'Wz_j+\epsilon s_j)-
+(r'Wr+2\epsilon r'Wz_j+\epsilon^2 s_j)(\delta'Wz_j+\epsilon s_j)=0.
+$$
+The sign of the derivative at zero is the sign of $\delta'W\delta\times r'Wz_j-r'Wr\times\delta'Wz_j$
+
+
+
+$$
+(\delta'W\delta\times r'Wz_j-r'Wr\times\delta'Wz_j)
+$$
+$$
+\epsilon s_j(\delta'W\delta-r'Wr)
+$$
+
+$$
+\epsilon^2s_j(r'Wz_j-\delta'Wz_j)+2\epsilon^2s_j(\delta'Wz_j-r'Wz_j)=-\epsilon^2s_j(r'Wz_j-\delta'Wz_j)=\epsilon^2s_jd'Wz_j
+$$
+# Scaling stress
+
+Define
+$$
+\sigma(X)=\frac{\sum_{k=1}^Kw_k(\delta_k-d_k(X))^2}{\sum_{k=1}^Kw_kd_k^2(X)}
+$$
+Multiply $X$ by $\lambda$ to minimize
+$$
+\sigma(\lambda X)=\frac{\eta_\delta^2-2\lambda\rho(X)+\lambda^2\eta^2(X)}{\lambda^2\eta^2(X)}=\frac{\gamma^2\eta_\delta^2-2\gamma\rho(X)+\eta^2(X)}{\eta^2(X)}
+$$
+with $\gamma=\lambda^{-1}$. Thus 
+$$
+\min_\lambda\sigma(\lambda X)=1-\frac{\rho^2(X)}{\eta_\delta^2\eta^2(X)}=1-\cos^2(\Delta,D(X))
+$$
+and the minimum is attained at
+$$
+\gamma=\frac{\rho(X)}{\eta_\delta^2},
+$$
+or
+$$
+\lambda=\frac{\eta_\delta^2}{\rho(X)}
+$$
+# next
+
+Minimize
+$$
+\sigma(X)=\frac{\eta_\delta^2-2\rho(X)+\eta^2(X)}{\eta^2(X)}
+$$
+
+By CS
+$$
+\rho(X)\geq\text{tr}\ X'V\mathcal{G}(Y)
+$$
+$$
+\sigma(X)\leq\frac{\eta_\delta^2-2\text{tr}\ X'V\mathcal{G}(Y)+\text{tr}\ X'VX}{\text{tr}\ X'VX}=\frac{\eta_\delta^2+\text{tr}\ (X-\mathcal{G}(Y))'V(X-\mathcal{G}(Y))-\text{tr}\ \mathcal{G}(Y)'V\mathcal{G}(Y)}{\text{tr}\ X'VX}
+$$
+$X(\lambda)=\mathcal{G}(Y)+\lambda(Y-\mathcal{G}(Y))$
+
+$$
+\sigma(X(\lambda))=\frac{\eta_\delta^2+\lambda^2\text{tr}\ (Y-\mathcal{G}(Y))'V(Y-\mathcal{G}(Y))-\text{tr}\ \mathcal{G}(Y)'V\mathcal{G}(Y)}
+{\text{tr}\ \mathcal{G}(Y)'V\mathcal{G}(Y)+2\lambda\text{tr}\ \mathcal{G}(Y)'V(Y-\mathcal{G}(Y))+\lambda^2\text{tr}\ (Y-\mathcal{G}(Y))'V(Y-\mathcal{G}(Y))}
+$$
+#
+
+$$
+\sigma(X,\hat D)=\frac{\mathop{\sum\sum}_{1\leq j<i\leq n}w_{ij}(\hat d_{ij}-d_{ij}(X))^2}{\mathop{\sum\sum}_{1\leq j<i\leq n}w_{ij}d_{ij}^2(X)}
+$$
 # Memory
 
 This is mostly for my own education.

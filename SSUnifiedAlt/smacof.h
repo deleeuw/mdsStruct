@@ -26,10 +26,11 @@
 void smacofSSEngine(const int n, const int p, double **delta, double **w,
                     double **vmat, double **vinv, double **xold, double **xnew,
                     double **dmat, double **dhat, double **basis,
-                    const int init, const int itmax, const int ieps1,
+                    const int haveinit, const int itmax, const int ieps1,
                     const int ieps2, const bool verbose, const bool relax,
+                    const int ditmax, const int ieps3, const bool dverbose,
                     const bool weights, const int degree, const int ordinal,
-                    char *iterstring);
+                    const int transform, char *iterstring);
 
 // smacofIndices.c
 
@@ -122,12 +123,13 @@ void smacofPrintVector(FILE *stream, const int n, const int width,
                        const int precision, double *x);
 void smacofReadInputFile(FILE *stream, double *delta);
 void smacofReadParameterFile(FILE *stream, int *n, int *p, int *itmax,
-                             int *init, int *feps, int *ceps, int *width,
+                             int *haveinit, int *feps, int *ceps, int *width,
                              int *precision, int *verbose, int *relax,
-                             int *degree, int *ordinal, int *weights,
-                             int *iknots, double *lowend, double *highend,
-                             int *anchor, int *knotspots, int *ninner,
-                             int *percentiles);
+                             int *ditmax, int *deps, int *dverbose, int *degree,
+                             int *ordinal, int *weights, int *haveknots,
+                             double *lowend, double *highend, int *anchor,
+                             int *ninner, int *percentiles, int *writefile,
+                             int *makeplots, int *transform);
 void smacofWriteOutputFile(FILE *stream, const int n, const int p,
                            const bool weights, const int width,
                            const int precision, double **delta, double **w,
@@ -172,9 +174,6 @@ void smacofInverseVMatrix(const int n, double **vmat, double **vinv);
 void smacofGuttmanTransform(const int n, const int p, const bool weights,
                             double **delta, double **dmat, double **w,
                             double **vinv, double **xold, double **xnew);
-double smacofStress(const int n, const bool weights, double **delta, double **w,
-                    double **dmat);
-
 // smacofNorm.c
 
 void smacofScale(const int n, const int p, const bool weights, double **delta,
@@ -184,6 +183,10 @@ void smacofNormDelta(const int n, const bool weights, double **delta,
 void smacofNormWeights(const int n, double **w);
 void smacofUnweighting(const int n, double wmax, double **delta, double **w,
                        double **dmat, double **dhat);
+double smacofSSQDelta(const int n, const bool weights, double **delta,
+                      double **w);
+double smacofStress(const int n, const int p, const bool weights, double **dhat,
+                    double **dmat, double **xconf, double **w);
 
 // smacofInitial.c
 
@@ -191,8 +194,9 @@ void smacofInitTorgerson(const int n, const int p, double **delta,
                          double **xold);
 void smacofInitMaximumSum(const int n, const int p, const bool weights,
                           double **delta, double **w, double **xold);
-void smacofInitial(const int n, const int p, const int init, const bool weights,
-                   double **delta, double **w, double **xini);
+void smacofInitial(const int n, const int p, const int haveinit,
+                   const bool weights, double **delta, double **w,
+                   double **xini);
 
 // smacofQP.c
 

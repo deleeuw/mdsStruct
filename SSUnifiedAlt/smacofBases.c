@@ -6,6 +6,9 @@ int smacofDoubleComparison(const void *a, const void *b) {
 
 bool smacofCheckIncreasing(double *innerknots, const double lowend,
                            const double highend, const int ninner) {
+    if (ninner == 0) {
+        return false;
+    }
     if (lowend >= innerknots[VINDEX(1)]) {
         return true;
     }
@@ -57,6 +60,9 @@ void smacofBisect(const double *x, const double *knots, const int *lowindex,
 void smacofMakeInnerKnots(const int ninner, const bool percentiles, const int n,
                           const double lowend, const double highend,
                           double *dsort, double *innerknots) {
+    if (ninner == 0) {
+        return;
+    }
     for (int i = 1; i <= ninner; i++) {
         innerknots[i - 1] = lowend + (i / (ninner + 1.0)) * (highend - lowend);
     }

@@ -1,0 +1,48 @@
+Tue Dec 26 11:12:39 2023
+
+
+Final Iteration
+
+itel 100 sold          nan snew          nan sdif          nan rmsd          nan rate          nan
+
+
+Data Delta
+
+  +0.0000000000
+  +3.0000000000  +0.0000000000
+  +2.0000000000  +1.0000000000  +0.0000000000
+  +3.0000000000  +2.0000000000  +3.0000000000  +0.0000000000
+
+
+Weights
+
+  +0.0000000000
+  +1.0000000000  +0.0000000000
+  +1.0000000000  +1.0000000000  +0.0000000000
+  +2.0000000000  +1.0000000000  +3.0000000000  +0.0000000000
+
+
+Transformed Data Dhat
+
+  +0.0000000000
+            nan  +0.0000000000
+            nan            nan  +0.0000000000
+            nan            nan            nan  +0.0000000000
+
+
+Configuration X
+
+            nan            nan
+            nan            nan
+            nan            nan
+            nan            nan
+
+
+Distance Matrix D(X)
+
+            nan
+            nan            nan
+            nan            nan            nan
+            nan            nan            nan            nan
+
+
