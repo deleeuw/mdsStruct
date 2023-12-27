@@ -3,28 +3,31 @@
 void smacofSSEngine(const int n, const int p, double **delta, double **w,
                     double **vmat, double **vinv, double **xold, double **xnew,
                     double **dmat, double **dhat, double **basis,
-                    const int init, const int itmax, const int ieps1,
-                    const int ieps2, const bool verbose, const bool relax,
-                    const bool weights, const int degree, const int ordinal,
-                    char *iterstring) {
-    int itel = 1, m = n * (n - 1) / 2, ditmax = 5, deps = 10;
+                    const int haveinit, const int typeinit, const int itmax,
+                    const int ieps1, const int ieps2, const bool verbose,
+                    const bool relax, const int ditmax, const int ieps3,
+                    const bool dverbose, const bool weights, const int ncol,
+                    const int ordinal, const int transform, char *iterstring) {
+    int itel = 1, m = n * (n - 1) / 2;
     double sold = 0.0, snew = 0.0, smid = 0.0;
     double eps1 = pow(10.0, -(double)ieps1), eps2 = pow(10.0, -(double)ieps2);
     double chnew = 0.0, chold = INFINITY, rate = 0.0;
     double *dmatvec = NULL, *dhatvec = NULL, *wvec = NULL, *bcoef = NULL;
     dmatvec = smacofMakeVector(m);
     dhatvec = smacofMakeVector(m);
-    bcoef = smacofMakeVector(degree);
+    bcoef = smacofMakeVector(ncol);
     if (weights) {
         wvec = smacofMakeVector(m);
         (void)smacofSymmetricCtoR(n, w, wvec);
     }
     (void)smacofCopyAnyMatrix(n, n, delta, dhat);
     (void)smacofNormDelta(n, weights, dhat, w);
-    (void)smacofInitial(n, p, init, weights, dhat, w, xold);
+    if (!haveinit) {
+        (void)smacofInitial(n, p, typeinit, weights, dhat, w, xold);
+    }
     (void)smacofDistance(n, p, xold, dmat);
     (void)smacofScale(n, p, weights, dhat, w, dmat, xold);
-    sold = smacofStress(n, weights, dhat, w, dmat);
+    sold = smacofStress(n, weights, w, dhat, dmat);
     // the fun starts here
     while (true) {
         (void)smacofGuttmanTransform(n, p, weights, dhat, dmat, w, vinv, xold,
@@ -35,18 +38,19 @@ void smacofSSEngine(const int n, const int p, double **delta, double **w,
             (void)smacofRelax(n, p, rate, xold, xnew);
         }
         (void)smacofDistance(n, p, xnew, dmat);
-        smid = smacofStress(n, weights, dhat, w, dmat);
-        (void)smacofSymmetricCtoR(n, dmat, dmatvec);
-        (void)smacofCCD(n, degree, dmatvec, wvec, bcoef, dhatvec, basis, ditmax, deps,
-                        true, weights, ordinal);
-        (void)smacofSymmetricRtoC(n, dhatvec, dhat);
-        (void)smacofNormDelta(n, weights, dhat, w);
-        snew = smacofStress(n, weights, dhat, w, dmat);
+        smid = smacofStress(n, weights, w, dhat, dmat);
+        if (transform) {
+            (void)smacofSymmetricCtoR(n, dmat, dmatvec);
+            (void)smacofSymmetricCtoR(n, dhat, dhatvec);
+            (void)smacofCCD(n, ncol, dmatvec, wvec, bcoef, dhatvec, basis,
+                            ditmax, ieps3, dverbose, weights, ordinal);
+            (void)smacofSymmetricRtoC(n, dhatvec, dhat);
+        }
+        snew = smacofStress(n, weights, w, dhat, dmat);
         if (verbose) {
             printf(
                 "itel %3d sold %12.10f smid %12.10f snew %12.10f sdif %+12.10f "
-                "etad "
-                "%+12.10f rate %12.10f\n",
+                "etad %+12.10f rate %12.10f\n",
                 itel, sold, smid, snew, sold - snew, chnew, rate);
         }
         if ((itel == itmax) || (((sold - snew) < eps1) && (chnew < eps2))) {

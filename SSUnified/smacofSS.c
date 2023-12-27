@@ -8,10 +8,11 @@ int main(int argc, char **argv) {
     char *name = argv[1];
     char parname[SSIZE], deltaname[SSIZE], xoldname[SSIZE], outname[SSIZE],
         weightsname[SSIZE], iknotname[SSIZE], timename[SSIZE];
-    int n = 0, p = 0, init = 0, itmax = 0, feps = 0, ceps = 0, verbose = 0,
-        width = 0, precision = 0, relax = 0, degree = 0, ordinal = 0,
-        weights = 0, iknots = 0, anchor = 0, knotspots = 0, ninner = 0,
-        percentiles = 0;
+    int n = 0, p = 0, haveinit = 0, typeinit = 0, itmax = 0, feps = 0, ceps = 0,
+        verbose = 0, width = 0, precision = 0, relax = 0, degree = 0,
+        ordinal = 0, weights = 0, haveknots = 0, anchor = 0, ninner = 0,
+        percentiles = 0, ditmax = 0, deps = 0, dverbose = 0, writefile = 0,
+        makeplots = 0, transform = 0;
     double lowend = 0.0, highend = 0.0;
     time_t t = time(NULL);
     char *iterstring = (char *)malloc((size_t)OSIZE * sizeof(char));
@@ -19,12 +20,13 @@ int main(int argc, char **argv) {
     FILE *parameterfile = fopen(parname, "r");
     assert(smacofReadParameterFile != NULL);
     (void)smacofReadParameterFile(
-        parameterfile, &n, &p, &itmax, &init, &feps, &ceps, &width, &precision,
-        &verbose, &relax, &degree, &ordinal, &weights, &iknots, &lowend,
-        &highend, &anchor, &knotspots, &ninner, &percentiles);
+        parameterfile, &n, &p, &itmax, &haveinit, &typeinit, &feps, &ceps,
+        &width, &precision, &verbose, &relax, &ditmax, &deps, &dverbose,
+        &degree, &ordinal, &weights, &haveknots, &lowend, &highend, &anchor,
+        &ninner, &percentiles, &writefile, &makeplots, &transform);
     fclose(parameterfile);
     int m = n * (n - 1) / 2, order = degree + 1, nknots = ninner + (2 * order),
-        span = nknots - order;
+        ncol = nknots - order;
     strcat(strcpy(deltaname, name), "Delta.txt");
     FILE *deltafile = fopen(deltaname, "r");
     assert(deltafile != NULL);
@@ -51,7 +53,6 @@ int main(int argc, char **argv) {
     if (weights) {
         vmat = smacofMakeSymmetricMatrix(n);
         vinv = smacofMakeSymmetricMatrix(n);
-        (void)smacofNormWeights(n, w);
         (void)smacofMakeVMatrix(n, w, vmat);
         (void)smacofInverseVMatrix(n, vmat, vinv);
     } else {
@@ -59,7 +60,7 @@ int main(int argc, char **argv) {
         vinv = smacofMakeSymmetricMatrix(0);
     }
     double **xold = smacofMakeAnyMatrix(n, p);
-    if (init == HAVE_INIT_CONFIGURATION) {
+    if (haveinit) {
         strcat(strcpy(xoldname, name), "Xold.txt");
         FILE *xoldfile = fopen(xoldname, "r");
         assert(xoldfile != NULL);
@@ -74,7 +75,7 @@ int main(int argc, char **argv) {
     for (int i = 0; i < ninner; i++) {
         multiplicities[i] = 1;
     }
-    if (iknots == HAVE_INNER_KNOTS) {
+    if (haveknots == HAVE_INNER_KNOTS) {
         strcat(strcpy(iknotname, name), "Knots.txt");
         FILE *iknotfile = fopen(iknotname, "r");
         assert(iknotfile != NULL);
@@ -93,30 +94,40 @@ int main(int argc, char **argv) {
     double *knots = smacofMakeVector(nknots);
     (void)smacofExtendPartition(innerknots, multiplicities, &order, &ninner,
                                 &lowend, &highend, knots);
-    double *basisvector = smacofMakeVector(m * span);
+    double *basisvector = smacofMakeVector(m * ncol);
     (void)smacofBsplineBasis(deltavec, knots, &order, &nknots, &m, basisvector);
-    double **basis = smacofMakeAnyMatrix(m, span);
-    (void)smacofAnyRtoC(m, span, basisvector, basis);
+    double **basis = smacofMakeAnyMatrix(m, ncol);
+    (void)smacofAnyRtoC(m, ncol, basisvector, basis);
     (void)smacofFreeVector(basisvector);
-    (void)smacofPrintAnyMatrix(stdout, m, span, 10, 4, basis);
+    (void)smacofFreeVector(deltavec);
+    (void)smacofPrintAnyMatrix(stdout, m, ncol, 8, 4, basis);
     if (ordinal) {
-        (void)smacofCumsumMatrix(n, span, basis);
+        (void)smacofCumsumMatrix(m, ncol, basis);
     }
+    (void)smacofPrintAnyMatrix(stdout, m, ncol, 8, 4, basis);
     double **dmat = smacofMakeSymmetricMatrix(n);
     double **dhat = smacofMakeSymmetricMatrix(n);
     double **xnew = smacofMakeAnyMatrix(n, p);
     // now we are getting serious
     (void)smacofSSEngine(n, p, delta, w, vmat, vinv, xold, xnew, dmat, dhat,
-                         basis, init, itmax, feps, ceps, verbose, relax,
-                         weights, degree, ordinal, iterstring);
+                         basis, haveinit, typeinit, itmax, feps, ceps, verbose,
+                         relax, ditmax, deps, dverbose, weights, ncol, ordinal,
+                         transform, iterstring);
     // phew
-    struct tm *tm = localtime(&t);
-    strftime(timename, sizeof(timename), "_%F_%H:%M", tm);
-    strcat(strcat(strcpy(outname, name), timename), ".txt");
-    FILE *stream = fopen(outname, "w");
-    assert(stream != NULL);
-    (void)smacofWriteOutputFile(stream, n, p, weights, width, precision, delta,
-                                w, dhat, xnew, dmat, iterstring);
+    if (writefile) {
+        struct tm *tm = localtime(&t);
+        strftime(timename, sizeof(timename), "_%F_%H:%M", tm);
+        strcat(strcat(strcpy(outname, name), timename), ".txt");
+        FILE *output = fopen(outname, "w");
+        assert(output != NULL);
+        //(void)smacofWriteParameterFile();
+        (void)smacofWriteOutputFile(output, n, p, weights, width, precision,
+                                    delta, w, dhat, xnew, dmat, iterstring);
+        fclose(output);
+    }
+    if (makeplots) {
+        (void)smacofShepardPlot(n, delta, dhat, dmat);
+    }
     (void)smacofFreeMatrix(n, delta);
     (void)smacofFreeMatrix(n, dmat);
     (void)smacofFreeMatrix(n, dhat);
@@ -126,6 +137,5 @@ int main(int argc, char **argv) {
         (void)smacofFreeMatrix(n, w);
     }
     free(iterstring);
-    fclose(stream);
     return EXIT_SUCCESS;
 }

@@ -1,8 +1,9 @@
 #include "smacof.h"
 
-void smacofInitial(const int n, const int p, const int init, const bool weights,
-                   double **delta, double **w, double **xold) {
-    switch (init) {
+void smacofInitial(const int n, const int p, const int typeinit,
+                   const bool weights, double **delta, double **w,
+                   double **xold) {
+    switch (typeinit) {
         case 1:
             (void)smacofInitTorgerson(n, p, delta, xold);
             break;
@@ -40,24 +41,26 @@ void smacofInitTorgerson(const int n, const int p, double **delta,
 
 void smacofInitMaximumSum(const int n, const int p, const bool weights,
                           double **delta, double **w, double **xold) {
-    int itmax = 100, eps = 15;
-    bool verbose = false;
-    double **bmat = smacofMakeAnyMatrix(n, n);
+    int jitmax = 100, jeps = 15;
+    bool jverbose = false;
+    double **bmat = smacofMakeSymmetricMatrix(n);
     double **evec = smacofMakeAnyMatrix(n, n);
     double *eval = smacofMakeVector(n);
     for (int i = 0; i < n; i++) {
+        double sum = 0.0;
         for (int j = 0; j < n; j++) {
-            double cell = SQUARE(delta[i][j]);
+            int ij = MAX(i, j);
+            int ji = MIN(i, j);
+            double cell = SQUARE(delta[ij][ji]);
             if (weights) {
-                cell *= w[i][j];
+                cell *= w[ij][ji];
             }
-            bmat[i][j] -= cell;
-            bmat[j][i] -= cell;
-            bmat[i][i] += cell;
-            bmat[j][j] += cell;
+            bmat[ij][ji] = -cell;
+            sum += cell;
         }
+        bmat[i][i] = sum;
     }
-    (void)smacofJacobi(n, p, bmat, evec, eval, itmax, eps, verbose);
+    (void)smacofJacobi(n, p, bmat, evec, eval, jitmax, jeps, jverbose);
     for (int s = 0; s < p; s++) {
         double fac = sqrt(fabs(eval[s]));
         for (int i = 0; i < n; i++) {

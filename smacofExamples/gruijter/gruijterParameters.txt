@@ -1,7 +1,8 @@
 n = 9
 p = 2
-haveinit = 3
-itmax = 100
+haveinit = 0
+typeinit = 3
+itmax = 1000
 feps = 10
 ceps = 6
 verbose = 1
@@ -16,16 +17,16 @@ ditmax = 20
 deps = 6
 dverbose = 0
 haveknots = 0
-ordinal = 0
-degree = 2
-ninner = 2
+ordinal = 1
+degree = 3
+ninner = 10
 lowend = 3.0
 highend = 9.0
 percentiles = 0
 anchor = 0
 writefile = 0
-makeplots = 0
-transform = 0
+makeplots = 1
+transform = 1
 
 
 

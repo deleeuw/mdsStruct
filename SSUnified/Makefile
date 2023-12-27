@@ -14,7 +14,8 @@ sources = \
 	smacofTransforms.c \
 	smacofCCD.c \
 	smacofIndices.c \
-	smacofCore.c 
+	smacofCore.c \
+	smacofPlot.c
 
 notyet = \
 	smacofQP.c \
@@ -35,7 +36,8 @@ objects = \
 	smacofTransforms.o \
 	smacofCCD.o \
 	smacofIndices.o \
-	smacofCore.o 
+	smacofCore.o \
+	smacofPlot.o
 	
 drivers = smacofSS.c \
 	smacofSSEngine.c
@@ -53,7 +55,7 @@ clib: ofiles
 	rm -f *.o
 
 smacofSS: clib
-	$(CC) -o smacofSS $(CFLAGS) $(drivers) -lsmacofSS
+	$(CC) -o smacofSS $(CFLAGS) $(drivers) -lsmacofSS -lplot
 	mv -f smacofSS /usr/local/bin
 	
 smacofSSDebug: $(includes) $(sources) $(drivers)

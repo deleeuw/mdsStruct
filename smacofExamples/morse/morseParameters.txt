@@ -1,9 +1,10 @@
 n = 36
 p = 2
-init = 1
-itmax = 10000
-feps = 15
-ceps = 10
+haveinit = 0
+typeinit = 1
+itmax = 1000
+feps = 10
+ceps = 6
 verbose = 1
 relax = 0
 width = 10
@@ -11,11 +12,23 @@ precision = 6
 weights = 0
 jitmax = 100
 jeps = 15
+jverbose = 0
+ditmax = 20
+deps = 6
+dverbose = 0
+haveknots = 0
 ordinal = 1
-transform = 2
 degree = 4
-numbknots = 5
-knotplace = 1
-interval = 1
+ninner = 4
+lowend = 0.0
+highend = 1.0
+percentiles = 0
+anchor = 0
+writefile = 0
+makeplots = 0
+transform = 1
+
+
+
 
 

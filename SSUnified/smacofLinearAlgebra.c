@@ -114,6 +114,7 @@ void smacofScaleMatrixColumns(const int n, const int m, const double p,
     }
 }
 
+/*
 void smacofDoubleJacobi(const int n, double **a, double **b, double **evec,
                         double *eval, const int itmax, const int ieps,
                         const bool verbose) {
@@ -131,6 +132,7 @@ void smacofDoubleJacobi(const int n, double **a, double **b, double **evec,
     (void)smacofFreeMatrix(n, u);
     (void)smacofFreeVector(bval);
 }
+*/
 
 // for now without pivoting
 

@@ -46,12 +46,13 @@ void smacofReadInputFile(FILE *stream, double *delta) {
 }
 
 void smacofReadParameterFile(FILE *stream, int *n, int *p, int *itmax,
-                             int *init, int *feps, int *ceps, int *width,
-                             int *precision, int *verbose, int *relax,
+                             int *haveinit, int *typeinit, int *feps, int *ceps,
+                             int *width, int *precision, int *verbose,
+                             int *relax, int *ditmax, int *deps, int *dverbose,
                              int *degree, int *ordinal, int *weights,
-                             int *iknots, double *lowend, double *highend,
-                             int *anchor, int *knotspots, int *ninner,
-                             int *percentiles) {
+                             int *haveknots, double *lowend, double *highend,
+                             int *anchor, int *ninner, int *percentiles,
+                             int *writefile, int *makeplots, int *transform) {
     char *line = (char *)malloc(80 * sizeof(char));
     char aux1[20], aux2[20];
     int par = 0;
@@ -68,8 +69,11 @@ void smacofReadParameterFile(FILE *stream, int *n, int *p, int *itmax,
         if (strcmp("itmax", aux1) == 0) {
             *itmax = par;
         }
-        if (strcmp("init", aux1) == 0) {
-            *init = par;
+        if (strcmp("haveinit", aux1) == 0) {
+            *haveinit = par;
+        }
+        if (strcmp("typeinit", aux1) == 0) {
+            *typeinit = par;
         }
         if (strcmp("feps", aux1) == 0) {
             *feps = par;
@@ -89,6 +93,15 @@ void smacofReadParameterFile(FILE *stream, int *n, int *p, int *itmax,
         if (strcmp("relax", aux1) == 0) {
             *relax = par;
         }
+        if (strcmp("ditmax", aux1) == 0) {
+            *ditmax = par;
+        }
+        if (strcmp("deps", aux1) == 0) {
+            *deps = par;
+        }
+        if (strcmp("dverbose", aux1) == 0) {
+            *dverbose = par;
+        }
         if (strcmp("degree", aux1) == 0) {
             *degree = par;
         }
@@ -98,8 +111,8 @@ void smacofReadParameterFile(FILE *stream, int *n, int *p, int *itmax,
         if (strcmp("weights", aux1) == 0) {
             *weights = par;
         }
-        if (strcmp("iknots", aux1) == 0) {
-            *iknots = par;
+        if (strcmp("haveknots", aux1) == 0) {
+            *haveknots = par;
         }
         if (strcmp("lowend", aux1) == 0) {
             *lowend = par;
@@ -110,31 +123,24 @@ void smacofReadParameterFile(FILE *stream, int *n, int *p, int *itmax,
         if (strcmp("anchor", aux1) == 0) {
             *anchor = par;
         }
-        if (strcmp("knotspots", aux1) == 0) {
-            *knotspots = par;
-        }
         if (strcmp("ninner", aux1) == 0) {
             *ninner = par;
         }
         if (strcmp("percentiles", aux1) == 0) {
             *percentiles = par;
         }
+        if (strcmp("writefile", aux1) == 0) {
+            *writefile = par;
+        }
+        if (strcmp("makeplots", aux1) == 0) {
+            *makeplots = par;
+        }
+        if (strcmp("transform", aux1) == 0) {
+            *transform = par;
+        }
     }
     free(line);
     return;
-}
-
-void smacofWriteEvalBmat(FILE *stream, const int n, const int width,
-                         const int precision, double **bmat, double **vmat) {
-    double **evec = smacofMakeAnyMatrix(n, n);
-    double *eval = smacofMakeVector(n);
-    double **bvec = smacofMakeAnyMatrix(n, n);
-    (void)smacofDoubleJacobi(n, bmat, vmat, evec, eval, 100, 15, false);
-    fprintf(stream, "Eigenvalues V^+B(X)\n\n");
-    (void)smacofPrintVector(stream, n, width, precision, eval);
-    (void)smacofFreeVector(eval);
-    (void)smacofFreeMatrix(n, evec);
-    (void)smacofFreeMatrix(n, bvec);
 }
 
 void smacofWriteOutputFile(FILE *stream, const int n, const int p,

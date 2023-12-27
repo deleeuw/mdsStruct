@@ -1,15 +1,29 @@
 #include "smacof.h"
 
-double smacofStress(const int n, const bool weights, double **delta, double **w,
+double smacofRho(const int n, const bool weights, double **w, double **dhat,
+                 double **dmat) {
+    double rho = 0.0, fac = 1.0;
+    for (int i = 1; i < n; i++) {
+        for (int j = 0; j < i; j++) {
+            fac = dhat[i][j] * dmat[i][j];
+            if (weights) {
+                rho += w[i][j] * fac;
+            } else {
+                rho += fac;
+            }
+        }
+    }
+    return rho;
+}
+
+double smacofStress(const int n, const bool weights, double **w, double **dhat,
                     double **dmat) {
-    double sum = 0.0, mw = 2.0 / (double)(n * (n - 1));
+    double sum = 0.0;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j <= i; j++) {
-            double fac = SQUARE(delta[i][j] - dmat[i][j]);
+            double fac = SQUARE(dhat[i][j] - dmat[i][j]);
             if (weights) {
                 fac *= w[i][j];
-            } else {
-                fac *= mw;
             }
             sum += fac;
         }
@@ -67,19 +81,13 @@ void smacofGuttmanTransform(const int n, const int p, const bool weights,
 }
 
 void smacofMakeVMatrix(const int n, double **weights, double **vmat) {
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j <= i; j++) {
-            vmat[i][j] = -weights[i][j];
+    for (int j = 0; j < (n - 1); j++) {
+        for (int i = (j + 1); i < n; i++) {
+            double wij = weights[i][j];
+            vmat[i][j] = -wij;
+            vmat[i][i] += wij;
+            vmat[j][j] += wij;
         }
-    }
-    for (int i = 0; i < n; i++) {
-        double sum = 0.0;
-        for (int j = 0; j < n; j++) {
-            int ij = MAX(i, j);
-            int ji = MIN(i, j);
-            sum += vmat[ij][ji];
-        }
-        vmat[i][i] = -sum;
     }
     return;
 }
