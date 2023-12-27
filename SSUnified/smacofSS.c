@@ -127,6 +127,7 @@ int main(int argc, char **argv) {
     }
     if (makeplots) {
         (void)smacofShepardPlot(n, delta, dhat, dmat);
+        (void)smacofConfigurationPlot(n, 0, 1, xnew);
     }
     (void)smacofFreeMatrix(n, delta);
     (void)smacofFreeMatrix(n, dmat);

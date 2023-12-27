@@ -214,6 +214,7 @@ void smacofInterval(const int n, double **delta, double **dmat, double **dhat);
 
 void smacofShepardPlot(const int n, double **delta, double **dhat,
                        double **dmat);
+void smacofConfigurationPlot(const int n, const int dim1, const int dim2, double **xmat);
 int smacofCoComp(const void *px, const void *py);
 void smacofCoSort(double *x, int *k, const int n);
 void smacofSqueeze(const int n, const double lowend, const double highend,
